@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0'
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = []
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+    // this is to avoid the @TargetApi missing on methods giving errors.
+    lintOptions {
+        abortOnError false
+    }
+    defaultConfig {
+        minSdkVersion 4
+    }
+}
+
+dependencies {
+    implementation project(':client')
+    implementation project(':AndroidME')
+}

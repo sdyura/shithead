@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation rootProject
+    implementation project(":SwingME")
+
+    // these are needed for compile only, the actual versions used are specific to android/ios
+    compileOnly fileTree(dir: '../SwingME/lib', include: ['midletrunner.jar', 'opt.jar'])
+}

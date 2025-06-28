@@ -1,0 +1,29 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+    }
+}
+
+
+apply plugin: 'java-library'
+
+compileJava {
+    targetCompatibility = 1.7
+    sourceCompatibility = 1.7
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['res']
+        }
+    }
+}
+
+
