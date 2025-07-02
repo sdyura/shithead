@@ -8,6 +8,24 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+application {
+    mainClassName = 'org.me4se.MIDletRunner'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': project.mainClassName,
+                'MIDlet-1': 'desktop ui,,net.yura.shithead.client.ShitHeadClient'
+        )
+    }
+}
+
+run {
+    args 'net.yura.shithead.client.ShitHeadClient'
+}
+
 dependencies {
     implementation project(':client')
+    implementation 'org.swingme:swingme-binding-desktop:4.0.0'
 }
