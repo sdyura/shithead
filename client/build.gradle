@@ -9,8 +9,8 @@ java {
 
 dependencies {
     implementation rootProject
-    implementation project(":SwingME")
+    implementation 'org.swingme:swingme:1.8.0'
 
     // these are needed for compile only, the actual versions used are specific to android/ios
-    compileOnly fileTree(dir: '../SwingME/lib', include: ['midletrunner.jar', 'opt.jar'])
+    compileOnly 'org.swingme:me4se-midletrunner:4.0.0'
 }

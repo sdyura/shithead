@@ -9,4 +9,5 @@ java {
 
 dependencies {
     implementation rootProject
+    implementation 'net.yura:io-util:1.0'
 }

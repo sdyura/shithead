@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         // Multi-OS Engine plugin
         // when it is updating you need to run "./gradlew moeUpdateXcodeSettings"
-        classpath group: 'org.multi-os-engine', name: 'moe-gradle', version: '1.10.1'
+        classpath group: 'org.multi-os-engine', name: 'moe-gradle', version: '1.10.2'
     }
 }
 
@@ -34,17 +34,59 @@ moe {
     }
 }
 
-moeMainReleaseProGuard {
-    appendCfgFile "../../iOSME/proguard.append.cfg"
-}
-moeMainDebugProGuard {
-    appendCfgFile "../../iOSME/proguard.append.cfg"
-}
-moeTestDebugProGuard {
-    appendCfgFile "../../iOSME/proguard.append.cfg"
-}
-
 dependencies {
     implementation project(':client')
-    implementation project(":iOSME")
+    implementation 'org.swingme:swingme-binding-ios:1.0.0'
 }
+
+moeMainReleaseProGuard {
+    appendCfgFile "proguard.append.cfg"
+}
+moeMainDebugProGuard {
+    appendCfgFile "proguard.append.cfg"
+}
+moeTestDebugProGuard {
+    appendCfgFile "proguard.append.cfg"
+}
+
+// copy the 'iosmeimg' folder into the main app resource bundle
+
+// Default excludes are: ("LICENSE", "LICENSE.*", "META-INF/LICENSE", "META-INF/LICENSE.*", "NOTICE", "NOTICE.*", "META-INF/NOTICE", "META-INF/NOTICE.*", "**/.*")
+moe.packaging.exclude("META-INF/moe-lib/**")
+
+task extractFileFromJar(type: Copy) {
+    def jarFile = configurations.runtimeClasspath.find { it.name.contains("swingme-binding-ios") }
+    from zipTree(jarFile)
+    include "META-INF/moe-lib/proguard.append.cfg"
+    eachFile { file ->
+        file.path = file.name
+    }
+    includeEmptyDirs = false
+    into projectDir
+}
+task copyiOSresources(dependsOn: extractFileFromJar) {
+    doLast {
+        def subDir = "META-INF/moe-lib/ios-res/"
+        configurations.runtimeClasspath.files.each { jar ->
+            copy {
+                from zipTree(jar)
+                include "$subDir/**"
+                into("xcode/")
+                eachFile { file ->
+                    file.path = file.path.replaceFirst("^$subDir", '')
+                }
+                includeEmptyDirs(false)
+            }
+        }
+    }
+}
+
+moeMainReleaseIphoneosXcodeBuild.dependsOn copyiOSresources
+moeMainDebugIphoneosXcodeBuild.dependsOn copyiOSresources
+moeMainReleaseIphonesimulatorXcodeBuild.dependsOn copyiOSresources
+moeMainDebugIphonesimulatorXcodeBuild.dependsOn copyiOSresources
+
+if (System.getenv('PLATFORM_NAME') != null) {
+    moeXcodeInternal.dependsOn copyiOSresources
+}
+
