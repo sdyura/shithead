@@ -26,4 +26,8 @@ sourceSets {
     }
 }
 
+dependencies {
+    api fileTree(dir: 'lib', include: 'cardsengine.jar')
+}
+
 
