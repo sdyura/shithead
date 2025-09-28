@@ -28,9 +28,9 @@ test { exclude '**' }
 // Setup Multi-OS Engine
 moe {
     xcode {
-        project 'xcode/Quickstart.xcodeproj'
-        mainTarget 'Quickstart'
-        testTarget 'Quickstart-Test'
+        project 'xcode/Shithead.xcodeproj'
+        mainTarget 'Shithead'
+        testTarget 'Shithead-Test'
     }
 }
 

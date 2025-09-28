@@ -1,9 +1,9 @@
 package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
+import net.yura.cardsengine.CardDeckEmptyException;
 import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,20 +39,25 @@ public class ShitheadGame {
      */
     public void deal() {
         deck.shuffle();
-        for (int i = 0; i < 3; i++) {
-            for (Player p : players) {
-                p.getDowncards().add(deck.dealCard());
+        try {
+            for (int i = 0; i < 3; i++) {
+                for (Player p : players) {
+                    p.getDowncards().add(deck.dealCard());
+                }
+            }
+            for (int i = 0; i < 3; i++) {
+                for (Player p : players) {
+                    p.getUpcards().add(deck.dealCard());
+                }
+            }
+            for (int i = 0; i < 3; i++) {
+                for (Player p : players) {
+                    p.getHand().add(deck.dealCard());
+                }
             }
         }
-        for (int i = 0; i < 3; i++) {
-            for (Player p : players) {
-                p.getUpcards().add(deck.dealCard());
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-            for (Player p : players) {
-                p.getHand().addCard(deck.dealCard());
-            }
+        catch (CardDeckEmptyException ex) {
+            throw new IllegalStateException("not enough cards in deck for initial deal", ex);
         }
     }
 
@@ -91,7 +96,7 @@ public class ShitheadGame {
 
         // remove from player's locations
         for (Card c : cards) {
-            if (player.getHand().getCards().remove(c)) {
+            if (player.getHand().remove(c)) {
                 // removed from hand
             } else if (player.getUpcards().remove(c)) {
                 // removed from table
@@ -152,8 +157,13 @@ public class ShitheadGame {
     }
 
     private void refillHand(Player player) {
-        while (player.getHand().size() < 3 && deck.getSize() > 0) {
-            player.getHand().addCard(deck.dealCard());
+        try {
+            while (player.getHand().size() < 3) {
+                player.getHand().add(deck.dealCard());
+            }
+        }
+        catch (CardDeckEmptyException ex) {
+            // this is fine, the deck is empty now
         }
     }
 

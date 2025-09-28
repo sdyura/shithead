@@ -45,8 +45,8 @@
 		583D44861E40B4910048FF77 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		583D44881E40B4B90048FF77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		583D44891E40B4B90048FF77 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9793DC7BCA03B1F0E1B02782 /* Quickstart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quickstart.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7A3E898974177A2A2F0C417 /* Quickstart-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Quickstart-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9793DC7BCA03B1F0E1B02782 /* Shithead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shithead.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7A3E898974177A2A2F0C417 /* Shithead-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shithead-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC4876D3960503C5F9FA285C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DE30C950268FBF750018914C /* iosmeimg */ = {isa = PBXFileReference; lastKnownFileType = folder; path = iosmeimg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,8 +135,8 @@
 		ADBAFA50E5D6822524142090 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9793DC7BCA03B1F0E1B02782 /* Quickstart.app */,
-				B7A3E898974177A2A2F0C417 /* Quickstart-Test.app */,
+				9793DC7BCA03B1F0E1B02782 /* Shithead.app */,
+				B7A3E898974177A2A2F0C417 /* Shithead-Test.app */,
 			);
 			path = Products;
 			sourceTree = "<group>";
@@ -144,9 +144,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		088AE52DA4AF76BC466B1DD6 /* Quickstart-Test */ = {
+		088AE52DA4AF76BC466B1DD6 /* Shithead-Test */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0DBD5A82988E65115A8497AF /* Build configuration list for PBXNativeTarget "Quickstart-Test" */;
+			buildConfigurationList = 0DBD5A82988E65115A8497AF /* Build configuration list for PBXNativeTarget "Shithead-Test" */;
 			buildPhases = (
 				DC94886E502D79B018836015 /* Compile Sources (MOE) */,
 				AB93DBBFAE3DF58FA576FA39 /* Frameworks */,
@@ -158,14 +158,14 @@
 			);
 			dependencies = (
 			);
-			name = "Quickstart-Test";
+			name = "Shithead-Test";
 			productName = "Quickstart-Test";
-			productReference = B7A3E898974177A2A2F0C417 /* Quickstart-Test.app */;
+			productReference = B7A3E898974177A2A2F0C417 /* Shithead-Test.app */;
 			productType = "com.apple.product-type.application";
 		};
-		1FD253CDC4B80AD0B7CECF92 /* Quickstart */ = {
+		1FD253CDC4B80AD0B7CECF92 /* Shithead */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DA9CF15504AD1A14A9232F71 /* Build configuration list for PBXNativeTarget "Quickstart" */;
+			buildConfigurationList = DA9CF15504AD1A14A9232F71 /* Build configuration list for PBXNativeTarget "Shithead" */;
 			buildPhases = (
 				4241AE1906862286C246DE16 /* Compile Sources (MOE) */,
 				A2BC52023A389D56ABDD2BFB /* Frameworks */,
@@ -177,9 +177,9 @@
 			);
 			dependencies = (
 			);
-			name = Quickstart;
+			name = Shithead;
 			productName = Quickstart;
-			productReference = 9793DC7BCA03B1F0E1B02782 /* Quickstart.app */;
+			productReference = 9793DC7BCA03B1F0E1B02782 /* Shithead.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -191,7 +191,7 @@
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "My Company";
 			};
-			buildConfigurationList = EE1B76AC2D4C44432A7FA818 /* Build configuration list for PBXProject "Quickstart" */;
+			buildConfigurationList = EE1B76AC2D4C44432A7FA818 /* Build configuration list for PBXProject "Shithead" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -205,8 +205,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1FD253CDC4B80AD0B7CECF92 /* Quickstart */,
-				088AE52DA4AF76BC466B1DD6 /* Quickstart-Test */,
+				1FD253CDC4B80AD0B7CECF92 /* Shithead */,
+				088AE52DA4AF76BC466B1DD6 /* Shithead-Test */,
 			);
 		};
 /* End PBXProject section */
@@ -306,6 +306,8 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
@@ -326,8 +328,6 @@
 				SYMROOT = "$(SRCROOT)/../build/moe/xcodebuild/sym";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
-				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
 			};
 			name = Release;
 		};
@@ -354,6 +354,8 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
@@ -381,8 +383,6 @@
 				SDKROOT = iphoneos;
 				SYMROOT = "$(SRCROOT)/../build/moe/xcodebuild/sym";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
-				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
 			};
 			name = Debug;
 		};
@@ -419,8 +419,8 @@
 					"${MOE_OTHER_LDFLAGS}",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = swingme.quickstart.test;
-				PRODUCT_NAME = "Quickstart-Test";
+				PRODUCT_BUNDLE_IDENTIFIER = net.yura.shithead.test;
+				PRODUCT_NAME = "Shithead-Test";
 				STRIP_STYLE = "non-global";
 			};
 			name = Debug;
@@ -459,8 +459,8 @@
 					"${MOE_OTHER_LDFLAGS}",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = swingme.quickstart;
-				PRODUCT_NAME = Quickstart;
+				PRODUCT_BUNDLE_IDENTIFIER = net.yura.shithead;
+				PRODUCT_NAME = Shithead;
 				STRIP_STYLE = "non-global";
 			};
 			name = Debug;
@@ -499,8 +499,8 @@
 					"${MOE_OTHER_LDFLAGS}",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = swingme.quickstart;
-				PRODUCT_NAME = Quickstart;
+				PRODUCT_BUNDLE_IDENTIFIER = net.yura.shithead;
+				PRODUCT_NAME = Shithead;
 				STRIP_STYLE = "non-global";
 			};
 			name = Release;
@@ -538,8 +538,8 @@
 					"${MOE_OTHER_LDFLAGS}",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = swingme.quickstart.test;
-				PRODUCT_NAME = "Quickstart-Test";
+				PRODUCT_BUNDLE_IDENTIFIER = net.yura.shithead.test;
+				PRODUCT_NAME = "Shithead-Test";
 				STRIP_STYLE = "non-global";
 			};
 			name = Release;
@@ -547,7 +547,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0DBD5A82988E65115A8497AF /* Build configuration list for PBXNativeTarget "Quickstart-Test" */ = {
+		0DBD5A82988E65115A8497AF /* Build configuration list for PBXNativeTarget "Shithead-Test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65873FC5DD821D2471802441 /* Debug */,
@@ -556,7 +556,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DA9CF15504AD1A14A9232F71 /* Build configuration list for PBXNativeTarget "Quickstart" */ = {
+		DA9CF15504AD1A14A9232F71 /* Build configuration list for PBXNativeTarget "Shithead" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A9CF19AFEA2E428EF8C4641D /* Debug */,
@@ -565,7 +565,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EE1B76AC2D4C44432A7FA818 /* Build configuration list for PBXProject "Quickstart" */ = {
+		EE1B76AC2D4C44432A7FA818 /* Build configuration list for PBXProject "Shithead" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2575EC0779141B6FFD49A895 /* Debug */,
