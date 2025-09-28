@@ -39,9 +39,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		196A02442E4F584ABA797266 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Quickstart-Test/Info.plist"; sourceTree = SOURCE_ROOT; };
+		196A02442E4F584ABA797266 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Shithead-Test/Info.plist"; sourceTree = SOURCE_ROOT; };
 		1EB08A0C79A9F530D95B3E8B /* moe-main-interfaces.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "moe-main-interfaces.m"; path = "../build/moe/main/ui-headers/moe-main-interfaces.m"; sourceTree = "<group>"; };
-		484E50E912C53A6976896EA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Quickstart/Info.plist; sourceTree = SOURCE_ROOT; };
+		484E50E912C53A6976896EA4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Shithead/Info.plist; sourceTree = SOURCE_ROOT; };
 		583D44861E40B4910048FF77 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		583D44881E40B4B90048FF77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		583D44891E40B4B90048FF77 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -88,8 +88,8 @@
 			isa = PBXGroup;
 			children = (
 				DE30C950268FBF750018914C /* iosmeimg */,
-				4D85E57E486ED51FA34DE305 /* Quickstart */,
-				73D1721AB6220D74E351DD53 /* Quickstart-Test */,
+				4D85E57E486ED51FA34DE305 /* Shithead */,
+				73D1721AB6220D74E351DD53 /* Shithead-Test */,
 				235E336D9FBC6ED908F4C9C7 /* Frameworks */,
 				ADBAFA50E5D6822524142090 /* Products */,
 				11236C66490972FB1EA3F4E7 /* Multi-OS Engine */,
@@ -104,7 +104,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4D85E57E486ED51FA34DE305 /* Quickstart */ = {
+		4D85E57E486ED51FA34DE305 /* Shithead */ = {
 			isa = PBXGroup;
 			children = (
 				484E50E912C53A6976896EA4 /* Info.plist */,
@@ -112,16 +112,16 @@
 				583D44891E40B4B90048FF77 /* LaunchScreen.storyboard */,
 				7EA67FDFC4E01224F187EAA7 /* Supporting Files */,
 			);
-			path = Quickstart;
+			path = Shithead;
 			sourceTree = "<group>";
 		};
-		73D1721AB6220D74E351DD53 /* Quickstart-Test */ = {
+		73D1721AB6220D74E351DD53 /* Shithead-Test */ = {
 			isa = PBXGroup;
 			children = (
 				196A02442E4F584ABA797266 /* Info.plist */,
 				41917924B290C9C6B97F1709 /* Supporting Files */,
 			);
-			path = "Quickstart-Test";
+			path = "Shithead-Test";
 			sourceTree = "<group>";
 		};
 		7EA67FDFC4E01224F187EAA7 /* Supporting Files */ = {
@@ -159,7 +159,7 @@
 			dependencies = (
 			);
 			name = "Shithead-Test";
-			productName = "Quickstart-Test";
+			productName = "Shithead-Test";
 			productReference = B7A3E898974177A2A2F0C417 /* Shithead-Test.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -178,7 +178,7 @@
 			dependencies = (
 			);
 			name = Shithead;
-			productName = Quickstart;
+			productName = Shithead;
 			productReference = 9793DC7BCA03B1F0E1B02782 /* Shithead.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -396,7 +396,7 @@
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Quickstart-Test/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Shithead-Test/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MOE_COPY_ANDROID_CACERTS = NO;
 				MOE_FRAMEWORK_PATH = "${MOE_SDK_PATH}/sdk/${PLATFORM_NAME}";
@@ -436,7 +436,7 @@
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
 				);
-				INFOPLIST_FILE = Quickstart/Info.plist;
+				INFOPLIST_FILE = Shithead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MOE_COPY_ANDROID_CACERTS = YES;
 				MOE_FRAMEWORK_PATH = "${MOE_SDK_PATH}/sdk/${PLATFORM_NAME}";
@@ -476,7 +476,7 @@
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
 				);
-				INFOPLIST_FILE = Quickstart/Info.plist;
+				INFOPLIST_FILE = Shithead/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MOE_COPY_ANDROID_CACERTS = YES;
 				MOE_FRAMEWORK_PATH = "${MOE_SDK_PATH}/sdk/${PLATFORM_NAME}";
@@ -515,7 +515,7 @@
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Quickstart-Test/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Shithead-Test/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MOE_COPY_ANDROID_CACERTS = NO;
 				MOE_FRAMEWORK_PATH = "${MOE_SDK_PATH}/sdk/${PLATFORM_NAME}";

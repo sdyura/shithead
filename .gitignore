@@ -4,6 +4,8 @@
 !**/src/**/build/
 /.idea/
 /local.properties
+/ios/xcode/Shithead.xcodeproj/xcuserdata/
+/ios/xcode/Shithead.xcodeproj/project.xcworkspace/
 
 # Ignore Gradle GUI config
 gradle-app.setting
