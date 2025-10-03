@@ -1,7 +1,6 @@
 package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
-import net.yura.cardsengine.Hand;
 import java.util.ArrayList;
 import java.util.List;
 
