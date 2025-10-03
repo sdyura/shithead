@@ -94,40 +94,61 @@ public class ShitheadGame {
             return false;
         }
 
-        // remove from player's locations
-        for (Card c : cards) {
-            if (player.getHand().remove(c)) {
-                // removed from hand
-            } else if (player.getUpcards().remove(c)) {
-                // removed from table
-            } else if (player.getDowncards().remove(c)) {
-                // playing blind card
-            }
-            wastePile.add(c);
+        List<Card> sourcePile;
+        if (!player.getHand().isEmpty()) {
+            sourcePile = player.getHand();
+        } else if (!player.getUpcards().isEmpty()) {
+            sourcePile = player.getUpcards();
+        } else if (!player.getDowncards().isEmpty()) {
+            sourcePile = player.getDowncards();
+        } else {
+            return false; // Player has no cards.
         }
 
+        if (!sourcePile.containsAll(cards)) {
+            return false;
+        }
+
+        // remove from player's locations
+        sourcePile.removeAll(cards);
+        wastePile.addAll(cards);
+
         // apply special rules
-        applySpecialRules(rank);
+        boolean burned = applySpecialRules(rank);
 
         refillHand(player);
 
-        // check if player has emptied all cards -> remove them from game
-        if (player.getHand().size() == 0 && player.getUpcards().isEmpty() && player.getDowncards().isEmpty()) {
+        boolean playerWon = player.getHand().isEmpty() && player.getUpcards().isEmpty() && player.getDowncards().isEmpty();
+
+        if (playerWon) {
             players.remove(player);
             if (currentPlayer >= players.size()) {
                 currentPlayer = 0;
             }
-        } else {
+        } else if (!burned) {
             advanceTurn();
         }
 
         return true;
     }
 
-    private void applySpecialRules(Rank rank) {
+    /**
+     * The current player picks up all the cards from the waste pile.
+     * This is usually done when the player cannot play any of their cards.
+     * After picking up the pile, the turn advances to the next player.
+     */
+    public void pickUpWastePile(Player player) {
+        player.getHand().addAll(wastePile);
+        wastePile.clear();
+        advanceTurn();
+    }
+
+    private boolean applySpecialRules(Rank rank) {
+        boolean burned = false;
         // Ten burns the pile
         if (rank == Rank.TEN) {
             wastePile.clear();
+            burned = true;
         }
         // Four of a kind burns the pile
         if (wastePile.size() >= 4) {
@@ -138,8 +159,10 @@ public class ShitheadGame {
             Rank r4 = wastePile.get(size - 4).getRank();
             if (r1 == r2 && r2 == r3 && r3 == r4) {
                 wastePile.clear();
+                burned = true;
             }
         }
+        return burned;
     }
 
     private boolean isPlayable(Rank rank, Card top) {
