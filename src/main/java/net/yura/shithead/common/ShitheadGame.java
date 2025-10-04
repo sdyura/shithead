@@ -41,7 +41,27 @@ public class ShitheadGame {
      */
     public ShitheadGame(int playerCount, Deck deck) {
         for (int i = 0; i < playerCount; i++) {
-            players.add(new Player());
+            players.add(new Player("Player " + (i + 1)));
+        }
+        this.deck = deck;
+    }
+
+    /**
+     * Creates a new game with a list of named players.
+     * @param playerNames list of player names
+     */
+    public ShitheadGame(List<String> playerNames) {
+        this(playerNames, new Deck(1));
+    }
+
+    /**
+     * Creates a new game with a list of named players and a specific deck.
+     * @param playerNames list of player names
+     * @param deck The deck to be used in the game.
+     */
+    public ShitheadGame(List<String> playerNames, Deck deck) {
+        for (String name : playerNames) {
+            players.add(new Player(name));
         }
         this.deck = deck;
     }
