@@ -18,7 +18,7 @@ import java.util.List;
 public class ShitheadGame {
 
     private final List<Player> players = new ArrayList<>();
-    private final Deck deck = new Deck(1);
+    private final Deck deck;
     private final List<Card> wastePile = new ArrayList<>();
 
     private int currentPlayer;
@@ -29,9 +29,21 @@ public class ShitheadGame {
      * @param playerCount number of players taking part
      */
     public ShitheadGame(int playerCount) {
+        this(playerCount, new Deck(1));
+    }
+
+    /**
+     * Creates a new game with the given number of players and a specific deck.
+     * This is useful for testing with a predictable deck.
+     *
+     * @param playerCount number of players taking part
+     * @param deck The deck to be used in the game.
+     */
+    public ShitheadGame(int playerCount, Deck deck) {
         for (int i = 0; i < playerCount; i++) {
             players.add(new Player());
         }
+        this.deck = deck;
     }
 
     /**
@@ -69,6 +81,13 @@ public class ShitheadGame {
     }
 
     /**
+     * Returns the list of players in the game.
+     */
+    public List<Player> getPlayers() {
+        return Collections.unmodifiableList(players);
+    }
+
+    /**
      * Plays a set of cards from the player's hand or table. The cards must all
      * be of the same rank and be valid according to the top of the waste pile.
      *
@@ -89,11 +108,6 @@ public class ShitheadGame {
             }
         }
 
-        Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
-        if (!isPlayable(rank, top)) {
-            return false;
-        }
-
         List<Card> sourcePile;
         if (!player.getHand().isEmpty()) {
             sourcePile = player.getHand();
@@ -106,6 +120,17 @@ public class ShitheadGame {
         }
 
         if (!sourcePile.containsAll(cards)) {
+            return false;
+        }
+
+        Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
+        if (!isPlayable(rank, top)) {
+            if (sourcePile == player.getDowncards()) {
+                // Penalty for invalid down-card play
+                sourcePile.removeAll(cards);
+                player.getHand().addAll(cards);
+                pickUpWastePile(player);
+            }
             return false;
         }
 
@@ -165,7 +190,7 @@ public class ShitheadGame {
         return burned;
     }
 
-    private boolean isPlayable(Rank rank, Card top) {
+    public boolean isPlayable(Rank rank, Card top) {
         if (rank == Rank.TWO || rank == Rank.TEN || top == null) {
             return true;
         }
