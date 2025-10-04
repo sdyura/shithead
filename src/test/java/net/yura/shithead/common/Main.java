@@ -154,31 +154,31 @@ public class Main {
         List<Card> cards = new ArrayList<>();
         String[] cardStrings = input.split(",");
         for (String cardStr : cardStrings) {
-            cardStr = cardStr.trim();
+            cardStr = cardStr.trim().toUpperCase();
             if (cardStr.length() < 2 || cardStr.length() > 3) return null; // Invalid format e.g. "AS" or "10S"
 
             Rank rank = null;
             Suit suit = null;
-            String rankStr;
+            char rankChar;
             char suitChar;
 
             if (cardStr.startsWith("10")) {
-                rankStr = "10";
+                rankChar = 'X'; // Special char for 10 in cardsengine
                 suitChar = cardStr.charAt(2);
             } else {
-                rankStr = "" + cardStr.charAt(0);
+                rankChar = cardStr.charAt(0);
                 suitChar = cardStr.charAt(1);
             }
 
             for (Rank r : Rank.THIRTEEN_RANKS) {
-                if (r.toString().equalsIgnoreCase(rankStr)) {
+                if (rankChar == r.toChar()) {
                     rank = r;
                     break;
                 }
             }
 
             for (Suit s : Suit.FOUR_SUITS) {
-                if (Character.toUpperCase(suitChar) == s.toChar()) {
+                if (suitChar == s.toChar()) {
                     suit = s;
                     break;
                 }
