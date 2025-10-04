@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class Player {
 
+    private final String name;
+
     /**
      * these are the cards the player is physically holding right now
      */
@@ -16,6 +18,14 @@ public class Player {
 
     private final List<Card> upcards = new ArrayList<>();
     private final List<Card> downcards = new ArrayList<>();
+
+    public Player(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     /**
      * Gets the cards currently in the players hand.

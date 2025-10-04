@@ -26,14 +26,14 @@ public class Main {
             playerNames.add(scanner.nextLine());
         }
 
-        ShitheadGame game = new ShitheadGame(playerNames.size());
+        ShitheadGame game = new ShitheadGame(playerNames);
         game.deal();
 
         // Initial rearrangement phase (simplified)
         for (Player player : game.getPlayers()) {
             System.out.println("\n" + player.getName() + ", it's time to rearrange your hand and face-up cards.");
             System.out.println("Your hand: " + player.getHand());
-            System.out.println("Your face-up cards: " + player.getFaceUpCards());
+            System.out.println("Your face-up cards: " + player.getUpcards());
             System.out.println("Enter cards from your hand to swap with face-up cards (e.g., 'AS,KH' or 'done').");
             // This is a simplified version. A real implementation would involve selecting specific face-up cards to swap.
             // For now, we'll just allow them to pick from hand, and assume they are swapping with the first available face-up slots.
@@ -48,29 +48,18 @@ public class Main {
             Player currentPlayer = game.getCurrentPlayer();
             System.out.println("\n------------------------------------");
             System.out.println(currentPlayer.getName() + "'s turn.");
-            System.out.println("Waste pile top: " + (game.getTopWastePileCard() != null ? game.getTopWastePileCard() : "Empty"));
+            Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
+            System.out.println("Waste pile top: " + (topCard != null ? topCard : "Empty"));
             System.out.println("Waste pile size: " + game.getWastePile().size());
-            System.out.println("Deck size: " + game.getDeck().getSize());
 
 
             if (!currentPlayer.getHand().isEmpty()) {
                 System.out.println("Your hand: " + currentPlayer.getHand());
-                System.out.print("Play card(s) (e.g., 'AS,KH' or '5S'), type 'pickup' to take the pile, or 'skip' if no valid play and deck is empty: ");
+                System.out.print("Play card(s) (e.g., 'AS,KH' or '5S'), type 'pickup' to take the pile: ");
                 String input = scanner.nextLine().trim().toUpperCase();
 
                 if (input.equalsIgnoreCase("pickup")) {
                     game.pickUpWastePile(currentPlayer);
-                    game.replenishHand(currentPlayer); // Replenish after picking up
-                    // nextPlayer() is called by pickUpWastePile if no cards are played
-                    // but since we are forcing a pickup, we might need to ensure turn passes if playCards isn't called.
-                    // game.playCards ensures next player or same player on 10/quartet.
-                    // if pickup is chosen, playCards with empty list handles it.
-                    game.playCards(currentPlayer, new ArrayList<>());
-                } else if (input.equalsIgnoreCase("skip") && currentPlayer.getHand().isEmpty() && game.getDeck().isEmpty()) {
-                    // This skip is only valid if hand is empty and deck is empty, moving to face-up
-                    // This is handled by the next block.
-                    System.out.println("Playing from hand. If you cannot play, you must 'pickup'.");
-                    game.playCards(currentPlayer, new ArrayList<>()); // Force pickup
                 }
                 else {
                     List<Card> cardsToPlay = parseCards(input);
@@ -92,10 +81,12 @@ public class Main {
                         continue;
                     }
 
-                    game.playCards(currentPlayer, cardsToPlay);
+                    if (!game.playCards(currentPlayer, cardsToPlay)) {
+                        System.out.println("Invalid move.");
+                    }
                 }
-            } else if (!currentPlayer.getFaceUpCards().isEmpty()) {
-                System.out.println("Your face-up cards: " + currentPlayer.getFaceUpCards());
+            } else if (!currentPlayer.getUpcards().isEmpty()) {
+                System.out.println("Your face-up cards: " + currentPlayer.getUpcards());
                 System.out.print("Play a face-up card (e.g., 'AS') or type 'pickup': ");
                 String input = scanner.nextLine().trim().toUpperCase();
                 if (input.equalsIgnoreCase("pickup")) {
@@ -103,16 +94,17 @@ public class Main {
                     // nextPlayer() is called by pickUpWastePile
                 } else {
                     List<Card> cardsToPlay = parseCards(input);
-                    if (cardsToPlay == null || cardsToPlay.size() != 1) { // Can only play one face-up at a time usually, or sets if allowed by rules.
-                        // For simplicity, let's assume one, or extend parseCards and game logic
+                    if (cardsToPlay == null || cardsToPlay.isEmpty()) {
                         System.out.println("Invalid input. Play one card or type 'pickup'.");
                         continue;
                     }
-                    if (!currentPlayer.getUpcards().contains(cardsToPlay.get(0))) {
+                    if (!currentPlayer.getUpcards().containsAll(cardsToPlay)) {
                         System.out.println("You don't have that card in your face-up pile. Try again.");
                         continue;
                     }
-                    game.playCards(currentPlayer, cardsToPlay);
+                    if (!game.playCards(currentPlayer, cardsToPlay)) {
+                        System.out.println("Invalid move.");
+                    }
                 }
 
             } else if (!currentPlayer.getDowncards().isEmpty()) {
@@ -130,7 +122,11 @@ public class Main {
                     System.out.println("Invalid index. Try again.");
                     continue;
                 }
-                game.playFaceDownCard(currentPlayer, index);
+                List<Card> cardToPlay = new ArrayList<>();
+                cardToPlay.add(currentPlayer.getDowncards().get(index));
+                if (!game.playCards(currentPlayer, cardToPlay)) {
+                    System.out.println("Invalid move, you picked up the pile");
+                }
             } else {
                 // Should not happen if game over logic is correct
                 System.out.println(currentPlayer.getName() + " has no cards left but game is not over?");
@@ -138,24 +134,12 @@ public class Main {
             }
 
             if (game.isFinished()) {
-                Player winner = game.getWinner();
                 System.out.println("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                if (winner != null) {
-                    System.out.println("Game Over! " + winner.getName() + " is the winner (first to shed all cards)!");
+                List<Player> remainingPlayers = game.getPlayers();
+                if (remainingPlayers.size() == 1) {
+                    System.out.println("Game Over! " + remainingPlayers.get(0).getName() + " is the Shithead!");
                 } else {
-                    // This case implies multiple players finished on the same "event" if game rules allow,
-                    // or the last player remaining is the loser.
-                    // For Shithead, the goal is to be the first to get rid of cards.
-                    // The last player with cards is the "shithead".
-                    List<Player> losers = game.getPlayers().stream().filter(p -> !p.hasNoCardsLeft()).collect(Collectors.toList());
-                    if(losers.size() == 1) {
-                        System.out.println("Game Over! " + losers.get(0).getName() + " is the Shithead!");
-                    } else if (losers.isEmpty() && game.getWinner() != null) {
-                        // Winner already declared.
-                    }
-                    else {
-                        System.out.println("Game Over! Multiple players might have cards left or an unhandled state.");
-                    }
+                    System.out.println("Game Over!");
                 }
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
@@ -175,19 +159,19 @@ public class Main {
 
             Rank rank = null;
             Suit suit = null;
-            char rankStr;
+            String rankStr;
             char suitChar;
 
             if (cardStr.startsWith("10")) {
-                rankStr = 'X';
+                rankStr = "10";
                 suitChar = cardStr.charAt(2);
             } else {
-                rankStr = cardStr.charAt(0);
+                rankStr = "" + cardStr.charAt(0);
                 suitChar = cardStr.charAt(1);
             }
 
             for (Rank r : Rank.THIRTEEN_RANKS) {
-                if (Character.toUpperCase(rankStr) == r.toChar()) {
+                if (r.toString().equalsIgnoreCase(rankStr)) {
                     rank = r;
                     break;
                 }
