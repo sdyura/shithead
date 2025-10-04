@@ -16,6 +16,8 @@ compileJava {
 }
 
 dependencies {
+    // source code to cardsengine can be found here:
+    // https://sourceforge.net/p/lobby/code/HEAD/tree/trunk/src_blackjack/net/yura/cardsengine/
     api fileTree(dir: 'lib', include: 'cardsengine.jar')
 }
 
