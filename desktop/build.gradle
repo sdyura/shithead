@@ -26,6 +26,7 @@ run {
 }
 
 dependencies {
+    implementation project(':')
     implementation project(':client')
     implementation 'org.swingme:swingme-binding-desktop:4.0.0'
 }

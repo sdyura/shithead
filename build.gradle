@@ -30,4 +30,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
+task runConsole(type: JavaExec) {
+    main = 'net.yura.shithead.common.Main'
+    classpath = sourceSets.test.runtimeClasspath
+    standardInput = System.in
+}
 
