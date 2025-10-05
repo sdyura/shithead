@@ -4,12 +4,8 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import net.yura.shithead.common.json.SerializerUtil;
 import org.junit.jupiter.api.Test;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -19,22 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShitheadGameSerializationTest {
 
-    private String loadResourceAsString(String path) throws IOException {
-        try (InputStream is = this.getClass().getResourceAsStream(path)) {
-            if (is == null) {
-                throw new IOException("Resource not found: " + path);
-            }
-            try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                 BufferedReader br = new BufferedReader(isr)) {
-                return br.lines().collect(Collectors.joining("\n"));
-            }
-        }
-    }
-
     @Test
     public void testFromJson() throws IOException, NoSuchFieldException, IllegalAccessException {
         // Load the game state snapshot from a shared test resource file.
-        String jsonSnapshot = loadResourceAsString("/testgame.json");
+        String jsonSnapshot = TestUtil.loadResourceAsString("/testgame.json");
 
         // Deserialize the JSON snapshot back to a game object
         ShitheadGame deserializedGame = SerializerUtil.fromJSON(jsonSnapshot);

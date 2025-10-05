@@ -2,16 +2,11 @@ package net.yura.shithead.common.json;
 
 import net.yura.cardsengine.Deck;
 import net.yura.shithead.common.ShitheadGame;
+import net.yura.shithead.common.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SerializerUtilTest {
@@ -44,21 +39,9 @@ public class SerializerUtilTest {
         game.deal();
     }
 
-    private String loadResourceAsString(String path) throws IOException {
-        try (InputStream is = this.getClass().getResourceAsStream(path)) {
-            if (is == null) {
-                throw new IOException("Resource not found: " + path);
-            }
-            try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                 BufferedReader br = new BufferedReader(isr)) {
-                return br.lines().collect(Collectors.joining("\n"));
-            }
-        }
-    }
-
     @Test
     public void testFullGameSerializationMatchesSnapshot() throws Exception {
-        String expectedJson = loadResourceAsString("/testgame.json");
+        String expectedJson = TestUtil.loadResourceAsString("/testgame.json");
         String generatedJson = SerializerUtil.toJSON(game, null);
         assertEquals(expectedJson, generatedJson.replaceAll("\\r\\n", "\n"));
     }
