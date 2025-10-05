@@ -1,10 +1,9 @@
 package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
@@ -27,20 +26,35 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
     @Override
     public ShitheadGame deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-        JsonNode node = mapper.readTree(jp);
+        String currentPlayerName = null;
+        List<Player> players = null;
+        List<Card> deckCards = null;
+        List<Card> wastePile = null;
 
-        // Let Jackson deserialize the nested objects and arrays using the registered deserializers
-        List<Player> players = mapper.convertValue(node.get("players"), new TypeReference<List<Player>>() {});
-        List<Card> deckCards = mapper.convertValue(node.get("deck"), new TypeReference<List<Card>>() {});
-        List<Card> wastePile = mapper.convertValue(node.get("wastePile"), new TypeReference<List<Card>>() {});
-        String currentPlayerName = node.get("currentPlayerName").asText();
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            String fieldName = jp.getCurrentName();
+            jp.nextToken(); // Move to the value
+
+            if ("currentPlayerName".equals(fieldName)) {
+                currentPlayerName = jp.getText();
+            } else if ("players".equals(fieldName)) {
+                players = jp.readValueAs(new TypeReference<List<Player>>() {});
+            } else if ("deck".equals(fieldName)) {
+                deckCards = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else if ("wastePile".equals(fieldName)) {
+                wastePile = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else {
+                jp.skipChildren();
+            }
+        }
 
         // The Deck class from the external cardsengine.jar library does not provide a
         // public method to set its internal card collection. Reflection is used here
         // as a workaround to inject the deserialized list of cards into the Deck.
         Stack<Card> deckStack = new Stack<>();
-        deckStack.addAll(deckCards);
+        if (deckCards != null) {
+            deckStack.addAll(deckCards);
+        }
         Deck deck = new Deck(0); // Create an empty deck
         try {
             Field cardsField = Deck.class.getDeclaredField("cards");
@@ -57,10 +71,12 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
         // Set the current player index
         int currentPlayerIndex = -1;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getName().equals(currentPlayerName)) {
-                currentPlayerIndex = i;
-                break;
+        if (players != null && currentPlayerName != null) {
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).getName().equals(currentPlayerName)) {
+                    currentPlayerIndex = i;
+                    break;
+                }
             }
         }
         if (currentPlayerIndex != -1) {

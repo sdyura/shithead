@@ -1,10 +1,9 @@
 package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import net.yura.cardsengine.Card;
 import net.yura.shithead.common.Player;
@@ -23,24 +22,36 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
 
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        ObjectMapper mapper = (ObjectMapper) jp.getCodec();
-        JsonNode node = mapper.readTree(jp);
+        String name = null;
+        List<Card> hand = null;
+        List<Card> upcards = null;
+        List<Card> downcards = null;
 
-        String name = node.get("name").asText();
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            String fieldName = jp.getCurrentName();
+            jp.nextToken(); // Move to the value
+
+            if ("name".equals(fieldName)) {
+                name = jp.getText();
+            } else if ("hand".equals(fieldName)) {
+                hand = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else if ("upcards".equals(fieldName)) {
+                upcards = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else if ("downcards".equals(fieldName)) {
+                downcards = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else {
+                jp.skipChildren();
+            }
+        }
+
         Player player = new Player(name);
-
-        if (node.has("hand")) {
-            List<Card> hand = mapper.convertValue(node.get("hand"), new TypeReference<List<Card>>() {});
+        if (hand != null) {
             player.getHand().addAll(hand);
         }
-
-        if (node.has("upcards")) {
-            List<Card> upcards = mapper.convertValue(node.get("upcards"), new TypeReference<List<Card>>() {});
+        if (upcards != null) {
             player.getUpcards().addAll(upcards);
         }
-
-        if (node.has("downcards")) {
-            List<Card> downcards = mapper.convertValue(node.get("downcards"), new TypeReference<List<Card>>() {});
+        if (downcards != null) {
             player.getDowncards().addAll(downcards);
         }
 
