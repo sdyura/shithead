@@ -1,0 +1,16 @@
+{
+  "currentPlayerName" : "Alice",
+  "deck" : [ "XD", "QD", "6D", "6S", "4H", "5C", "7H", "4C", "6C", "4S", "8D", "KS", "3D", "AH", "XC", "XS", "QH", "9D", "QC", "JS", "KH", "3H", "8S", "2S", "JD", "8H", "5H", "2H", "5S", "7S", "AC", "4D", "KC", "7C" ],
+  "wastePile" : [ ],
+  "players" : [ {
+    "name" : "Alice",
+    "upcards" : [ "6H", "3C", "JH" ],
+    "hand" : [ "7D", "QS", "9S" ],
+    "downcards" : [ "5D", "AD", "2D" ]
+  }, {
+    "name" : "Bob",
+    "upcards" : [ "XH", "3S", "KD" ],
+    "hand" : [ "2C", "JC", "8C" ],
+    "downcards" : [ "9C", "9H", "AS" ]
+  } ]
+}

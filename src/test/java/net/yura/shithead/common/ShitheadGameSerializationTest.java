@@ -4,8 +4,12 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import net.yura.shithead.common.json.SerializerUtil;
 import org.junit.jupiter.api.Test;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -15,52 +19,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShitheadGameSerializationTest {
 
+    private String loadResourceAsString(String path) throws IOException {
+        try (InputStream is = this.getClass().getResourceAsStream(path)) {
+            if (is == null) {
+                throw new IOException("Resource not found: " + path);
+            }
+            try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                 BufferedReader br = new BufferedReader(isr)) {
+                return br.lines().collect(Collectors.joining("\n"));
+            }
+        }
+    }
+
     @Test
     public void testFromJson() throws IOException, NoSuchFieldException, IllegalAccessException {
-        // This is a snapshot of a game state, generated from a predictably shuffled deck.
-        // Using a hardcoded string makes the test independent of the serialization logic
-        // and ensures that fromJSON is tested against a stable, known input.
-        String jsonSnapshot = "{\n" +
-                "  \"currentPlayerName\" : \"p1\",\n" +
-                "  \"deck\" : [ \"5C\", \"9S\", \"3S\", \"QC\", \"XC\", \"5S\", \"7H\", \"3H\", \"KH\", \"XD\", \"6C\", \"AD\", \"JS\", \"2D\", \"9D\", \"7C\", \"4D\", \"8S\", \"2H\", \"3D\", \"KD\", \"KC\", \"8C\", \"6H\", \"AS\", \"XH\", \"4S\", \"AH\", \"JC\", \"4H\", \"JH\", \"7S\", \"JD\", \"KS\" ],\n" +
-                "  \"wastePile\" : [ ],\n" +
-                "  \"players\" : [ {\n" +
-                "    \"name\" : \"p1\",\n" +
-                "    \"upcards\" : [ \"5H\", \"6S\", \"8D\" ],\n" +
-                "    \"hand\" : [ \"2S\", \"QD\", \"QS\" ],\n" +
-                "    \"downcards\" : [ \"9H\", \"AC\", \"6D\" ]\n" +
-                "  }, {\n" +
-                "    \"name\" : \"p2\",\n" +
-                "    \"upcards\" : [ \"9C\", \"7D\", \"XS\" ],\n" +
-                "    \"hand\" : [ \"3C\", \"8H\", \"2C\" ],\n" +
-                "    \"downcards\" : [ \"5D\", \"4C\", \"QH\" ]\n" +
-                "  } ]\n" +
-                "}";
+        // Load the game state snapshot from a shared test resource file.
+        String jsonSnapshot = loadResourceAsString("/testgame.json");
 
         // Deserialize the JSON snapshot back to a game object
         ShitheadGame deserializedGame = SerializerUtil.fromJSON(jsonSnapshot);
 
         // Assert that the deserialized game state is identical to the snapshot
-        assertEquals("p1", deserializedGame.getCurrentPlayer().getName());
+        assertEquals("Alice", deserializedGame.getCurrentPlayer().getName());
         assertTrue(deserializedGame.getWastePile().isEmpty());
         assertEquals(2, deserializedGame.getPlayers().size());
 
         // Assert player 1 state
         Player p1 = deserializedGame.getPlayers().get(0);
-        assertEquals("p1", p1.getName());
-        assertCardListsEqual(Arrays.asList("2S", "QD", "QS"), p1.getHand());
-        assertCardListsEqual(Arrays.asList("5H", "6S", "8D"), p1.getUpcards());
-        assertCardListsEqual(Arrays.asList("9H", "AC", "6D"), p1.getDowncards());
+        assertEquals("Alice", p1.getName());
+        assertCardListsEqual(Arrays.asList("7D", "QS", "9S"), p1.getHand());
+        assertCardListsEqual(Arrays.asList("6H", "3C", "JH"), p1.getUpcards());
+        assertCardListsEqual(Arrays.asList("5D", "AD", "2D"), p1.getDowncards());
 
         // Assert player 2 state
         Player p2 = deserializedGame.getPlayers().get(1);
-        assertEquals("p2", p2.getName());
-        assertCardListsEqual(Arrays.asList("3C", "8H", "2C"), p2.getHand());
-        assertCardListsEqual(Arrays.asList("9C", "7D", "XS"), p2.getUpcards());
-        assertCardListsEqual(Arrays.asList("5D", "4C", "QH"), p2.getDowncards());
+        assertEquals("Bob", p2.getName());
+        assertCardListsEqual(Arrays.asList("2C", "JC", "8C"), p2.getHand());
+        assertCardListsEqual(Arrays.asList("XH", "3S", "KD"), p2.getUpcards());
+        assertCardListsEqual(Arrays.asList("9C", "9H", "AS"), p2.getDowncards());
 
         // Assert deck state
-        List<String> expectedDeck = Arrays.asList("5C", "9S", "3S", "QC", "XC", "5S", "7H", "3H", "KH", "XD", "6C", "AD", "JS", "2D", "9D", "7C", "4D", "8S", "2H", "3D", "KD", "KC", "8C", "6H", "AS", "XH", "4S", "AH", "JC", "4H", "JH", "7S", "JD", "KS");
+        List<String> expectedDeck = Arrays.asList("XD", "QD", "6D", "6S", "4H", "5C", "7H", "4C", "6C", "4S", "8D", "KS", "3D", "AH", "XC", "XS", "QH", "9D", "QC", "JS", "KH", "3H", "8S", "2S", "JD", "8H", "5H", "2H", "5S", "7S", "AC", "4D", "KC", "7C");
         assertCardListsEqual(expectedDeck, getDeckCards(deserializedGame.getDeck()));
     }
 
