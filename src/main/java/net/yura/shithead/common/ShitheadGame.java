@@ -249,4 +249,8 @@ public class ShitheadGame {
     public boolean isFinished() {
         return players.size() <= 1;
     }
+
+    public Deck getDeck() {
+        return deck;
+    }
 }
