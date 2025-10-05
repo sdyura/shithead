@@ -1,26 +1,61 @@
 package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import net.yura.cardsengine.Card;
+import net.yura.cardsengine.Rank;
+import net.yura.cardsengine.Suit;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SerializerUtil {
 
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Map<Character, Rank> RANK_MAP = new HashMap<>();
+    private static final Map<Character, Suit> SUIT_MAP = new HashMap<>();
 
     static {
+        for (Rank r : Rank.THIRTEEN_RANKS) {
+            RANK_MAP.put(r.toChar(), r);
+        }
+        for (Suit s : Suit.FOUR_SUITS) {
+            SUIT_MAP.put(s.toChar(), s);
+        }
+
         SimpleModule module = new SimpleModule();
         module.addSerializer(ShitheadGame.class, new ShitheadGameSerializer());
         module.addSerializer(Player.class, new PlayerSerializer());
-        // Use the built-in ToStringSerializer for Card, as its toString() method provides a good representation (e.g., "AS" for Ace of Spades).
         module.addSerializer(Card.class, new ToStringSerializer());
+
         module.addDeserializer(ShitheadGame.class, new ShitheadGameDeserializer());
+        module.addDeserializer(Player.class, new PlayerDeserializer());
+        module.addDeserializer(Card.class, new FromStringDeserializer<Card>(Card.class) {
+            @Override
+            protected Card _deserialize(String value, DeserializationContext ctxt) {
+                return cardFromString(value);
+            }
+        });
+
         mapper.registerModule(module);
+    }
+
+    private static Card cardFromString(String s) {
+        if (s == null || s.length() != 2) {
+            throw new IllegalArgumentException("Card string must be non-null and 2 characters long, but was: " + s);
+        }
+        Rank rank = RANK_MAP.get(s.charAt(0));
+        Suit suit = SUIT_MAP.get(s.charAt(1));
+        if (rank == null || suit == null) {
+            throw new IllegalArgumentException("Invalid rank or suit character in card string: " + s);
+        }
+        return Card.getCardByRankSuit(rank, suit);
     }
 
     /**
@@ -33,13 +68,10 @@ public class SerializerUtil {
      * @throws JsonProcessingException If an error occurs during serialization.
      */
     public static String toJSON(ShitheadGame game, String playerName) throws JsonProcessingException {
-        // Use a new ObjectMapper instance for each call to ensure thread safety with attributes
         ObjectMapper localMapper = mapper.copy();
-
         if (playerName != null) {
             localMapper.setConfig(localMapper.getSerializationConfig().withAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY, playerName));
         }
-
         return localMapper.writerWithDefaultPrettyPrinter().writeValueAsString(game);
     }
 

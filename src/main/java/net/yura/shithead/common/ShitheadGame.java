@@ -17,11 +17,15 @@ import java.util.List;
  */
 public class ShitheadGame {
 
-    private final List<Player> players = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private final Deck deck;
     private List<Card> wastePile = new ArrayList<>();
 
     private int currentPlayer;
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
 
     public void setWastePile(List<Card> wastePile) {
         this.wastePile = wastePile;
