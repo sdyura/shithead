@@ -42,12 +42,12 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
     private Card cardFromString(String s) {
         if (s == null || s.length() != 2) {
-            throw new IllegalArgumentException("Invalid card string: " + s);
+            throw new IllegalArgumentException("Card string must be non-null and 2 characters long, but was: " + s);
         }
         Rank rank = RANK_MAP.get(s.charAt(0));
         Suit suit = SUIT_MAP.get(s.charAt(1));
         if (rank == null || suit == null) {
-            throw new IllegalArgumentException("Invalid card string: " + s);
+            throw new IllegalArgumentException("Invalid rank or suit character in card string: " + s);
         }
         return Card.getCardByRankSuit(rank, suit);
     }
