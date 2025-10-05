@@ -11,6 +11,7 @@ import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -22,6 +23,15 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
     protected ShitheadGameDeserializer(Class<?> vc) {
         super(vc);
+    }
+
+    private List<Card> readCardsOrCount(JsonParser jp) throws IOException {
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            int count = jp.getIntValue();
+            return Collections.nCopies(count, null);
+        } else {
+            return jp.readValueAs(new TypeReference<List<Card>>() {});
+        }
     }
 
     @Override
@@ -37,12 +47,13 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
             if ("currentPlayerName".equals(fieldName)) {
                 currentPlayerName = jp.getText();
+                ctxt.setAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY, currentPlayerName);
             } else if ("players".equals(fieldName)) {
                 players = jp.readValueAs(new TypeReference<List<Player>>() {});
-            } else if ("deck".equals(fieldName)) {
-                deckCards = jp.readValueAs(new TypeReference<List<Card>>() {});
+            } else if ("deck".equals(fieldName) || "cardsInDeck".equals(fieldName)) {
+                deckCards = readCardsOrCount(jp);
             } else if ("wastePile".equals(fieldName)) {
-                wastePile = jp.readValueAs(new TypeReference<List<Card>>() {});
+                wastePile = readCardsOrCount(jp);
             } else {
                 jp.skipChildren();
             }
