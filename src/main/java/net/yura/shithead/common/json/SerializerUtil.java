@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import net.yura.cardsengine.Card;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
+import java.io.IOException;
 
 public class SerializerUtil {
 
@@ -18,6 +19,7 @@ public class SerializerUtil {
         module.addSerializer(Player.class, new PlayerSerializer());
         // Use the built-in ToStringSerializer for Card, as its toString() method provides a good representation (e.g., "AS" for Ace of Spades).
         module.addSerializer(Card.class, new ToStringSerializer());
+        module.addDeserializer(ShitheadGame.class, new ShitheadGameDeserializer());
         mapper.registerModule(module);
     }
 
@@ -39,5 +41,16 @@ public class SerializerUtil {
         }
 
         return localMapper.writerWithDefaultPrettyPrinter().writeValueAsString(game);
+    }
+
+    /**
+     * Deserializes a ShitheadGame from a JSON string.
+     *
+     * @param json The JSON string representing the game state.
+     * @return A new ShitheadGame object.
+     * @throws IOException If an error occurs during deserialization.
+     */
+    public static ShitheadGame fromJSON(String json) throws IOException {
+        return mapper.readValue(json, ShitheadGame.class);
     }
 }

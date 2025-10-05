@@ -19,9 +19,17 @@ public class ShitheadGame {
 
     private final List<Player> players = new ArrayList<>();
     private final Deck deck;
-    private final List<Card> wastePile = new ArrayList<>();
+    private List<Card> wastePile = new ArrayList<>();
 
     private int currentPlayer;
+
+    public void setWastePile(List<Card> wastePile) {
+        this.wastePile = wastePile;
+    }
+
+    public void setCurrentPlayer(int currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
 
     /**
      * Creates a new game with the given number of players.
