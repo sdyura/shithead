@@ -4,9 +4,11 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.CardDeckEmptyException;
 import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Basic implementation of the Shithead card game rules.
@@ -248,5 +250,48 @@ public class ShitheadGame {
      */
     public boolean isFinished() {
         return players.size() <= 1;
+    }
+
+    /**
+     * Returns the number of cards left in the deck.
+     * <p>
+     * This method uses reflection to access the private 'cards' field of the Deck class,
+     * as there is no public getter for the card collection. This is a workaround and might
+     * break if the Deck class implementation changes.
+     *
+     * @return The number of cards in the deck.
+     * @throws RuntimeException if the 'cards' field cannot be accessed.
+     */
+    public int getDeckSize() {
+        try {
+            Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            Stack<?> cards = (Stack<?>) cardsField.get(deck);
+            return cards.size();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            // This is a workaround, so if it fails, we throw a runtime exception
+            // as this indicates a change in the underlying library that we depend on.
+            throw new RuntimeException("Could not get deck size via reflection", e);
+        }
+    }
+
+    /**
+     * Returns the list of cards left in the deck.
+     * <p>
+     * This method uses reflection to access the private 'cards' field of the Deck class.
+     *
+     * @return The list of cards in the deck.
+     * @throws RuntimeException if the 'cards' field cannot be accessed.
+     */
+    public List<Card> getDeckCards() {
+        try {
+            Field cardsField = Deck.class.getDeclaredField("cards");
+            cardsField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Stack<Card> cards = (Stack<Card>) cardsField.get(deck);
+            return new ArrayList<>(cards);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Could not get deck cards via reflection", e);
+        }
     }
 }
