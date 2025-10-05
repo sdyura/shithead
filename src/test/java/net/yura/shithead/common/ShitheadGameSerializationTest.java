@@ -2,14 +2,13 @@ package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
-import net.yura.cardsengine.Rank;
-import net.yura.cardsengine.Suit;
 import net.yura.shithead.common.json.SerializerUtil;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,29 +18,10 @@ public class ShitheadGameSerializationTest {
     public void testFromJson() throws IOException, NoSuchFieldException, IllegalAccessException {
         // Create a game with a predictable state
         List<String> playerNames = Arrays.asList("p1", "p2");
-        Deck deck = new Deck(0); // Create an empty deck
-        Stack<Card> cards = new Stack<>();
-        // Add enough cards for a 2-player deal (18 cards needed) plus some left over
-        cards.push(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.TWO, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.FOUR, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.SIX, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.SEVEN, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.EIGHT, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.NINE, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.TEN, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.JACK, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.QUEEN, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.KING, Suit.SPADES));
-        cards.push(Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS));
-        cards.push(Card.getCardByRankSuit(Rank.TWO, Suit.HEARTS));
-        cards.push(Card.getCardByRankSuit(Rank.THREE, Suit.HEARTS));
-        cards.push(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS));
-        cards.push(Card.getCardByRankSuit(Rank.FIVE, Suit.HEARTS));
-        cards.push(Card.getCardByRankSuit(Rank.SIX, Suit.HEARTS));
-        setDeckCards(deck, cards);
+        // Use a seeded random to ensure the deck is shuffled predictably for testing
+        Deck deck = new Deck(1);
+        deck.setRandom(new Random(12345));
+        deck.shuffle();
 
         ShitheadGame originalGame = new ShitheadGame(playerNames, deck);
         originalGame.deal();
@@ -68,16 +48,10 @@ public class ShitheadGameSerializationTest {
         }
     }
 
-    private void setDeckCards(Deck deck, Stack<Card> cards) throws NoSuchFieldException, IllegalAccessException {
-        // The Deck class from the external cardsengine.jar library does not provide a
-        // public method to construct a deck with a specific set of cards. Reflection
-        // is used here as a workaround to set up a predictable deck for testing.
-        Field cardsField = Deck.class.getDeclaredField("cards");
-        cardsField.setAccessible(true);
-        cardsField.set(deck, cards);
-    }
-
     private List<Card> getDeckCards(Deck deck) throws NoSuchFieldException, IllegalAccessException {
+        // The Deck class from the external cardsengine.jar library does not provide a
+        // public method to get the list of cards. Reflection is used here as a
+        // workaround to access the internal state of the deck for assertion purposes.
         Field cardsField = Deck.class.getDeclaredField("cards");
         cardsField.setAccessible(true);
         @SuppressWarnings("unchecked")
