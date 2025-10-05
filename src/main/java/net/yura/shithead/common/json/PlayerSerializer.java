@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import net.yura.shithead.common.Player;
-
 import java.io.IOException;
 
 public class PlayerSerializer extends JsonSerializer<Player> {
@@ -26,11 +25,18 @@ public class PlayerSerializer extends JsonSerializer<Player> {
         if (contextPlayerName == null || isContextPlayer) {
             // Full view: either no context or it's the context player
             gen.writeObjectField("hand", player.getHand());
-            gen.writeObjectField("downcards", player.getDowncards());
         } else {
             // Restricted view for other players
             // Instead of serializing the cards, serialize their counts
             gen.writeNumberField("handCount", player.getHand().size());
+        }
+
+        if (contextPlayerName == null) {
+            // Full view: either no context or it's the context player
+            gen.writeObjectField("downcards", player.getDowncards());
+        } else {
+            // Restricted view for other players
+            // Instead of serializing the cards, serialize their counts
             gen.writeNumberField("downcardsCount", player.getDowncards().size());
         }
 

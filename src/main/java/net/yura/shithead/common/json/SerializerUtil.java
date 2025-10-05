@@ -1,4 +1,4 @@
-package net.yura.shithead.common.util;
+package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import net.yura.cardsengine.Card;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
-import net.yura.shithead.common.json.PlayerSerializer;
-import net.yura.shithead.common.json.ShitheadGameSerializer;
 
 public class SerializerUtil {
 

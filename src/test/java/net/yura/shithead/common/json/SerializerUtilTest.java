@@ -1,4 +1,4 @@
-package net.yura.shithead.common.util;
+package net.yura.shithead.common.json;
 
 import net.yura.cardsengine.Deck;
 import net.yura.shithead.common.ShitheadGame;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SerializerUtilTest {
@@ -39,7 +40,7 @@ public class SerializerUtilTest {
             "    \"name\" : \"Alice\",\n" +
             "    \"upcards\" : [ \"6H\", \"3C\", \"JH\" ],\n" +
             "    \"hand\" : [ \"7D\", \"QS\", \"9S\" ],\n" +
-            "    \"downcards\" : [ \"5D\", \"AD\", \"2D\" ]\n" +
+            "    \"downcardsCount\" : 3\n" +
             "  }, {\n" +
             "    \"name\" : \"Bob\",\n" +
             "    \"upcards\" : [ \"XH\", \"3S\", \"KD\" ],\n" +
