@@ -1,0 +1,16 @@
+{
+  "currentPlayerName" : "Alice",
+  "cardsInDeck" : 34,
+  "wastePile" : [ ],
+  "players" : [ {
+    "name" : "Alice",
+    "upcards" : [ "6H", "3C", "JH" ],
+    "handCount" : 3,
+    "downcardsCount" : 3
+  }, {
+    "name" : "Bob",
+    "upcards" : [ "XH", "3S", "KD" ],
+    "handCount" : 3,
+    "downcardsCount" : 3
+  } ]
+}

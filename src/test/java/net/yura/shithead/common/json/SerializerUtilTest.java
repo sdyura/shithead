@@ -49,6 +49,13 @@ public class SerializerUtilTest {
     }
 
     @Test
+    public void testSpectatorSpecificSerializationMatchesSnapshot() throws Exception {
+        String expectedJson = loadResourceAsString("/testgame_jill.json");
+        String generatedJson = SerializerUtil.toJSON(game, "Jill");
+        assertEquals(expectedJson, generatedJson.replaceAll("\\r\\n", "\n"));
+    }
+
+    @Test
     public void testFromJson() throws IOException, NoSuchFieldException, IllegalAccessException {
         // Load the game state snapshot from a shared test resource file.
         String jsonSnapshot = loadResourceAsString("/testgame.json");
