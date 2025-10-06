@@ -26,10 +26,6 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
         return jp.readValueAs(new TypeReference<List<Card>>() {});
     }
 
-    private List<Card> createNulls(int count) {
-        return Collections.nCopies(count, null);
-    }
-
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         String playerName = null;
@@ -47,19 +43,19 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
                 if (jp.currentToken() == JsonToken.START_ARRAY) {
                     hand = readCards(jp);
                 } else {
-                    hand = createNulls(jp.getIntValue());
+                    hand = Collections.nCopies(jp.getIntValue(), null);
                 }
             } else if ("upcards".equals(fieldName) || "upcardsCount".equals(fieldName)) {
                 if (jp.currentToken() == JsonToken.START_ARRAY) {
                     upcards = readCards(jp);
                 } else {
-                    upcards = createNulls(jp.getIntValue());
+                    upcards = Collections.nCopies(jp.getIntValue(), null);
                 }
             } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
                 if (jp.currentToken() == JsonToken.START_ARRAY) {
                     downcards = readCards(jp);
                 } else {
-                    downcards = createNulls(jp.getIntValue());
+                    downcards = Collections.nCopies(jp.getIntValue(), null);
                 }
             } else {
                 jp.skipChildren();
