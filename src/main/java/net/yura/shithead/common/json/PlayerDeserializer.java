@@ -2,7 +2,6 @@ package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import net.yura.cardsengine.Card;
@@ -22,7 +21,7 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
 
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        String name = null;
+        String playerName = null;
         List<Card> hand = null;
         List<Card> upcards = null;
         List<Card> downcards = null;
@@ -32,19 +31,19 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
             jp.nextToken(); // Move to the value
 
             if ("name".equals(fieldName)) {
-                name = jp.getText();
-            } else if ("hand".equals(fieldName)) {
-                hand = jp.readValueAs(new TypeReference<List<Card>>() {});
-            } else if ("upcards".equals(fieldName)) {
-                upcards = jp.readValueAs(new TypeReference<List<Card>>() {});
-            } else if ("downcards".equals(fieldName)) {
-                downcards = jp.readValueAs(new TypeReference<List<Card>>() {});
+                playerName = jp.getText();
+            } else if ("hand".equals(fieldName) || "handCount".equals(fieldName)) {
+                hand = GameDeserializer.readCardsOrCount(jp);
+            } else if ("upcards".equals(fieldName) || "upcardsCount".equals(fieldName)) {
+                upcards = GameDeserializer.readCardsOrCount(jp);
+            } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
+                downcards = GameDeserializer.readCardsOrCount(jp);
             } else {
                 jp.skipChildren();
             }
         }
 
-        Player player = new Player(name);
+        Player player = new Player(playerName);
         if (hand != null) {
             player.getHand().addAll(hand);
         }

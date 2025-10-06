@@ -30,11 +30,11 @@ public class SerializerUtil {
         }
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(ShitheadGame.class, new ShitheadGameSerializer());
+        module.addSerializer(ShitheadGame.class, new GameSerializer());
         module.addSerializer(Player.class, new PlayerSerializer());
         module.addSerializer(Card.class, new ToStringSerializer());
 
-        module.addDeserializer(ShitheadGame.class, new ShitheadGameDeserializer());
+        module.addDeserializer(ShitheadGame.class, new GameDeserializer());
         module.addDeserializer(Player.class, new PlayerDeserializer());
         module.addDeserializer(Card.class, new FromStringDeserializer<Card>(Card.class) {
             @Override
