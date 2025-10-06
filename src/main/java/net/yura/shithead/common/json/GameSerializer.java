@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class ShitheadGameSerializer extends JsonSerializer<ShitheadGame> {
+public class GameSerializer extends JsonSerializer<ShitheadGame> {
 
     @Override
     public void serialize(ShitheadGame game, JsonGenerator gen, SerializerProvider serializers) throws IOException {

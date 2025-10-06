@@ -15,17 +15,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
+public class GameDeserializer extends StdDeserializer<ShitheadGame> {
 
-    public ShitheadGameDeserializer() {
+    public GameDeserializer() {
         this(null);
     }
 
-    protected ShitheadGameDeserializer(Class<?> vc) {
+    protected GameDeserializer(Class<?> vc) {
         super(vc);
     }
 
-    private List<Card> readCardsOrCount(JsonParser jp) throws IOException {
+    static List<Card> readCardsOrCount(JsonParser jp) throws IOException {
         if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
             int count = jp.getIntValue();
             return Collections.nCopies(count, null);

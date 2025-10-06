@@ -2,14 +2,11 @@ package net.yura.shithead.common.json;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import net.yura.cardsengine.Card;
 import net.yura.shithead.common.Player;
-
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 public class PlayerDeserializer extends StdDeserializer<Player> {
@@ -20,10 +17,6 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
 
     protected PlayerDeserializer(Class<?> vc) {
         super(vc);
-    }
-
-    private List<Card> readCards(JsonParser jp) throws IOException {
-        return jp.readValueAs(new TypeReference<List<Card>>() {});
     }
 
     @Override
@@ -40,23 +33,11 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
             if ("name".equals(fieldName)) {
                 playerName = jp.getText();
             } else if ("hand".equals(fieldName) || "handCount".equals(fieldName)) {
-                if (jp.currentToken() == JsonToken.START_ARRAY) {
-                    hand = readCards(jp);
-                } else {
-                    hand = Collections.nCopies(jp.getIntValue(), null);
-                }
+                hand = GameDeserializer.readCardsOrCount(jp);
             } else if ("upcards".equals(fieldName) || "upcardsCount".equals(fieldName)) {
-                if (jp.currentToken() == JsonToken.START_ARRAY) {
-                    upcards = readCards(jp);
-                } else {
-                    upcards = Collections.nCopies(jp.getIntValue(), null);
-                }
+                upcards = GameDeserializer.readCardsOrCount(jp);
             } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
-                if (jp.currentToken() == JsonToken.START_ARRAY) {
-                    downcards = readCards(jp);
-                } else {
-                    downcards = Collections.nCopies(jp.getIntValue(), null);
-                }
+                downcards = GameDeserializer.readCardsOrCount(jp);
             } else {
                 jp.skipChildren();
             }

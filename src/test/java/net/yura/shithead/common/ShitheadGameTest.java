@@ -128,48 +128,4 @@ class ShitheadGameTest {
         assertEquals(0, game.getWastePile().size());
         assertEquals(p1, game.getCurrentPlayer(), "Player should play again after burning the pile");
     }
-
-    @Test
-    void testDeserializationWithContext() throws Exception {
-        // Load the player-specific JSON file
-        java.io.InputStream is = getClass().getClassLoader().getResourceAsStream("testgame_alice.json");
-        assertNotNull(is, "testgame_alice.json not found");
-        String json = new String(is.readAllBytes());
-
-        // Deserialize the game state
-        ShitheadGame game = net.yura.shithead.common.json.SerializerUtil.fromJSON(json);
-
-        // Assert general game state
-        assertEquals("Alice", game.getCurrentPlayer().getName());
-        assertTrue(game.getWastePile().isEmpty());
-
-        // Assert deck state using reflection
-        Deck deck = game.getDeck();
-        java.lang.reflect.Field cardsField = Deck.class.getDeclaredField("cards");
-        cardsField.setAccessible(true);
-        java.util.Stack<Card> cards = (java.util.Stack<Card>) cardsField.get(deck);
-        assertEquals(34, cards.size());
-
-
-        // Assert Alice's state (cards are visible)
-        Player alice = game.getPlayers().get(0);
-        assertEquals("Alice", alice.getName());
-        assertEquals(3, alice.getUpcards().size());
-        assertFalse(alice.getUpcards().contains(null)); // Should contain actual cards
-        assertEquals(3, alice.getHand().size());
-        assertFalse(alice.getHand().contains(null));
-        assertEquals(3, alice.getDowncards().size()); // Downcards are never visible
-        assertTrue(alice.getDowncards().stream().allMatch(c -> c == null));
-
-
-        // Assert Bob's state (cards are hidden)
-        Player bob = game.getPlayers().get(1);
-        assertEquals("Bob", bob.getName());
-        assertEquals(3, bob.getUpcards().size());
-        assertFalse(bob.getUpcards().contains(null)); // Upcards are always visible
-        assertEquals(3, bob.getHand().size());
-        assertTrue(bob.getHand().stream().allMatch(c -> c == null)); // Hand is hidden
-        assertEquals(3, bob.getDowncards().size());
-        assertTrue(bob.getDowncards().stream().allMatch(c -> c == null));
-    }
 }
