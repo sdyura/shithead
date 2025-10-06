@@ -47,7 +47,6 @@ public class ShitheadGameDeserializer extends StdDeserializer<ShitheadGame> {
 
             if ("currentPlayerName".equals(fieldName)) {
                 currentPlayerName = jp.getText();
-                ctxt.setAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY, currentPlayerName);
             } else if ("players".equals(fieldName)) {
                 players = jp.readValueAs(new TypeReference<List<Player>>() {});
             } else if ("deck".equals(fieldName) || "cardsInDeck".equals(fieldName)) {

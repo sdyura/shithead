@@ -30,25 +30,12 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
         return Collections.nCopies(count, null);
     }
 
-    private int getArraySizeAndSkip(JsonParser jp) throws IOException {
-        int count = 0;
-        // This assumes the parser is at the START_ARRAY token
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            count++;
-            jp.skipChildren();
-        }
-        return count;
-    }
-
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         String playerName = null;
         List<Card> hand = null;
         List<Card> upcards = null;
         List<Card> downcards = null;
-
-        String contextPlayerName = (String) ctxt.getAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY);
-        boolean isGodView = contextPlayerName == null;
 
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = jp.getCurrentName();
@@ -57,13 +44,8 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
             if ("name".equals(fieldName)) {
                 playerName = jp.getText();
             } else if ("hand".equals(fieldName) || "handCount".equals(fieldName)) {
-                boolean isContextPlayer = playerName != null && playerName.equals(contextPlayerName);
                 if (jp.currentToken() == JsonToken.START_ARRAY) {
-                    if (isGodView || isContextPlayer) {
-                        hand = readCards(jp);
-                    } else {
-                        hand = createNulls(getArraySizeAndSkip(jp));
-                    }
+                    hand = readCards(jp);
                 } else {
                     hand = createNulls(jp.getIntValue());
                 }
@@ -75,11 +57,7 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
                 }
             } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
                 if (jp.currentToken() == JsonToken.START_ARRAY) {
-                    if (isGodView) {
-                        downcards = readCards(jp);
-                    } else {
-                        downcards = createNulls(getArraySizeAndSkip(jp));
-                    }
+                    downcards = readCards(jp);
                 } else {
                     downcards = createNulls(jp.getIntValue());
                 }
