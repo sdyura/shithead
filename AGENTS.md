@@ -5,13 +5,14 @@
 
 ## Coding Conventions
 
-- avoid creating a method for a simple 1 line with no anonymous classes, just inline that line
-- no empty lines in import section except for between standard imports and static imports
+- when creating a git branch name use '_' in place of spaces in the name
+- Try to inline single line methods what have no anonymous classes
+- remove empty lines in import section except for between standard imports and static imports
 - else/catch/etc... goes on new line
-- avoid wrapping long lines
-- when implementing a method, check a similar method does not already exist, if it does, use it, if its private make it public
+- only wrap lines significantly longer then 120 characters.
+- when implementing a method, check if a similar method already exist, if it does, use it, if its private make it public
 - when using jackson to convert json into a java object, do NOT 'readTree', loop the parser, then create the java object
-- avoid creating a util class for every util method, just add it to an appropriate existing class, only when there are more then 2 methods that need to be grouped together create the util class
+- only create a util classes when there is 2 or more util method that needs grouping, otherwise just add it to an appropriate existing class
 
 ## Testing
 

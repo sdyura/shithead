@@ -1,4 +1,4 @@
-# shithead
+# Shithead
 
 desktop/iOS/android version of the game card game Shithead
 
