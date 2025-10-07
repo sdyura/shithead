@@ -1,6 +1,6 @@
 # Shithead
 
-desktop/iOS/android version of the game card game Shithead
+desktop/iOS/android version of the card game Shithead
 
 https://en.wikipedia.org/wiki/Shithead_(card_game)
 
