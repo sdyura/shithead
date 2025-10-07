@@ -67,12 +67,17 @@ public class SerializerUtil {
      * @return A JSON string representing the game state.
      * @throws JsonProcessingException If an error occurs during serialization.
      */
-    public static String toJSON(ShitheadGame game, String playerName) throws JsonProcessingException {
+    public static String toJSON(ShitheadGame game, String playerName) {
         ObjectMapper localMapper = mapper.copy();
         if (playerName != null) {
             localMapper.setConfig(localMapper.getSerializationConfig().withAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY, playerName));
         }
-        return localMapper.writerWithDefaultPrettyPrinter().writeValueAsString(game);
+        try {
+            return localMapper.writerWithDefaultPrettyPrinter().writeValueAsString(game);
+        }
+        catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
@@ -82,7 +87,12 @@ public class SerializerUtil {
      * @return A new ShitheadGame object.
      * @throws IOException If an error occurs during deserialization.
      */
-    public static ShitheadGame fromJSON(String json) throws IOException {
-        return mapper.readValue(json, ShitheadGame.class);
+    public static ShitheadGame fromJSON(String json) {
+        try {
+            return mapper.readValue(json, ShitheadGame.class);
+        }
+        catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("bad json " + json, e);
+        }
     }
 }
