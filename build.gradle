@@ -29,7 +29,7 @@ compileJava {
 dependencies {
     // source code to cardsengine can be found here:
     // https://sourceforge.net/p/lobby/code/HEAD/tree/trunk/src_blackjack/net/yura/cardsengine/
-    api fileTree(dir: 'lib', include: 'cardsengine.jar')
+    api 'net.yura:playing-cards:1.0.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
