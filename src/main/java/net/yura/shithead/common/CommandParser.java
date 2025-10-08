@@ -27,34 +27,24 @@ public class CommandParser {
                 }
                 List<Card> cards;
                 Card revealed = null;
+                boolean isDowncardPlay = false;
                 switch (tokens[1]) {
                     case "hand":
                         List<Card> cardsToPlay = new ArrayList<>();
                         for (int i = 2; i < tokens.length; i++) {
-                            Card card = cardFromString(tokens[i]);
-                            if (player.getHand().contains(card)) {
-                                cardsToPlay.add(card);
-                            }
-                            else {
-                                throw new InvalidCommandException("card not in hand: " + tokens[i]);
-                            }
+                            cardsToPlay.add(cardFromString(tokens[i]));
                         }
                         cards = cardsToPlay;
                         break;
                     case "up":
                         List<Card> upCardsToPlay = new ArrayList<>();
                         for (int i = 2; i < tokens.length; i++) {
-                            Card card = cardFromString(tokens[i]);
-                            if (player.getUpcards().contains(card)) {
-                                upCardsToPlay.add(card);
-                            }
-                            else {
-                                throw new InvalidCommandException("card not in upcards: " + tokens[i]);
-                            }
+                            upCardsToPlay.add(cardFromString(tokens[i]));
                         }
                         cards = upCardsToPlay;
                         break;
                     case "down":
+                        isDowncardPlay = true;
                         if (tokens.length != 3) {
                             throw new InvalidCommandException("can only play one downcard at a time");
                         }
@@ -76,7 +66,12 @@ public class CommandParser {
                 }
 
                 if (!game.playCards(player, cards)) {
-                    throw new InvalidCommandException("invalid move");
+                    if (isDowncardPlay) {
+                        // A failed downcard play is a valid game event, not an error.
+                        // The penalty is handled by the game logic.
+                    } else {
+                        throw new InvalidCommandException("invalid move");
+                    }
                 }
                 return revealed;
 
