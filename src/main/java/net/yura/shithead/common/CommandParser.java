@@ -103,6 +103,7 @@ public class CommandParser {
             case '8': rank = Rank.EIGHT; break;
             case '9': rank = Rank.NINE; break;
             case 't': rank = Rank.TEN; break;
+            case 'x': rank = Rank.TEN; break;
             case 'j': rank = Rank.JACK; break;
             case 'q': rank = Rank.QUEEN; break;
             case 'k': rank = Rank.KING; break;
