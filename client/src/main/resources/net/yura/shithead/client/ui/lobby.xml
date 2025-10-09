@@ -1,0 +1,10 @@
+<frame title="$app.title"
+       xmlns="http://thinlet.net/xul"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://thinlet.net/xul http://thinlet.net/xul/xul.xsd">
+    <panel halign="center" valign="center" gap="10">
+        <label text="$app.title" style="font-size: 24pt;"/>
+        <button name="play" text="$button.play.online"/>
+        <button name="about" text="$button.about"/>
+    </panel>
+</frame>
