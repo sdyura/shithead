@@ -6,10 +6,10 @@ import net.yura.cardsengine.Rank;
 import net.yura.cardsengine.Suit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Stack;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandParserTest {
@@ -28,7 +28,7 @@ public class CommandParserTest {
         player1.getHand().clear();
         player1.getUpcards().clear();
         player1.getDowncards().clear();
-        game.setWastePile(new java.util.ArrayList<>());
+        game.setWastePile(new ArrayList<>());
 
         // Use reflection to set a predictable deck for testing
         Deck deck = game.getDeck();
@@ -38,23 +38,23 @@ public class CommandParserTest {
     }
 
     @Test
-    public void testPlayFromHand() throws InvalidCommandException {
+    public void testPlayFromHand() {
         player1.getHand().add(Card.getCardByRankSuit(Rank.FIVE, Suit.HEARTS));
-        parser.parse(game, "play hand 5h");
+        parser.parse(game, "play hand 5H");
         assertEquals(1, game.getWastePile().size());
         assertEquals(0, player1.getHand().size());
     }
 
     @Test
-    public void testPlayFromUpcards() throws InvalidCommandException {
+    public void testPlayFromUpcards() {
         player1.getUpcards().add(Card.getCardByRankSuit(Rank.SIX, Suit.DIAMONDS));
-        parser.parse(game, "play up 6d");
+        parser.parse(game, "play up 6D");
         assertEquals(1, game.getWastePile().size());
         assertEquals(0, player1.getUpcards().size());
     }
 
     @Test
-    public void testPlayFromDowncards() throws InvalidCommandException {
+    public void testPlayFromDowncards() {
         Card downCard = Card.getCardByRankSuit(Rank.SEVEN, Suit.CLUBS);
         player1.getDowncards().add(downCard);
         Card revealed = parser.parse(game, "play down 0");
@@ -64,7 +64,7 @@ public class CommandParserTest {
     }
 
     @Test
-    public void testPickUpWastePile() throws InvalidCommandException {
+    public void testPickUpWastePile() {
         game.setWastePile(new java.util.ArrayList<>(Collections.singletonList(Card.getCardByRankSuit(Rank.EIGHT, Suit.SPADES))));
         parser.parse(game, "pickup");
         assertEquals(0, game.getWastePile().size());
@@ -73,7 +73,7 @@ public class CommandParserTest {
 
     @Test
     public void testInvalidCommand() {
-        assertThrows(InvalidCommandException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             parser.parse(game, "fly away");
         });
     }
@@ -81,7 +81,7 @@ public class CommandParserTest {
     @Test
     public void testPlayNonExistentCard() {
         player1.getHand().add(Card.getCardByRankSuit(Rank.FIVE, Suit.HEARTS));
-        assertThrows(InvalidCommandException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             parser.parse(game, "play hand 6h");
         });
     }
@@ -90,13 +90,13 @@ public class CommandParserTest {
     public void testInvalidMove() {
         game.setWastePile(new java.util.ArrayList<>(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.HEARTS))));
         player1.getHand().add(Card.getCardByRankSuit(Rank.QUEEN, Suit.HEARTS));
-        assertThrows(InvalidCommandException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             parser.parse(game, "play hand qh");
         });
     }
 
     @Test
-    public void testPlayRevealedDowncard() throws InvalidCommandException {
+    public void testPlayRevealedDowncard() {
         Card downCard = Card.getCardByRankSuit(Rank.ACE, Suit.CLUBS);
         player1.getDowncards().add(downCard);
 

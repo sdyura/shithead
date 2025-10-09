@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CommandParserIntegrationTest {
 
     @Test
-    public void testHardcoded2PlayerGame() throws InvalidCommandException {
+    public void testHardcoded2PlayerGame() {
         CommandParser parser = new CommandParser();
         ShitheadGame game = new ShitheadGame(2);
         Deck deck = game.getDeck();
@@ -17,89 +18,88 @@ public class CommandParserIntegrationTest {
         game.deal();
 
         String[] commands = {
-            "play hand 7d", "play hand 2c", "play hand qs", "play hand kc", "pickup", "play hand jc",
-            "play hand 2c", "play hand 8c", "play hand 9s", "pickup", "play hand 7c", "play hand 7s",
-            "play hand 7d", "play hand jc", "play hand qs", "play hand 2c", "play hand 4d",
-            "play hand 5s", "play hand kc", "pickup", "play hand 2h", "play hand ac", "play hand 5h",
-            "play hand 8c", "play hand 8h", "play hand 9s", "play hand jd", "play hand jc",
-            "play hand 2s", "play hand 7c", "play hand 8s", "play hand qs", "play hand kh",
-            "play hand 2c", "play hand 3h", "play hand 7s", "play hand js", "play hand kc", "pickup",
-            "play hand 7d", "play hand qc", "play hand xs", "play hand 4d", "play hand 9d",
-            "play hand xc", "play hand 5s", "play hand qh", "play hand ks", "play hand 2h",
-            "play hand ah", "play hand ac", "play hand 3d", "play hand 5h", "play hand 8d",
-            "play hand 8c", "pickup", "play hand 8h", "play hand qh", "play hand 2s", "play hand 4s",
-            "play hand 9s", "play hand ks", "play hand kh", "play hand 2h", "play hand jd", "pickup",
-            "play hand jc", "play hand qh", "play hand qs", "play hand 2s", "play hand 7c",
-            "play hand 8d", "play hand 8s", "play hand 8c", "play hand 2c", "play hand 6c",
-            "play hand 7s", "play hand 8h", "play hand js", "play hand ks", "play hand kc",
-            "play hand kh", "pickup", "play hand 4c", "play hand 7h", "play hand 9s", "play hand jc",
-            "play hand 2h", "play hand 3h", "play hand 5s", "play hand 5c", "play hand 5h",
-            "play hand qh", "pickup", "play hand qs", "play hand 2h", "play hand 2s", "play hand ah",
-            "play hand 7c", "play hand jd", "play hand 2c", "play hand ac", "play hand 8d",
-            "play hand 9s", "play hand js", "play hand jc", "play hand ks", "pickup", "play hand 8s",
-            "play hand qh", "play hand kc", "play hand 2h", "play hand 8c", "play hand qs",
-            "play hand kh", "play hand 2s", "play hand 6c", "play hand 7h", "play hand 7s",
-            "play hand 7c", "play hand 8h", "play hand jd", "pickup", "play hand 3d", "play hand 4h",
-            "play hand 4s", "play hand 6s", "play hand 2c", "play hand 6d", "play hand 8d",
-            "play hand 8s", "play hand 9s", "play hand qh", "play hand ks", "play hand kc", "pickup",
-            "play hand 2h", "play hand 4c", "play hand 8c", "play hand js", "play hand qs",
-            "play hand 2c", "play hand kh", "play hand ks", "play hand 2s", "play hand 3h",
-            "play hand 6c", "play hand jc", "play hand jd", "play hand qh", "pickup", "play hand 5s",
-            "play hand 7h", "play hand 8d", "play hand 8h", "play hand 8s", "play hand 2h",
-            "play hand 5c", "play hand 7s", "play hand 9s", "play hand js", "play hand kc",
-            "play hand 2c", "play hand 5h", "play hand 7c", "pickup", "play hand 4c", "play hand 4h",
-            "play hand 8c", "play hand 8d", "play hand qs", "play hand 2h", "play hand kh",
-            "play hand kc", "play hand ks", "play hand 2c", "play hand 2s", "play hand ah",
-            "play hand 3h", "play hand 3d", "play hand 6c", "play hand 6s", "play hand jc",
-            "play hand js", "play hand jd", "pickup", "play hand qh", "play hand qs", "play hand qd",
-            "play hand 2h", "play hand xd", "play up 6h", "play hand 6d", "play up jh", "play hand kh",
-            "pickup", "play hand ac", "play hand 6h", "play hand 7h", "play hand jh", "play hand kc",
-            "play hand kh", "play hand ks", "pickup", "play hand 4s", "play hand 6d", "play hand 8h",
-            "play hand jh", "play hand 2c", "play hand ac", "play hand 5s", "play hand 6h",
-            "play hand 8s", "play hand kc", "play hand 2s", "play hand 7h", "play hand 7s",
-            "play hand kh", "pickup", "play hand ks", "play hand 2c", "play up 3c", "play hand 5c",
-            "play down 2", "play hand 9s", "play down 1", "play hand 5h", "play hand ks",
-            "play hand kc", "play hand 2c", "play hand 7c", "play hand 2d", "play hand 4c",
-            "play hand 5c", "play hand 8c", "play hand 9s", "play hand jc", "pickup", "play hand 4h",
-            "play hand 5h", "play hand 8d", "play hand ks", "play hand 2s", "play hand ad",
-            "play hand ah", "play hand 3c", "play hand 3h", "play hand kc", "play hand kh",
-            "play hand 2c", "play hand 3d", "play hand 7c", "play hand js", "play hand 2d",
-            "play hand 6c", "play hand 8c", "play hand jd", "play hand jc", "play hand jh",
-            "pickup", "play hand 6s", "play hand 9s", "pickup", "play hand 4c", "play hand 4s",
-            "play hand 5c", "play hand 6d", "play hand 8d", "play hand 8h", "play hand ks",
-            "pickup", "play hand 4h", "play hand 5s", "play hand 5h", "play hand 6h", "play hand 2s",
-            "play hand ac", "play hand ad", "play hand 8s", "play hand kc", "play hand ks",
-            "play hand kh", "pickup", "play hand ah", "play hand 7h", "play hand 2c", "play hand 7s",
-            "play hand 7c", "play hand 9s", "play hand js", "play hand 2s", "play hand 3c",
-            "play hand 6s", "play hand 2d", "play hand 4c", "play hand 6c", "play hand 6d",
-            "play hand 8c", "play hand 8d", "play hand jd", "play hand kc", "pickup", "play hand 4s",
-            "play hand jc", "play hand ks", "play hand 2c", "play hand 5c", "play hand jh",
-            "play hand kh", "play hand 2s", "play hand 8h", "play hand 9s", "pickup", "play hand 3h",
-            "play hand 4h", "play hand 7h", "play hand 8s", "play hand js", "play hand jc",
-            "play hand 2d", "play hand 5s", "play hand 7s", "play hand ks", "play hand kc",
-            "play hand 2c", "play hand 3d", "play hand 5h", "play hand 7c", "play hand jh",
-            "play hand jd", "play hand kh", "pickup", "play hand 6h", "play hand 6s", "play hand 2s",
-            "play hand ah", "play hand ac", "play hand 3c", "play hand 4s", "play hand 4c",
-            "play hand 5c", "play hand 6c", "play hand 8h", "play hand 8c", "play hand 9s",
-            "play hand js", "pickup", "play hand 6d", "play hand 6h", "play hand 8d", "play hand 2s",
-            "play hand 3h", "play hand 6s", "play hand 7h", "play hand 8h", "play hand 8s",
-            "play hand 8c", "play hand jc", "play hand js", "play hand 2d", "play hand ad",
-            "play hand 4h", "play hand 4s", "play hand 5s", "play hand 5c", "play hand 7s",
-            "play hand 9s", "play hand ks", "pickup", "play hand kc", "play hand 2s", "play hand 2c",
-            "play hand ah", "play hand 3d", "play hand 3c", "play hand 5h", "play hand 6c",
-            "play hand 7c", "play hand 8d", "play hand jh", "play hand jc", "play hand jd",
-            "play hand js", "play hand ac", "play hand kh", "play hand 2d", "play down 0",
-            "play down 0", "play up 3s", "play up xh", "play down 0", "play down 0", "play up kd"
+            "play hand 7D", "play hand 2C", "play hand QS", "play hand KC", "pickup", "play hand JC",
+            "play hand 2C", "play hand 8C", "play hand 9S", "pickup", "play hand 7C", "play hand 7S",
+            "play hand 7D", "play hand JC", "play hand QS", "play hand 2C", "play hand 4D",
+            "play hand 5S", "play hand KC", "pickup", "play hand 2H", "play hand AC", "play hand 5H",
+            "play hand 8C", "play hand 8H", "play hand 9S", "play hand JD", "play hand JC",
+            "play hand 2S", "play hand 7C", "play hand 8S", "play hand QS", "play hand KH",
+            "play hand 2C", "play hand 3H", "play hand 7S", "play hand JS", "play hand KC", "pickup",
+            "play hand 7D", "play hand QC", "play hand XS", "play hand 4D", "play hand 9D",
+            "play hand XC", "play hand 5S", "play hand QH", "play hand KS", "play hand 2H",
+            "play hand AH", "play hand AC", "play hand 3D", "play hand 5H", "play hand 8D",
+            "play hand 8C", "pickup", "play hand 8H", "play hand QH", "play hand 2S", "play hand 4S",
+            "play hand 9S", "play hand KS", "play hand KH", "play hand 2H", "play hand JD", "pickup",
+            "play hand JC", "play hand QH", "play hand QS", "play hand 2S", "play hand 7C",
+            "play hand 8D", "play hand 8S", "play hand 8C", "play hand 2C", "play hand 6C",
+            "play hand 7S", "play hand 8H", "play hand JS", "play hand KS", "play hand KC",
+            "play hand KH", "pickup", "play hand 4C", "play hand 7H", "play hand 9S", "play hand JC",
+            "play hand 2H", "play hand 3H", "play hand 5S", "play hand 5C", "play hand 5H",
+            "play hand QH", "pickup", "play hand QS", "play hand 2H", "play hand 2S", "play hand AH",
+            "play hand 7C", "play hand JD", "play hand 2C", "play hand AC", "play hand 8D",
+            "play hand 9S", "play hand JS", "play hand JC", "play hand KS", "pickup", "play hand 8S",
+            "play hand QH", "play hand KC", "play hand 2H", "play hand 8C", "play hand QS",
+            "play hand KH", "play hand 2S", "play hand 6C", "play hand 7H", "play hand 7S",
+            "play hand 7C", "play hand 8H", "play hand JD", "pickup", "play hand 3D", "play hand 4H",
+            "play hand 4S", "play hand 6S", "play hand 2C", "play hand 6D", "play hand 8D",
+            "play hand 8S", "play hand 9S", "play hand QH", "play hand KS", "play hand KC", "pickup",
+            "play hand 2H", "play hand 4C", "play hand 8C", "play hand JS", "play hand QS",
+            "play hand 2C", "play hand KH", "play hand KS", "play hand 2S", "play hand 3H",
+            "play hand 6C", "play hand JC", "play hand JD", "play hand QH", "pickup", "play hand 5S",
+            "play hand 7H", "play hand 8D", "play hand 8H", "play hand 8S", "play hand 2H",
+            "play hand 5C", "play hand 7S", "play hand 9S", "play hand JS", "play hand KC",
+            "play hand 2C", "play hand 5H", "play hand 7C", "pickup", "play hand 4C", "play hand 4H",
+            "play hand 8C", "play hand 8D", "play hand QS", "play hand 2H", "play hand KH",
+            "play hand KC", "play hand KS", "play hand 2C", "play hand 2S", "play hand AH",
+            "play hand 3H", "play hand 3D", "play hand 6C", "play hand 6S", "play hand JC",
+            "play hand JS", "play hand JD", "pickup", "play hand QH", "play hand QS", "play hand QD",
+            "play hand 2H", "play hand XD", "play up 6H", "play hand 6D", "play up JH", "play hand KH",
+            "pickup", "play hand AC", "play hand 6H", "play hand 7H", "play hand JH", "play hand KC",
+            "play hand KH", "play hand KS", "pickup", "play hand 4S", "play hand 6D", "play hand 8H",
+            "play hand JH", "play hand 2C", "play hand AC", "play hand 5S", "play hand 6H",
+            "play hand 8S", "play hand KC", "play hand 2S", "play hand 7H", "play hand 7S",
+            "play hand KH", "pickup", "play hand KS", "play hand 2C", "play up 3C", "play hand 5C",
+            "play down 2", "play hand 9S", "play down 1", "play hand 5H", "play hand KS",
+            "play hand KC", "play hand 2C", "play hand 7C", "play hand 2D", "play hand 4C",
+            "play hand 5C", "play hand 8C", "play hand 9S", "play hand JC", "pickup", "play hand 4H",
+            "play hand 5H", "play hand 8D", "play hand KS", "play hand 2S", "play hand AD",
+            "play hand AH", "play hand 3C", "play hand 3H", "play hand KC", "play hand KH",
+            "play hand 2C", "play hand 3D", "play hand 7C", "play hand JS", "play hand 2D",
+            "play hand 6C", "play hand 8C", "play hand JD", "play hand JC", "play hand JH",
+            "pickup", "play hand 6S", "play hand 9S", "pickup", "play hand 4C", "play hand 4S",
+            "play hand 5C", "play hand 6D", "play hand 8D", "play hand 8H", "play hand KS",
+            "pickup", "play hand 4H", "play hand 5S", "play hand 5H", "play hand 6H", "play hand 2S",
+            "play hand AC", "play hand AD", "play hand 8S", "play hand KC", "play hand KS",
+            "play hand KH", "pickup", "play hand AH", "play hand 7H", "play hand 2C", "play hand 7S",
+            "play hand 7C", "play hand 9S", "play hand JS", "play hand 2S", "play hand 3C",
+            "play hand 6S", "play hand 2D", "play hand 4C", "play hand 6C", "play hand 6D",
+            "play hand 8C", "play hand 8D", "play hand JD", "play hand KC", "pickup", "play hand 4S",
+            "play hand JC", "play hand KS", "play hand 2C", "play hand 5C", "play hand JH",
+            "play hand KH", "play hand 2S", "play hand 8H", "play hand 9S", "pickup", "play hand 3H",
+            "play hand 4H", "play hand 7H", "play hand 8S", "play hand JS", "play hand JC",
+            "play hand 2D", "play hand 5S", "play hand 7S", "play hand KS", "play hand KC",
+            "play hand 2C", "play hand 3D", "play hand 5H", "play hand 7C", "play hand JH",
+            "play hand JD", "play hand KH", "pickup", "play hand 6H", "play hand 6S", "play hand 2S",
+            "play hand AH", "play hand AC", "play hand 3C", "play hand 4S", "play hand 4C",
+            "play hand 5C", "play hand 6C", "play hand 8H", "play hand 8C", "play hand 9S",
+            "play hand JS", "pickup", "play hand 6D", "play hand 6H", "play hand 8D", "play hand 2S",
+            "play hand 3H", "play hand 6S", "play hand 7H", "play hand 8H", "play hand 8S",
+            "play hand 8C", "play hand JC", "play hand JS", "play hand 2D", "play hand AD",
+            "play hand 4H", "play hand 4S", "play hand 5S", "play hand 5C", "play hand 7S",
+            "play hand 9S", "play hand KS", "pickup", "play hand KC", "play hand 2S", "play hand 2C",
+            "play hand AH", "play hand 3D", "play hand 3C", "play hand 5H", "play hand 6C",
+            "play hand 7C", "play hand 8D", "play hand JH", "play hand JC", "play hand JD",
+            "play hand JS", "play hand AC", "play hand KH", "play hand 2D", "play down 0"
         };
 
         for (String command : commands) {
             if (game.isFinished()) {
-                break;
+                fail("command not needed: " + command);
             }
             parser.parse(game, command);
         }
 
-        assertTrue(game.isFinished(), "Game should be finished after the hardcoded sequence of moves.");
+        assertTrue(game.isFinished(), "Game should be finished After the hardcoded sequence of moves.");
         assertEquals(1, game.getPlayers().size(), "There should be only one player left (the winner).");
     }
 }

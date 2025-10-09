@@ -59,17 +59,17 @@ class ShitheadGameTest {
         p2.getDowncards().add(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS));
 
         // P1 plays from hand
-        assertTrue(game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES))));
         assertTrue(p1.getHand().isEmpty());
         assertEquals(p2, game.getCurrentPlayer());
 
         // P2 plays from hand
-        assertTrue(game.playCards(p2, Collections.singletonList(Card.getCardByRankSuit(Rank.SIX, Suit.HEARTS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.SIX, Suit.HEARTS))));
         assertTrue(p2.getHand().isEmpty());
         assertEquals(p1, game.getCurrentPlayer());
 
         // P1 plays from upcards and wins
-        assertTrue(game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.QUEEN, Suit.HEARTS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.QUEEN, Suit.HEARTS))));
         assertTrue(p1.getUpcards().isEmpty());
         assertTrue(game.isFinished(), "Game should be finished after P1 plays their last upcard");
     }
@@ -80,18 +80,18 @@ class ShitheadGameTest {
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES)); // Ensure p1 doesn't win immediately
 
         // P1 plays a King
-        game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.CLUBS)));
+        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.CLUBS)));
         assertEquals(1, game.getWastePile().size());
         assertEquals(p2, game.getCurrentPlayer());
 
         // P2 has a 3, cannot play on a King
         p2.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
-        assertFalse(game.playCards(p2, Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS))));
+        assertFalse(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS))));
 
         // P2 picks up the pile
         int cardsInHandBefore = p2.getHand().size();
         int cardsInWasteBefore = game.getWastePile().size();
-        game.pickUpWastePile(p2);
+        game.pickUpWastePile();
 
         assertEquals(cardsInHandBefore + cardsInWasteBefore, p2.getHand().size());
         assertEquals(0, game.getWastePile().size());
@@ -103,7 +103,7 @@ class ShitheadGameTest {
         p1.getDowncards().add(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS));
 
         // P1 plays their downcard (blind)
-        assertTrue(game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS))));
         assertTrue(p1.getDowncards().isEmpty());
         assertEquals(1, game.getWastePile().size());
     }
@@ -116,15 +116,15 @@ class ShitheadGameTest {
 
         // Test playing a Two on any card
         p1.getHand().add(Card.getCardByRankSuit(Rank.KING, Suit.SPADES));
-        game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES)));
+        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES)));
 
         p2.getHand().add(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS));
-        assertTrue(game.playCards(p2, Collections.singletonList(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS))));
         assertEquals(2, game.getWastePile().size());
 
         // Test playing a Ten to burn the pile and play again
         p1.getHand().add(Card.getCardByRankSuit(Rank.TEN, Suit.DIAMONDS));
-        assertTrue(game.playCards(p1, Collections.singletonList(Card.getCardByRankSuit(Rank.TEN, Suit.DIAMONDS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.TEN, Suit.DIAMONDS))));
         assertEquals(0, game.getWastePile().size());
         assertEquals(p1, game.getCurrentPlayer(), "Player should play again after burning the pile");
     }

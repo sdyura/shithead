@@ -1,124 +1,83 @@
 package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
-import net.yura.cardsengine.Rank;
-import net.yura.cardsengine.Suit;
-
+import net.yura.shithead.common.json.SerializerUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class CommandParser {
 
-    public Card parse(ShitheadGame game, String command) throws InvalidCommandException {
-
-        String[] tokens = command.toLowerCase(Locale.ROOT).split(" ");
-        if (tokens.length == 0) {
-            throw new InvalidCommandException("empty command");
+    public Card parse(ShitheadGame game, String command) {
+        if (command.startsWith("play down ")) {
+            int index = Integer.parseInt(command.substring("play down ".length()));
+            Player player = game.getCurrentPlayer();
+            Card card = player.getDowncards().get(index);
+            execute(game, "play down " + card);
+            return card;
         }
 
-        Player player = game.getCurrentPlayer();
+        execute(game, command);
+        return null;
+    }
+
+    public void execute(ShitheadGame game, String command) {
+
+        String[] tokens = command.split(" ");
+        if (tokens.length == 0) {
+            throw new IllegalArgumentException("empty command");
+        }
 
         switch (tokens[0]) {
             case "play":
                 if (tokens.length < 3) {
-                    throw new InvalidCommandException("incomplete play command");
+                    throw new IllegalArgumentException("incomplete play command");
                 }
                 List<Card> cards;
-                Card revealed = null;
                 boolean isDowncardPlay = false;
                 switch (tokens[1]) {
                     case "hand":
                         List<Card> cardsToPlay = new ArrayList<>();
                         for (int i = 2; i < tokens.length; i++) {
-                            cardsToPlay.add(cardFromString(tokens[i]));
+                            cardsToPlay.add(SerializerUtil.cardFromString(tokens[i]));
                         }
                         cards = cardsToPlay;
                         break;
                     case "up":
                         List<Card> upCardsToPlay = new ArrayList<>();
                         for (int i = 2; i < tokens.length; i++) {
-                            upCardsToPlay.add(cardFromString(tokens[i]));
+                            upCardsToPlay.add(SerializerUtil.cardFromString(tokens[i]));
                         }
                         cards = upCardsToPlay;
                         break;
                     case "down":
                         isDowncardPlay = true;
                         if (tokens.length != 3) {
-                            throw new InvalidCommandException("can only play one downcard at a time");
+                            throw new IllegalArgumentException("can only play one downcard at a time");
                         }
-                        try {
-                            int index = Integer.parseInt(tokens[2]);
-                            Card card = player.getDowncards().get(index);
-                            cards = Collections.singletonList(card);
-                            revealed = card;
-                        }
-                        catch (NumberFormatException ex) {
-                            throw new InvalidCommandException("invalid index for downcard: " + tokens[2]);
-                        }
-                        catch (IndexOutOfBoundsException ex) {
-                            throw new InvalidCommandException("downcard index out of bounds: " + tokens[2]);
-                        }
+                        Card card = SerializerUtil.cardFromString(tokens[2]);
+                        cards = Collections.singletonList(card);
                         break;
                     default:
-                        throw new InvalidCommandException("invalid card source: " + tokens[1]);
+                        throw new IllegalArgumentException("invalid card source: " + tokens[1]);
                 }
 
-                if (!game.playCards(player, cards)) {
+                if (!game.playCards(cards)) {
                     if (isDowncardPlay) {
                         // A failed downcard play is a valid game event, not an error.
                         // The penalty is handled by the game logic.
                     } else {
-                        throw new InvalidCommandException("invalid move");
+                        throw new IllegalArgumentException("invalid move");
                     }
                 }
-                return revealed;
+                return;
 
             case "pickup":
-                game.pickUpWastePile(player);
-                return null;
+                game.pickUpWastePile();
+                return;
 
             default:
-                throw new InvalidCommandException("unknown command: " + tokens[0]);
+                throw new IllegalArgumentException("unknown command: " + tokens[0]);
         }
-    }
-
-    private static Card cardFromString(String s) throws InvalidCommandException {
-        if (s.length() != 2) {
-            throw new InvalidCommandException("invalid card string: " + s);
-        }
-        char rankChar = s.charAt(0);
-        char suitChar = s.charAt(1);
-
-        Rank rank;
-        switch (rankChar) {
-            case 'a': rank = Rank.ACE; break;
-            case '2': rank = Rank.TWO; break;
-            case '3': rank = Rank.THREE; break;
-            case '4': rank = Rank.FOUR; break;
-            case '5': rank = Rank.FIVE; break;
-            case '6': rank = Rank.SIX; break;
-            case '7': rank = Rank.SEVEN; break;
-            case '8': rank = Rank.EIGHT; break;
-            case '9': rank = Rank.NINE; break;
-            case 't': rank = Rank.TEN; break;
-            case 'x': rank = Rank.TEN; break;
-            case 'j': rank = Rank.JACK; break;
-            case 'q': rank = Rank.QUEEN; break;
-            case 'k': rank = Rank.KING; break;
-            default: throw new InvalidCommandException("unknown rank: " + rankChar);
-        }
-
-        Suit suit;
-        switch (suitChar) {
-            case 'c': suit = Suit.CLUBS; break;
-            case 'd': suit = Suit.DIAMONDS; break;
-            case 'h': suit = Suit.HEARTS; break;
-            case 's': suit = Suit.SPADES; break;
-            default: throw new InvalidCommandException("unknown suit: " + suitChar);
-        }
-
-        return Card.getCardByRankSuit(rank, suit);
     }
 }

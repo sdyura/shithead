@@ -123,11 +123,12 @@ public class ShitheadGame {
      * Plays a set of cards from the player's hand or table. The cards must all
      * be of the same rank and be valid according to the top of the waste pile.
      *
-     * @param player player performing the play
-     * @param cards  list of cards to play
+     * @param cards list of cards to play
      * @return {@code true} if the play was successful, {@code false} otherwise
      */
-    public boolean playCards(Player player, List<Card> cards) {
+    public boolean playCards(List<Card> cards) {
+        Player player = getCurrentPlayer();
+
         if (cards.isEmpty()) {
             return false;
         }
@@ -161,7 +162,7 @@ public class ShitheadGame {
                 // Penalty for invalid down-card play
                 sourcePile.removeAll(cards);
                 player.getHand().addAll(cards);
-                pickUpWastePile(player);
+                pickUpWastePile();
             }
             return false;
         }
@@ -194,7 +195,8 @@ public class ShitheadGame {
      * This is usually done when the player cannot play any of their cards.
      * After picking up the pile, the turn advances to the next player.
      */
-    public void pickUpWastePile(Player player) {
+    public void pickUpWastePile() {
+        Player player = getCurrentPlayer();
         player.getHand().addAll(wastePile);
         wastePile.clear();
         advanceTurn();
