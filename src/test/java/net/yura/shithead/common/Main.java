@@ -6,7 +6,6 @@ import net.yura.cardsengine.Suit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -59,7 +58,7 @@ public class Main {
                 String input = scanner.nextLine().trim().toUpperCase();
 
                 if (input.equalsIgnoreCase("pickup")) {
-                    game.pickUpWastePile(currentPlayer);
+                    game.pickUpWastePile();
                 }
                 else {
                     List<Card> cardsToPlay = parseCards(input);
@@ -81,7 +80,7 @@ public class Main {
                         continue;
                     }
 
-                    if (!game.playCards(currentPlayer, cardsToPlay)) {
+                    if (!game.playCards(cardsToPlay)) {
                         System.out.println("Invalid move.");
                     }
                 }
@@ -90,7 +89,7 @@ public class Main {
                 System.out.print("Play a face-up card (e.g., 'AS') or type 'pickup': ");
                 String input = scanner.nextLine().trim().toUpperCase();
                 if (input.equalsIgnoreCase("pickup")) {
-                    game.pickUpWastePile(currentPlayer);
+                    game.pickUpWastePile();
                     // nextPlayer() is called by pickUpWastePile
                 } else {
                     List<Card> cardsToPlay = parseCards(input);
@@ -102,7 +101,7 @@ public class Main {
                         System.out.println("You don't have that card in your face-up pile. Try again.");
                         continue;
                     }
-                    if (!game.playCards(currentPlayer, cardsToPlay)) {
+                    if (!game.playCards(cardsToPlay)) {
                         System.out.println("Invalid move.");
                     }
                 }
@@ -124,7 +123,7 @@ public class Main {
                 }
                 List<Card> cardToPlay = new ArrayList<>();
                 cardToPlay.add(currentPlayer.getDowncards().get(index));
-                if (!game.playCards(currentPlayer, cardToPlay)) {
+                if (!game.playCards(cardToPlay)) {
                     System.out.println("Invalid move, you picked up the pile");
                 }
             } else {

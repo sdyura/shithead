@@ -38,7 +38,7 @@ public class ShitheadGameIntegrationTest {
             if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
                 boolean wasBurn = cardToPlay.getRank() == net.yura.cardsengine.Rank.TEN;
-                game.playCards(currentPlayer, Collections.singletonList(cardToPlay));
+                game.playCards(Collections.singletonList(cardToPlay));
 
                 // --- Verification: Check game state after playing ---
                 if (wasBurn) {
@@ -53,7 +53,7 @@ public class ShitheadGameIntegrationTest {
                 if (!currentPlayer.getHand().isEmpty() || !currentPlayer.getUpcards().isEmpty()) {
                     // --- Sub-Phase: Hand or Up-cards ---
                     // If the player has cards in hand or up-cards but none are playable, they must pick up the pile.
-                    game.pickUpWastePile(currentPlayer);
+                    game.pickUpWastePile();
                     assertEquals(0, game.getWastePile().size(), "Waste pile should be empty after pickup.");
                     assertEquals(initialHandSize + initialWastePileSize, currentPlayer.getHand().size(), "Player's hand should contain the picked-up pile.");
                     assertEquals(otherPlayer, game.getCurrentPlayer(), "Turn should advance after picking up pile.");
@@ -61,7 +61,7 @@ public class ShitheadGameIntegrationTest {
                     // --- Sub-Phase: Down-cards ---
                     // If hand and up-cards are empty, the player must play a down-card blindly.
                     Card downCard = currentPlayer.getDowncards().get(0);
-                    boolean playSuccessful = game.playCards(currentPlayer, Collections.singletonList(downCard));
+                    boolean playSuccessful = game.playCards(Collections.singletonList(downCard));
 
                     if (!playSuccessful) {
                         // --- Verification: Check penalty for invalid down-card ---
@@ -128,7 +128,7 @@ public class ShitheadGameIntegrationTest {
             if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
                 Player playerBeforeMove = currentPlayer;
-                game.playCards(currentPlayer, Collections.singletonList(cardToPlay));
+                game.playCards(Collections.singletonList(cardToPlay));
                 Player playerAfterMove = game.getCurrentPlayer();
 
                 // --- Verification: Check game state after playing ---
@@ -144,7 +144,7 @@ public class ShitheadGameIntegrationTest {
                 if (!currentPlayer.getHand().isEmpty() || !currentPlayer.getUpcards().isEmpty()) {
                     // --- Sub-Phase: Hand or Up-cards ---
                     // Player must pick up the pile if they have no valid moves from hand or up-cards.
-                    game.pickUpWastePile(currentPlayer);
+                    game.pickUpWastePile();
                     assertEquals(0, game.getWastePile().size(), "3P: Waste pile should be empty after pickup.");
                     assertEquals(initialHandSize + initialWastePileSize, currentPlayer.getHand().size(), "3P: Player's hand should contain the picked-up pile.");
                     assertNotEquals(currentPlayer, game.getCurrentPlayer(), "3P: Turn should advance after picking up pile.");
@@ -152,7 +152,7 @@ public class ShitheadGameIntegrationTest {
                     // --- Sub-Phase: Down-cards ---
                     // Player must play a down-card blindly.
                     Card downCard = currentPlayer.getDowncards().get(0);
-                    boolean playSuccessful = game.playCards(currentPlayer, Collections.singletonList(downCard));
+                    boolean playSuccessful = game.playCards(Collections.singletonList(downCard));
 
                     if (!playSuccessful) {
                         // --- Verification: Check penalty for invalid down-card ---
