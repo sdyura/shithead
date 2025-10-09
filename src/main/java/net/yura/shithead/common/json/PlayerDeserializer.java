@@ -22,9 +22,10 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         String playerName = null;
-        List<Card> hand = null;
-        List<Card> upcards = null;
-        List<Card> downcards = null;
+        // Initialize to empty lists to handle spectator view where these fields might be missing
+        List<Card> hand = new java.util.ArrayList<>();
+        List<Card> upcards = new java.util.ArrayList<>();
+        List<Card> downcards = new java.util.ArrayList<>();
 
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = jp.getCurrentName();
@@ -33,26 +34,23 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
             if ("name".equals(fieldName)) {
                 playerName = jp.getText();
             } else if ("hand".equals(fieldName) || "handCount".equals(fieldName)) {
-                hand = GameDeserializer.readCardsOrCount(jp);
+                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
+                if (cards != null) hand = cards;
             } else if ("upcards".equals(fieldName) || "upcardsCount".equals(fieldName)) {
-                upcards = GameDeserializer.readCardsOrCount(jp);
+                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
+                if (cards != null) upcards = cards;
             } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
-                downcards = GameDeserializer.readCardsOrCount(jp);
+                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
+                if (cards != null) downcards = cards;
             } else {
                 jp.skipChildren();
             }
         }
 
         Player player = new Player(playerName);
-        if (hand != null) {
-            player.getHand().addAll(hand);
-        }
-        if (upcards != null) {
-            player.getUpcards().addAll(upcards);
-        }
-        if (downcards != null) {
-            player.getDowncards().addAll(downcards);
-        }
+        player.getHand().addAll(hand);
+        player.getUpcards().addAll(upcards);
+        player.getDowncards().addAll(downcards);
 
         return player;
     }
