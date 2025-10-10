@@ -1,0 +1,5 @@
+<dialog i18n="true" text="app.title" columns="1" gap="10">
+        <label i18n="true" text="app.title" font="24" halign="center" weightx="1"/>
+        <button i18n="true" action="play" text="button.play.online" halign="center"/>
+        <button i18n="true" action="about" text="button.about" halign="center"/>
+</dialog>
