@@ -7,7 +7,7 @@ import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 
 public class ShitHeadClient extends Application implements ActionListener {
@@ -17,20 +17,21 @@ public class ShitHeadClient extends Application implements ActionListener {
         dp.setLookAndFeel(DesktopPane.getSystemLookAndFeelClassName());
 
         try {
-            XULLoader loader = new XULLoader();
 
-            ResourceBundle bundle = ResourceBundle.getBundle("net.yura.shithead.client.ui.game_text");
-            Properties properties = new Properties();
-            for (Enumeration<String> e = bundle.getKeys(); e.hasMoreElements(); ) {
-                String key = e.nextElement();
-                properties.put(key, bundle.getString(key));
+            ResourceBundle bundle = ResourceBundle.getBundle("game_text");
+            Properties properties = new Properties() {
+                @Override
+                public String getProperty(String key) {
+                    return bundle.getString(key);
+                }
+            };
+
+            XULLoader loader = new XULLoader();
+            try (InputStream stream = ShitHeadClient.class.getResourceAsStream("/main_menu.xml")) {
+                loader.load(new InputStreamReader(stream), this, properties);
             }
 
-            InputStream stream = ShitHeadClient.class.getResourceAsStream("/net/yura/shithead/client/ui/lobby.xml");
-
-            loader.load(stream, this, properties);
             Frame frame = (Frame)loader.getRoot();
-
             frame.setMaximum(true);
             frame.setVisible(true);
         }
