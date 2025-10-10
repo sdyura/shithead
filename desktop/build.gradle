@@ -16,7 +16,9 @@ jar {
     manifest {
         attributes(
                 'Main-Class': project.mainClassName,
-                'MIDlet-1': 'desktop ui,,net.yura.shithead.client.ShitHeadClient'
+                'MIDlet-1': 'desktop ui,,net.yura.shithead.client.ShitHeadClient',
+                'versionName': rootProject.ext.versionName,
+                'versionCode': rootProject.ext.versionCode
         )
     }
 }
