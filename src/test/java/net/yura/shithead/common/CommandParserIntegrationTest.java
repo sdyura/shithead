@@ -102,4 +102,39 @@ public class CommandParserIntegrationTest {
         assertTrue(game.isFinished(), "Game should be finished After the hardcoded sequence of moves.");
         assertEquals(1, game.getPlayers().size(), "There should be only one player left (the winner).");
     }
+
+    @Test
+    public void testSpectatorGame() throws Exception {
+        // Setup a game to a certain point
+        CommandParser parser = new CommandParser();
+        ShitheadGame game = new ShitheadGame(2);
+        Deck deck = game.getDeck();
+        deck.setRandom(new Random(123)); // Fixed seed
+        game.deal();
+
+        String[] setupCommands = {
+            "play hand 7D", "play hand 2C", "play hand QS", "play hand KC", "pickup", "play hand JC"
+        };
+
+        for (String command : setupCommands) {
+            parser.parse(game, command);
+        }
+
+        // Serialize from a spectator's POV
+        String spectatorJson = net.yura.shithead.common.json.SerializerUtil.toJSON(game, "spectator");
+
+        // Deserialize back
+        ShitheadGame spectatorGame = net.yura.shithead.common.json.SerializerUtil.fromJSON(spectatorJson);
+
+        // Continue the game with the spectator's view
+        String[] subsequentCommands = {
+            "play hand 2C", "play hand 8C", "play hand 9S", "pickup", "play hand 7C", "play hand 7S"
+        };
+
+        for (String command : subsequentCommands) {
+            parser.parse(spectatorGame, command);
+        }
+
+        assertEquals("Player 1", spectatorGame.getCurrentPlayer().getName());
+    }
 }

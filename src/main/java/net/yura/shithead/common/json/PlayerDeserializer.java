@@ -44,15 +44,9 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
         }
 
         Player player = new Player(playerName);
-        if (hand != null) {
-            player.getHand().addAll(hand);
-        }
-        if (upcards != null) {
-            player.getUpcards().addAll(upcards);
-        }
-        if (downcards != null) {
-            player.getDowncards().addAll(downcards);
-        }
+        player.getHand().addAll(hand);
+        player.getUpcards().addAll(upcards);
+        player.getDowncards().addAll(downcards);
 
         return player;
     }

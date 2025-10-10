@@ -152,23 +152,39 @@ public class ShitheadGame {
             return false; // Player has no cards.
         }
 
-        if (!sourcePile.containsAll(cards)) {
-            return false;
+        // --- Validation for card ownership (handles spectator mode) ---
+        List<Card> pileCopy = new ArrayList<>(sourcePile);
+        for (Card card : cards) {
+            if (!pileCopy.remove(card)) { // Try to remove the specific card
+                if (!pileCopy.remove(null)) { // If not found, try to remove a null placeholder
+                    return false; // Player has neither the card nor a placeholder for it
+                }
+            }
         }
 
+        // --- Validation for game rules ---
         Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
         if (!isPlayable(rank, top)) {
             if (sourcePile == player.getDowncards()) {
                 // Penalty for invalid down-card play
-                sourcePile.removeAll(cards);
+                // We must remove the card from downcards and add it to hand before picking up pile
+                for (Card card : cards) {
+                    if (!sourcePile.remove(card)) {
+                        sourcePile.remove(null); // Known to succeed due to validation above
+                    }
+                }
                 player.getHand().addAll(cards);
                 pickUpWastePile();
             }
             return false;
         }
 
-        // remove from player's locations
-        sourcePile.removeAll(cards);
+        // --- Execution: Remove cards from the actual source pile ---
+        for (Card card : cards) {
+            if (!sourcePile.remove(card)) {
+                sourcePile.remove(null); // Known to succeed due to validation above
+            }
+        }
         wastePile.addAll(cards);
 
         // apply special rules
