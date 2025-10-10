@@ -10,4 +10,12 @@ java {
 dependencies {
     implementation rootProject
     implementation 'net.yura:io-util:1.0'
+
+    // lobby uses netty-all-4.1.Final
+    implementation fileTree(dir: '../lib', include: 'LobbyServer.jar')
+    //noinspection GradleDynamicVersion
+    implementation 'io.netty:netty-all:4.1.+'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
 }
