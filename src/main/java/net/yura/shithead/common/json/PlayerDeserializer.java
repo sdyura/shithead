@@ -22,10 +22,9 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
     @Override
     public Player deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         String playerName = null;
-        // Initialize to empty lists to handle spectator view where these fields might be missing
-        List<Card> hand = new java.util.ArrayList<>();
-        List<Card> upcards = new java.util.ArrayList<>();
-        List<Card> downcards = new java.util.ArrayList<>();
+        List<Card> hand = null;
+        List<Card> upcards = null;
+        List<Card> downcards = null;
 
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = jp.getCurrentName();
@@ -34,14 +33,11 @@ public class PlayerDeserializer extends StdDeserializer<Player> {
             if ("name".equals(fieldName)) {
                 playerName = jp.getText();
             } else if ("hand".equals(fieldName) || "handCount".equals(fieldName)) {
-                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
-                if (cards != null) hand = cards;
+                hand = GameDeserializer.readCardsOrCount(jp);
             } else if ("upcards".equals(fieldName) || "upcardsCount".equals(fieldName)) {
-                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
-                if (cards != null) upcards = cards;
+                upcards = GameDeserializer.readCardsOrCount(jp);
             } else if ("downcards".equals(fieldName) || "downcardsCount".equals(fieldName)) {
-                List<Card> cards = GameDeserializer.readCardsOrCount(jp);
-                if (cards != null) downcards = cards;
+                downcards = GameDeserializer.readCardsOrCount(jp);
             } else {
                 jp.skipChildren();
             }
