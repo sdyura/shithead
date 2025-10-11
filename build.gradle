@@ -35,6 +35,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
+jar {
+    archiveBaseName.set("shithead-core")
+    archiveVersion.set(rootProject.ext.versionName)
+}
+
 task runConsole(type: JavaExec) {
     main = 'net.yura.shithead.common.Main'
     classpath = sourceSets.test.runtimeClasspath
