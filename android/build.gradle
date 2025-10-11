@@ -30,6 +30,8 @@ android {
     // this is to avoid the @TargetApi missing on methods giving errors.
     defaultConfig {
         minSdkVersion 4
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
     lint {
         abortOnError false

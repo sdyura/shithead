@@ -4,13 +4,19 @@ import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.components.Frame;
+import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class ShitHeadClient extends Application implements ActionListener {
+
+    private Properties properties;
 
     protected void initialize(DesktopPane dp) {
 
@@ -19,7 +25,7 @@ public class ShitHeadClient extends Application implements ActionListener {
         try {
 
             ResourceBundle bundle = ResourceBundle.getBundle("game_text");
-            Properties properties = new Properties() {
+            properties = new Properties() {
                 @Override
                 public String getProperty(String key) {
                     return bundle.getString(key);
@@ -45,7 +51,22 @@ public class ShitHeadClient extends Application implements ActionListener {
             System.out.println("Play Online clicked");
         }
         else if ("about".equals(actionCommand)) {
-            System.out.println("About clicked");
+            String versionName = System.getProperty("versionName");
+            String versionCode = System.getProperty("versionCode");
+
+            if (versionName == null) {
+                try (InputStream stream = Application.getResourceAsStream("/META-INF/MANIFEST.MF")) {
+                    Manifest manifest = new Manifest(stream);
+                    Attributes attributes = manifest.getMainAttributes();
+                    versionName = attributes.getValue("versionName");
+                    versionCode = attributes.getValue("versionCode");
+                }
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            OptionPane.showMessageDialog(null, new String[] {"Version: " + versionName, "Build: " + versionCode}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
         }
     }
 }
