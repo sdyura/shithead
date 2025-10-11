@@ -34,4 +34,6 @@ jar {
 
 run {
     args 'net.yura.shithead.client.ShitHeadClient'
+    // this does not run the actual jar, so cant see the version info in the manifest
+    applicationDefaultJvmArgs = ["-DversionName=$rootProject.ext.versionName", "-DversionCode=$rootProject.ext.versionCode"]
 }
