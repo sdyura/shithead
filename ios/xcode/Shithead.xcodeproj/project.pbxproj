@@ -306,6 +306,8 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
@@ -326,8 +328,6 @@
 				SYMROOT = "$(SRCROOT)/../build/moe/xcodebuild/sym";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
-				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
 			};
 			name = Release;
 		};
@@ -354,6 +354,8 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${MOE_FRAMEWORK_PATH}",
@@ -381,8 +383,6 @@
 				SDKROOT = iphoneos;
 				SYMROOT = "$(SRCROOT)/../build/moe/xcodebuild/sym";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
-				"EXCLUDED_ARCHS[sdk=iphoneos*]" = armv7;
 			};
 			name = Debug;
 		};

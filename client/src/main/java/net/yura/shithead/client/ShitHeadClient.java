@@ -3,12 +3,11 @@ package net.yura.shithead.client;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
-import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Frame;
-import net.yura.mobile.gui.components.Label;
 import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
@@ -52,35 +51,22 @@ public class ShitHeadClient extends Application implements ActionListener {
             System.out.println("Play Online clicked");
         }
         else if ("about".equals(actionCommand)) {
-            try {
-                String platform = System.getProperty("java.runtime.name");
-                String versionName;
-                String versionCode;
+            String versionName = System.getProperty("versionName");
+            String versionCode = System.getProperty("versionCode");
 
-                // HACK: The moe-gradle plugin does not seem to have a way to pass system properties to the xcode build,
-                // or to set the build settings directly. This is a workaround to get the version information for iOS.
-                if (platform != null && platform.toLowerCase().contains("ios")) {
-                    versionName = "1.0.0-ios";
-                    versionCode = "1-ios";
-                } else {
-                    versionName = System.getProperty("versionName");
-                    versionCode = System.getProperty("versionCode");
-
-                    if (versionName == null) {
-                        try (InputStream stream = Application.getResourceAsStream("/META-INF/MANIFEST.MF")) {
-                            Manifest manifest = new Manifest(stream);
-                            Attributes attributes = manifest.getMainAttributes();
-                            versionName = attributes.getValue("versionName");
-                            versionCode = attributes.getValue("versionCode");
-                        }
-                    }
+            if (versionName == null) {
+                try (InputStream stream = Application.getResourceAsStream("/META-INF/MANIFEST.MF")) {
+                    Manifest manifest = new Manifest(stream);
+                    Attributes attributes = manifest.getMainAttributes();
+                    versionName = attributes.getValue("versionName");
+                    versionCode = attributes.getValue("versionCode");
                 }
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
 
-                OptionPane.showMessageDialog(null, new String[] {"Version: " + versionName, "Build: " + versionCode}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
-            }
-            catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            OptionPane.showMessageDialog(null, new String[] {"Version: " + versionName, "Build: " + versionCode}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
         }
     }
 }
