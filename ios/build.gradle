@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         mavenLocal()
     }
     dependencies {
@@ -85,12 +85,26 @@ task copyiOSresources() {
     }
 }
 
-moeMainReleaseIphoneosXcodeBuild.dependsOn copyiOSresources
-moeMainDebugIphoneosXcodeBuild.dependsOn copyiOSresources
-moeMainReleaseIphonesimulatorXcodeBuild.dependsOn copyiOSresources
-moeMainDebugIphonesimulatorXcodeBuild.dependsOn copyiOSresources
+task updateInfoPlist {
+    doLast {
+        File infoPlist = file('xcode/Shithead/Info.plist')
+        String content = infoPlist.getText('UTF-8')
+        content = content.replaceAll(
+                '<key>CFBundleShortVersionString</key>(\\s*)<string>.*?</string>',
+                "<key>CFBundleShortVersionString</key>\$1<string>${rootProject.ext.versionName}</string>")
+        content = content.replaceAll(
+                '<key>CFBundleVersion</key>(\\s*)<string>.*?</string>',
+                "<key>CFBundleVersion</key>\$1<string>${rootProject.ext.versionCode}</string>")
+        infoPlist.write(content, 'UTF-8')
+    }
+}
+
+moeMainReleaseIphoneosXcodeBuild.dependsOn copyiOSresources, updateInfoPlist
+moeMainDebugIphoneosXcodeBuild.dependsOn copyiOSresources, updateInfoPlist
+moeMainReleaseIphonesimulatorXcodeBuild.dependsOn copyiOSresources, updateInfoPlist
+moeMainDebugIphonesimulatorXcodeBuild.dependsOn copyiOSresources, updateInfoPlist
 
 if (System.getenv('PLATFORM_NAME') != null) {
-    moeXcodeInternal.dependsOn copyiOSresources
+    moeXcodeInternal.dependsOn copyiOSresources, updateInfoPlist
 }
 
