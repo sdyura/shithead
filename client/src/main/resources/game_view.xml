@@ -1,0 +1,8 @@
+<dialog i18n="true" text="app.title" columns="1" gap="10">
+    <panel class="net.yura.shithead.uicomponents.GameView" id="game_view" weightx="1" weighty="1"/>
+    <panel columns="3" gap="10">
+        <button i18n="true" action="play_cards" text="button.play.cards" />
+        <button i18n="true" action="pickup_pile" text="button.pickup.pile" />
+        <button i18n="true" action="spectator_view" text="button.spectator.view" />
+    </panel>
+</dialog>
