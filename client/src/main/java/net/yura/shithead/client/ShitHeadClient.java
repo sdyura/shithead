@@ -1,22 +1,26 @@
 package net.yura.shithead.client;
 
-import net.yura.mobile.gui.ActionListener;
-import net.yura.mobile.gui.Application;
-import net.yura.mobile.gui.DesktopPane;
-import net.yura.mobile.gui.components.Frame;
-import net.yura.mobile.gui.components.OptionPane;
-import net.yura.mobile.gui.layout.XULLoader;
-import net.yura.mobile.util.Properties;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import net.yura.mobile.gui.ActionListener;
+import net.yura.mobile.gui.Application;
+import net.yura.mobile.gui.DesktopPane;
+import net.yura.mobile.gui.components.Frame;
+import net.yura.mobile.gui.components.OptionPane;
+import net.yura.mobile.gui.components.Panel;
+import net.yura.mobile.gui.layout.XULLoader;
+import net.yura.mobile.util.Properties;
+import net.yura.shithead.common.ShitheadGame;
+import net.yura.shithead.uicomponents.GameView;
 
 public class ShitHeadClient extends Application implements ActionListener {
 
     private Properties properties;
+    private GameView gameView;
 
     protected void initialize(DesktopPane dp) {
 
@@ -48,7 +52,34 @@ public class ShitHeadClient extends Application implements ActionListener {
 
     public void actionPerformed(String actionCommand) {
         if ("play".equals(actionCommand)) {
-            System.out.println("Play Online clicked");
+            try {
+                XULLoader loader = new XULLoader();
+                try (InputStream stream = ShitHeadClient.class.getResourceAsStream("/game_view.xml")) {
+                    loader.load(new InputStreamReader(stream), this, properties);
+                }
+
+                Frame frame = (Frame)DesktopPane.getDesktopPane().getSelectedFrame();
+                gameView = (GameView)loader.find("game_view");
+                ShitheadGame game = new ShitheadGame(4);
+                game.deal();
+                gameView.setGame(game);
+                gameView.setPlayerID(0);
+                frame.setContentPane( (Panel)loader.getRoot() );
+                frame.revalidate();
+                frame.repaint();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        else if ("play_cards".equals(actionCommand)) {
+            // TODO: Implement this
+        }
+        else if ("pickup_pile".equals(actionCommand)) {
+            // TODO: Implement this
+        }
+        else if ("spectator_view".equals(actionCommand)) {
+            gameView.setSpectatorView(!gameView.isSpectatorView());
         }
         else if ("about".equals(actionCommand)) {
             String versionName = System.getProperty("versionName");
