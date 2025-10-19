@@ -25,11 +25,15 @@ import static org.mockito.Mockito.verify;
 public class ServerTest {
 
     private static final String GAME_TYPE_NAME = "Shithead";
+    private static final String PLAYER_1_NAME = "player1";
+    private static final String PLAYER_2_NAME = "player2";
     private static final VerificationWithTimeout TIMEOUT = timeout(1000);
 
     private static Server server;
-    private static Connection connection;
-    private static LobbyClient mockClient;
+    private static Connection connection1;
+    private static LobbyClient mockClient1;
+    private static Connection connection2;
+    private static LobbyClient mockClient2;
 
     @BeforeAll
     public static void setupServer() throws Exception {
@@ -40,6 +44,8 @@ public class ServerTest {
         shithead.setName(GAME_TYPE_NAME);
         shithead.setServerClass(ShitHeadServer.class.getName());
         shithead.setClientClass("not needed");
+        shithead.setMinPlayers(2);
+        shithead.setMaxPlayers(2);
 
         db.startTransaction();
         db.saveGameType(shithead);
@@ -48,22 +54,27 @@ public class ServerTest {
         server = new Server(0, db);
         server.start();
 
-        connection = new LobbyCom("test-normal-uuid", "junit-test", "1.0");
-        mockClient = Mockito.mock(LobbyClient.class);
-        connection.addEventListener(mockClient);
+        connection1 = new LobbyCom(PLAYER_1_NAME + "-uuid", "junit-test", "1.0");
+        mockClient1 = Mockito.mock(LobbyClient.class);
+        connection1.addEventListener(mockClient1);
+        connection1.connect("localhost", server.getPort());
+        verify(mockClient1, TIMEOUT).connected();
+        verify(mockClient1, TIMEOUT).setUsername(PLAYER_1_NAME, Player.PLAYER_NORMAL);
 
-        connection.connect("localhost", server.getPort());
-
-        // wait to be connected
-        verify(mockClient, TIMEOUT).connected();
-
-        verify(mockClient, TIMEOUT).setUsername("test-normal", Player.PLAYER_NORMAL);
+        connection2 = new LobbyCom(PLAYER_2_NAME + "-uuid", "junit-test", "1.0");
+        mockClient2 = Mockito.mock(LobbyClient.class);
+        connection2.addEventListener(mockClient2);
+        connection2.connect("localhost", server.getPort());
+        verify(mockClient2, TIMEOUT).connected();
+        verify(mockClient2, TIMEOUT).setUsername(PLAYER_2_NAME, Player.PLAYER_NORMAL);
     }
 
     @AfterAll
     public static void stopServer() {
-        connection.disconnect();
-        connection = null;
+        connection1.disconnect();
+        connection1 = null;
+        connection2.disconnect();
+        connection2 = null;
 
         server.shutdown();
         server = null;
@@ -72,28 +83,24 @@ public class ServerTest {
     @Test
     public void doTesting() {
 
-        connection.getGameTypes();
-        GameType shithead = getGameTypeFromServer(GAME_TYPE_NAME);
-        connection.getGames(shithead);
+        connection1.getGameTypes();
+        GameType shithead = getGameTypeFromServer(mockClient1, GAME_TYPE_NAME);
+        connection1.getGames(shithead);
 
-        Game newGame = new Game("test game", null, 3, 100); // timeout is in seconds
+        Game newGame = new Game("test game", null, 2, 100);
         newGame.setType(shithead);
-        connection.createNewGame(newGame);
+        connection1.createNewGame(newGame);
 
-        Game game = getGameFromServer();
+        Game game = getGameFromServer(mockClient1);
         System.out.println("Game: " + game);
-/*
-        // TODO cant play it yet, need to have another client join
-        connection.playGame(game.getId());
 
-        ArgumentCaptor<Object> gameDataCaptor = ArgumentCaptor.captor();
-        verify(mockClient, TIMEOUT).messageForGame(eq(game.getId()), gameDataCaptor.capture());
-        Object gameData = gameDataCaptor.getValue();
-        System.out.println("Game Data: " + gameData);
- */
+        // player 2 joins the game
+        connection2.joinGame(game.getId());
+
+        // TODO need to check that both players get a notification that the game has started
     }
 
-    private static GameType getGameTypeFromServer(String name) {
+    private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
         ArgumentCaptor<List<GameType>> gameTypeCaptor = ArgumentCaptor.captor();
         verify(mockClient, TIMEOUT).addGameType(gameTypeCaptor.capture());
         List<GameType> gameTypes = gameTypeCaptor.getValue();
@@ -101,7 +108,7 @@ public class ServerTest {
         return gameTypes.stream().filter(gt -> name.equals(gt.getName())).findFirst().orElseThrow();
     }
 
-    private static Game getGameFromServer() {
+    private static Game getGameFromServer(LobbyClient mockClient) {
         ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.captor();
         verify(mockClient, TIMEOUT).addOrUpdateGame(gameCaptor.capture());
         return gameCaptor.getValue();
