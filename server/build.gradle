@@ -14,3 +14,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.mockito:mockito-core:5.20.0'
 }
+
+// To run the test server, execute the following command in the root project directory:
+// ./gradlew :server:runTestServer
+task runTestServer(type: JavaExec) {
+    group = "Verification"
+    description = "Runs the TestServer"
+    mainClass = 'net.yura.shithead.server.TestServer'
+    classpath = sourceSets.test.runtimeClasspath
+}
