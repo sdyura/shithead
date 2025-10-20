@@ -1,0 +1,3 @@
+<dialog i18n="true" text="app.title" columns="1" gap="10">
+    <panel property="class=net.yura.shithead.uicomponents.GameView" name="game_view" weightx="1" weighty="1"/>
+</dialog>
