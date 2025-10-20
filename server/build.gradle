@@ -16,7 +16,7 @@ dependencies {
 }
 
 // To run the test server, execute the following command in the root project directory:
-// ./gradlew :server:runTestServer
+// ./gradlew --parallel :server:runTestServer
 task runTestServer(type: JavaExec) {
     group = "Verification"
     description = "Runs the TestServer"

@@ -1,6 +1,5 @@
 package net.yura.shithead.uicomponents;
 
-import javax.microedition.lcdui.Graphics;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.components.Panel;
@@ -12,8 +11,7 @@ import net.yura.shithead.common.ShitheadGame;
 public class GameView extends Panel {
 
     private ShitheadGame game;
-    private int playerID;
-    private boolean spectatorView = false;
+    private String myUsername;
 
     public GameView() {
     }
@@ -23,28 +21,19 @@ public class GameView extends Panel {
         repaint();
     }
 
-    public void setPlayerID(int playerID) {
-        this.playerID = playerID;
+    public void setPlayerID(String playerID) {
+        this.myUsername = playerID;
     }
 
-    public void setSpectatorView(boolean spectatorView) {
-        this.spectatorView = spectatorView;
-        repaint();
-    }
-
-    public boolean isSpectatorView() {
-        return spectatorView;
-    }
-
-    public void paint(Graphics g) {
+    @Override
+    public void paintComponent(Graphics2D g2) {
+        super.paintComponent(g2);
         if (game == null) {
             return;
         }
 
-        Graphics2D g2 = new Graphics2D(g);
-
         List<Player> players = game.getPlayers();
-        int localPlayerIndex = playerID;
+        int localPlayerIndex = 0; // TODO fix hard coded
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
@@ -89,7 +78,7 @@ public class GameView extends Panel {
 
     private void drawCard(Graphics2D g, Card card, int x, int y, boolean isLocalPlayer) {
         Icon icon;
-        boolean isVisible = !spectatorView && isLocalPlayer && card != null;
+        boolean isVisible = isLocalPlayer && card != null;
 
         if (isVisible) {
             icon = CardImageManager.getCardImage(card);
@@ -100,7 +89,7 @@ public class GameView extends Panel {
         if (icon != null) {
             icon.paintIcon(this, g, x, y);
         } else {
-            g.setColor(0x808080); // Gray
+            g.setColor(0xFF808080); // Gray
             g.fillRect(x, y, 71, 96);
         }
     }
