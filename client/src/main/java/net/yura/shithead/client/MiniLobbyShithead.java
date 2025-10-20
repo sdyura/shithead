@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.jar.Manifest;
 
-public class MiniLobbyShithead implements MiniLobbyGame, ActionListener {
+public class MiniLobbyShithead implements MiniLobbyGame {
 
     Properties strings;
 
@@ -54,7 +54,18 @@ public class MiniLobbyShithead implements MiniLobbyGame, ActionListener {
 
     @Override
     public Icon getIconForGame(Game game) {
-        return null;
+        // TODO when new version of lobby, this can just be null
+        return new Icon() {
+            @Override
+            public int getIconWidth() {
+                return 1;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 1;
+            }
+        };
     }
 
     @Override
@@ -62,39 +73,36 @@ public class MiniLobbyShithead implements MiniLobbyGame, ActionListener {
         return "";
     }
 
-    private GameType gameType;
-    private XULLoader gameSetupLoader;
-
     @Override
-    public void openGameSetup(GameType gameType) {
-        this.gameType = gameType;
-        gameSetupLoader = new XULLoader();
+    public void openGameSetup(final GameType gameType) {
+        final XULLoader gameSetupLoader = new XULLoader();
         try (InputStreamReader reader = new InputStreamReader(ShitHeadClient.class.getResourceAsStream("/game_setup.xml"))) {
-            gameSetupLoader.load(reader, this, strings);
+            gameSetupLoader.load(reader, new ActionListener() {
+                @Override
+                public void actionPerformed(String actionCommand) {
+                    if ("create".equals(actionCommand)) {
+                        Spinner players = (Spinner)gameSetupLoader.find("players");
+                        int numPlayers = (Integer)players.getValue();
+                        TextField gamename = (TextField)gameSetupLoader.find("gamename");
+                        String gameName = gamename.getText();
+                        Game newGame = new Game(gameName, null, numPlayers, Integer.MAX_VALUE);
+                        newGame.setType(gameType);
+                        lobby.createNewGame(newGame);
+                    }
+                    ((Frame)gameSetupLoader.getRoot()).setVisible(false);
+                }
+            }, strings);
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        ((Frame)gameSetupLoader.getRoot()).setVisible(true);
-    }
+        TextField gamename = (TextField)gameSetupLoader.find("gamename");
+        gamename.setText(lobby.whoAmI() + "'s game");
 
-    @Override
-    public void actionPerformed(String actionCommand) {
-        if ("create".equals(actionCommand)) {
-            Spinner players = (Spinner)gameSetupLoader.find("players");
-            int numPlayers = (Integer)players.getValue();
-            TextField gamename = (TextField)gameSetupLoader.find("gamename");
-            String gameName = gamename.getText();
-            if (gameName.isEmpty()) {
-                gameName = lobby.whoAmI() + "'s game";
-            }
-            Game newGame = new Game(gameName, null, numPlayers, 100);
-            newGame.setType(gameType);
-            lobby.createNewGame(newGame);
-            ((Frame)gameSetupLoader.getRoot()).setVisible(false);
-            gameSetupLoader = null;
-            gameType = null;
-        }
+        Frame dialog = (Frame)gameSetupLoader.getRoot();
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 
     @Override
