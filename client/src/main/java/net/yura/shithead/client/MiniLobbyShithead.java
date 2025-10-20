@@ -8,8 +8,15 @@ import net.yura.lobby.model.Player;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Icon;
+import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.util.Properties;
-
+import net.yura.mobile.gui.ActionListener;
+import net.yura.mobile.gui.components.Frame;
+import net.yura.mobile.gui.components.Spinner;
+import net.yura.mobile.gui.components.TextField;
+import net.yura.mobile.gui.components.Label;
+import net.yura.mobile.gui.layout.XULLoader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -47,7 +54,18 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     @Override
     public Icon getIconForGame(Game game) {
-        return null;
+        // TODO when new version of lobby, this can just be null
+        return new Icon() {
+            @Override
+            public int getIconWidth() {
+                return 1;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 1;
+            }
+        };
     }
 
     @Override
@@ -56,8 +74,35 @@ public class MiniLobbyShithead implements MiniLobbyGame {
     }
 
     @Override
-    public void openGameSetup(GameType gameType) {
-        // TODO game setup
+    public void openGameSetup(final GameType gameType) {
+        final XULLoader gameSetupLoader = new XULLoader();
+        try (InputStreamReader reader = new InputStreamReader(ShitHeadClient.class.getResourceAsStream("/game_setup.xml"))) {
+            gameSetupLoader.load(reader, new ActionListener() {
+                @Override
+                public void actionPerformed(String actionCommand) {
+                    if ("create".equals(actionCommand)) {
+                        Spinner players = (Spinner)gameSetupLoader.find("players");
+                        int numPlayers = (Integer)players.getValue();
+                        TextField gamename = (TextField)gameSetupLoader.find("gamename");
+                        String gameName = gamename.getText();
+                        Game newGame = new Game(gameName, null, numPlayers, Integer.MAX_VALUE);
+                        newGame.setType(gameType);
+                        lobby.createNewGame(newGame);
+                    }
+                    ((Frame)gameSetupLoader.getRoot()).setVisible(false);
+                }
+            }, strings);
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        TextField gamename = (TextField)gameSetupLoader.find("gamename");
+        gamename.setText(lobby.whoAmI() + "'s game");
+
+        Frame dialog = (Frame)gameSetupLoader.getRoot();
+        dialog.pack();
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 
     @Override
