@@ -1,21 +1,29 @@
 package net.yura.shithead.server;
 
-import com.sun.tools.javac.util.List;
-
 import net.yura.lobby.server.AbstractTurnBasedServerGame;
 import net.yura.lobby.server.LobbySession;
+import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     ShitheadGame game;
+    private final CommandParser commandParser;
+
+    public ShitHeadServer() {
+        this.commandParser = new CommandParser();
+    }
 
     @Override
     public void startGame(String[] players) {
+        // TODO may need to shuffle the players
         game = new ShitheadGame(Arrays.asList(players));
+        game.deal();
+        getInputFromClient(game.getCurrentPlayer().getName());
     }
 
     @Override
@@ -23,18 +31,14 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         String username = lobbySession.getUsername();
         String json = SerializerUtil.toJSON(game, username);
         // TODO maybe we want to gzip
-        listoner.messageFromGame(json, List.of(lobbySession));
+        listoner.messageFromGame(json, Collections.singletonList(lobbySession));
     }
 
     @Override
-    public void destroyGame() {
-
-    }
+    public void destroyGame() { }
 
     @Override
-    public void playerJoins(String s) {
-
-    }
+    public void playerJoins(String s) { }
 
     @Override
     public boolean playerResigns(String s) {
@@ -56,7 +60,13 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         if (!username.equals(game.getCurrentPlayer().getName())) {
             throw new RuntimeException("not your turn");
         }
-        // TODO pass command to game engine
+        String command = (String) o;
+        commandParser.execute(game, command);
+
+        // after move, notify all players
+        for (LobbySession session : getAllClients()) {
+            listoner.messageFromGame(command, Collections.singletonList(session));
+        }
     }
 
     @Override
