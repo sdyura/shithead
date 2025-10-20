@@ -20,8 +20,10 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void startGame(String[] players) {
+        // TODO may need to shuffle the players
         game = new ShitheadGame(Arrays.asList(players));
         game.deal();
+        getInputFromClient(game.getCurrentPlayer().getName());
     }
 
     @Override
@@ -33,14 +35,10 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     }
 
     @Override
-    public void destroyGame() {
-
-    }
+    public void destroyGame() { }
 
     @Override
-    public void playerJoins(String s) {
-
-    }
+    public void playerJoins(String s) { }
 
     @Override
     public boolean playerResigns(String s) {
@@ -62,12 +60,12 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         if (!username.equals(game.getCurrentPlayer().getName())) {
             throw new RuntimeException("not your turn");
         }
-        commandParser.execute(game, (String) o);
+        String command = (String) o;
+        commandParser.execute(game, command);
 
         // after move, notify all players
-        for (LobbySession session : listSessions()) {
-            String json = SerializerUtil.toJSON(game, session.getUsername());
-            listoner.messageFromGame(json, Collections.singletonList(session));
+        for (LobbySession session : getAllClients()) {
+            listoner.messageFromGame(command, Collections.singletonList(session));
         }
     }
 

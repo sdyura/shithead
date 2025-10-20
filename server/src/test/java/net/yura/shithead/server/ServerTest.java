@@ -3,9 +3,6 @@ package net.yura.shithead.server;
 import net.yura.lobby.client.Connection;
 import net.yura.lobby.client.LobbyClient;
 import net.yura.lobby.client.LobbyCom;
-import net.yura.lobby.database.Database;
-import net.yura.lobby.database.GameTypeRoom;
-import net.yura.lobby.database.impl.MemoryDatabase;
 import net.yura.lobby.model.Game;
 import net.yura.lobby.model.GameType;
 import net.yura.lobby.model.Player;
@@ -18,15 +15,18 @@ import org.mockito.Mockito;
 import org.mockito.verification.VerificationWithTimeout;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 public class ServerTest {
 
-    private static final String GAME_TYPE_NAME = "Shithead";
-    private static final String PLAYER_1_NAME = "player1";
-    private static final String PLAYER_2_NAME = "player2";
+    private static final String PLAYER_1_NAME = "test-normal";
+    private static final String PLAYER_2_NAME = "test-guest";
+
     private static final VerificationWithTimeout TIMEOUT = timeout(1000);
 
     private static Server server;
@@ -38,21 +38,7 @@ public class ServerTest {
     @BeforeAll
     public static void setupServer() throws Exception {
 
-        Database db = new MemoryDatabase();
-
-        GameTypeRoom shithead = new GameTypeRoom();
-        shithead.setName(GAME_TYPE_NAME);
-        shithead.setServerClass(ShitHeadServer.class.getName());
-        shithead.setClientClass("not needed");
-        shithead.setMinPlayers(2);
-        shithead.setMaxPlayers(2);
-
-        db.startTransaction();
-        db.saveGameType(shithead);
-        db.endTransaction();
-
-        server = new Server(0, db);
-        server.start();
+        server = TestServer.startTestServer(0);
 
         connection1 = new LobbyCom(PLAYER_1_NAME + "-uuid", "junit-test", "1.0");
         mockClient1 = Mockito.mock(LobbyClient.class);
@@ -66,7 +52,7 @@ public class ServerTest {
         connection2.addEventListener(mockClient2);
         connection2.connect("localhost", server.getPort());
         verify(mockClient2, TIMEOUT).connected();
-        verify(mockClient2, TIMEOUT).setUsername(PLAYER_2_NAME, Player.PLAYER_NORMAL);
+        verify(mockClient2, TIMEOUT).setUsername(PLAYER_2_NAME, Player.PLAYER_GUEST);
     }
 
     @AfterAll
@@ -83,26 +69,48 @@ public class ServerTest {
     @Test
     public void doTesting() {
 
+        // player 1 register for updates
         connection1.getGameTypes();
-        GameType shithead = getGameTypeFromServer(mockClient1, GAME_TYPE_NAME);
+        GameType shithead = getGameTypeFromServer(mockClient1, TestServer.GAME_TYPE_NAME);
         connection1.getGames(shithead);
 
+        // player 1 create new game
         Game newGame = new Game("test game", null, 2, 100);
         newGame.setType(shithead);
         connection1.createNewGame(newGame);
 
         Game game = getGameFromServer(mockClient1);
         System.out.println("Game: " + game);
+        assertEquals(1, game.getNumOfPlayers());
+        assertEquals(2, game.getMaxPlayers());
+
+        // player 2 register for updates
+        connection2.getGameTypes();
+        connection2.getGames(getGameTypeFromServer(mockClient2, TestServer.GAME_TYPE_NAME));
+        getGameFromServer(mockClient2);
 
         // player 2 joins the game
-        connection2.joinGame(game.getId());
+        connection2.joinGame(game.getId(), null);
+        game = getGameFromServer(mockClient2); // this will actually get called twice, once for joining, once for game asking for input
+        System.out.println("Game started: " + game +" " + game.getNumOfPlayers() + "/" + game.getMaxPlayers());
+        assertEquals(2, game.getNumOfPlayers());
+        assertEquals(2, game.getMaxPlayers());
 
-        // TODO need to check that both players get a notification that the game has started
+        connection1.playGame(game.getId());
+        Object gameObj1 = messageForGame(mockClient1, game.getId());
+        System.out.println("Game obj1: " + gameObj1);
+        assertNotNull(gameObj1);
+
+        connection2.playGame(game.getId());
+        Object gameObj2 = messageForGame(mockClient2, game.getId());
+        System.out.println("Game obj2: " + gameObj2);
+        assertNotNull(gameObj2);
     }
 
     private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
         ArgumentCaptor<List<GameType>> gameTypeCaptor = ArgumentCaptor.captor();
         verify(mockClient, TIMEOUT).addGameType(gameTypeCaptor.capture());
+        clearInvocations(mockClient);
         List<GameType> gameTypes = gameTypeCaptor.getValue();
         System.out.println("Game Types: " + gameTypes);
         return gameTypes.stream().filter(gt -> name.equals(gt.getName())).findFirst().orElseThrow();
@@ -110,7 +118,15 @@ public class ServerTest {
 
     private static Game getGameFromServer(LobbyClient mockClient) {
         ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.captor();
-        verify(mockClient, TIMEOUT).addOrUpdateGame(gameCaptor.capture());
+        verify(mockClient, TIMEOUT.atLeastOnce()).addOrUpdateGame(gameCaptor.capture());
+        clearInvocations(mockClient);
+        return gameCaptor.getValue();
+    }
+
+    private static Object messageForGame(LobbyClient mockClient, int id) {
+        ArgumentCaptor<Object> gameCaptor = ArgumentCaptor.captor();
+        verify(mockClient, TIMEOUT).messageForGame(eq(id), gameCaptor.capture());
+        clearInvocations(mockClient);
         return gameCaptor.getValue();
     }
 }
