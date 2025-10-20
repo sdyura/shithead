@@ -1,0 +1,10 @@
+<dialog i18n="true" text="app.title" columns="1" gap="10">
+    <panel columns="2">
+        <label text="Game Name:"/>
+        <textfield name="gamename"/>
+        <label i18n="true" text="players.number"/>
+        <spinbox name="players" minimum="2" maximum="6" selected="2"/>
+    </panel>
+    <label name="error" foreground="red"/>
+    <button i18n="true" action="create" text="button.create"/>
+</dialog>
