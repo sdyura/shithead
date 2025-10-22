@@ -283,4 +283,13 @@ public class ShitheadGame {
     public Deck getDeck() {
         return deck;
     }
+
+    public void renamePlayer(String oldName, String newName) {
+        for (Player player : players) {
+            if (player.getName().equals(oldName)) {
+                player.setName(newName);
+                return;
+            }
+        }
+    }
 }

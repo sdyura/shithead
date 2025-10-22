@@ -2,6 +2,10 @@ package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
 import net.yura.shithead.common.json.SerializerUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +78,19 @@ public class CommandParser {
 
             case "pickup":
                 game.pickUpWastePile();
+                return;
+
+            case "rename":
+                if (tokens.length != 3) {
+                    throw new IllegalArgumentException("incomplete rename command");
+                }
+                try {
+                    String oldName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
+                    String newName = URLDecoder.decode(tokens[2], StandardCharsets.UTF_8.name());
+                    game.renamePlayer(oldName, newName);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
                 return;
 
             default:

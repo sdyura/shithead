@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Player {
 
-    private final String name;
+    private String name;
 
     /**
      * these are the cards the player is physically holding right now
@@ -25,6 +25,10 @@ public class Player {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
