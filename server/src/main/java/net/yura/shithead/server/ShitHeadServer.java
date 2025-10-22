@@ -5,6 +5,8 @@ import net.yura.lobby.server.LobbySession;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,8 +48,18 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     }
 
     @Override
-    public void midgamePlayerLogin(String s, String s1) {
+    public void midgamePlayerLogin(String oldName, String newName) {
+        game.renamePlayer(oldName, newName);
 
+        // after move, notify all players
+        try {
+            String renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()).replace("+", "%20") + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name()).replace("+", "%20");
+            for (LobbySession session : getAllClients()) {
+                listoner.messageFromGame(renameCommand, Collections.singletonList(session));
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

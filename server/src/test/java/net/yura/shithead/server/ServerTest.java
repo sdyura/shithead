@@ -105,6 +105,17 @@ public class ServerTest {
         Object gameObj2 = messageForGame(mockClient2, game.getId());
         System.out.println("Game obj2: " + gameObj2);
         assertNotNull(gameObj2);
+
+        // player 1 renames
+        String newName = "new name";
+        connection1.setNick(newName);
+
+        // get the rename command from both players
+        Object rename1 = messageForGame(mockClient1, game.getId());
+        Object rename2 = messageForGame(mockClient2, game.getId());
+
+        assertEquals("rename test-normal new%20name", rename1);
+        assertEquals("rename test-normal new%20name", rename2);
     }
 
     private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
