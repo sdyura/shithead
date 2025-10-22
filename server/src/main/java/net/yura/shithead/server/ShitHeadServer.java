@@ -53,7 +53,7 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
         // after move, notify all players
         try {
-            String renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()).replace("+", "%20") + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name()).replace("+", "%20");
+            String renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()) + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name());
             for (LobbySession session : getAllClients()) {
                 listoner.messageFromGame(renameCommand, Collections.singletonList(session));
             }

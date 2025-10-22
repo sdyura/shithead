@@ -114,8 +114,8 @@ public class ServerTest {
         Object rename1 = messageForGame(mockClient1, game.getId());
         Object rename2 = messageForGame(mockClient2, game.getId());
 
-        assertEquals("rename test-normal new%20name", rename1);
-        assertEquals("rename test-normal new%20name", rename2);
+        assertEquals("rename test-normal new+name", rename1);
+        assertEquals("rename test-normal new+name", rename2);
     }
 
     private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
