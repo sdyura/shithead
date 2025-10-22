@@ -23,8 +23,6 @@ import net.yura.shithead.uicomponents.GameView;
 public class ShitHeadClient extends Application implements ActionListener {
 
     private Properties properties;
-    private GameView gameView;
-
     private MiniLobbyClient minilobby;
 
     protected void initialize(DesktopPane dp) {
@@ -75,26 +73,17 @@ public class ShitHeadClient extends Application implements ActionListener {
             openMainMenu();
         }
         else if ("test".equals(actionCommand)) {
-            try {
-                XULLoader loader = new XULLoader();
-                try (InputStream stream = ShitHeadClient.class.getResourceAsStream("/game_view.xml")) {
-                    loader.load(new InputStreamReader(stream), this, properties);
+
+            ShitheadGame game = new ShitheadGame(4);
+            game.deal();
+
+            final GameUI gameUI = new GameUI(properties, game, new ActionListener() {
+                @Override
+                public void actionPerformed(String actionCommand) {
+                    // TODO how do i handle hidden cards???
+                    // TODO gameUI.newCommand(actionCommand);
                 }
-
-                gameView = (GameView)loader.find("game_view");
-                ShitheadGame game = new ShitheadGame(4);
-                game.deal();
-                gameView.setGame(game);
-                gameView.setPlayerID("Player 1");
-
-                Frame frame = (Frame)DesktopPane.getDesktopPane().getSelectedFrame();
-                frame.setContentPane( (Panel)loader.getRoot() );
-                frame.revalidate();
-                frame.repaint();
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            });
         }
         else if ("about".equals(actionCommand)) {
             String versionName = System.getProperty("versionName");

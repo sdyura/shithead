@@ -6,16 +6,17 @@ import net.yura.lobby.model.Game;
 import net.yura.lobby.model.GameType;
 import net.yura.lobby.model.Player;
 import net.yura.mobile.gui.Application;
-import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Icon;
-import net.yura.mobile.gui.components.OptionPane;
+import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.util.Properties;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.Spinner;
 import net.yura.mobile.gui.components.TextField;
-import net.yura.mobile.gui.components.Label;
 import net.yura.mobile.gui.layout.XULLoader;
+import net.yura.shithead.common.ShitheadGame;
+import net.yura.shithead.common.json.SerializerUtil;
+
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
     Properties strings;
 
     protected MiniLobbyClient lobby;
+    private GameUI openGameUI;
 
     public MiniLobbyShithead(Properties strings) {
         this.strings = strings;
@@ -85,7 +87,8 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                         int numPlayers = (Integer)players.getValue();
                         TextField gamename = (TextField)gameSetupLoader.find("gamename");
                         String gameName = gamename.getText();
-                        Game newGame = new Game(gameName, null, numPlayers, Integer.MAX_VALUE);
+                        // TODO for now options cant be null, but in next version of lobby it can
+                        Game newGame = new Game(gameName, "", numPlayers, Integer.MAX_VALUE);
                         newGame.setType(gameType);
                         lobby.createNewGame(newGame);
                     }
@@ -110,14 +113,35 @@ public class MiniLobbyShithead implements MiniLobbyGame {
         lobby.mycom.playGame(game.getId());
     }
 
+    // not used, only used when byte[] are read with java serialisation into an object
     @Override
-    public void objectForGame(Object object) {
-
-    }
+    public void objectForGame(Object object) { }
 
     @Override
     public void stringForGame(String message) {
-
+        if (openGameUI == null) {
+            ShitheadGame onlineGame = SerializerUtil.fromJSON(message);
+            openGameUI = new GameUI(strings, onlineGame, new ActionListener() {
+                @Override
+                public void actionPerformed(String gameAction) {
+                    lobby.sendGameMessage(gameAction);
+                }
+            });
+            Window gameWindow = openGameUI.gameView.getWindow();
+            gameWindow.addWindowListener(new ActionListener() {
+                @Override
+                public void actionPerformed(String actionCommand) {
+                    if (Frame.CMD_CLOSE.equals(actionCommand)) {
+                        lobby.closeGame();
+                        gameWindow.setVisible(false);
+                        openGameUI = null;
+                    }
+                }
+            });
+        }
+        else {
+            openGameUI.newCommand(message);
+        }
     }
 
     @Override
@@ -127,18 +151,15 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     @Override
     public void disconnected() {
-
+        openGameUI.close();
+        openGameUI = null;
     }
 
     @Override
-    public void loginGoogle() {
-
-    }
+    public void loginGoogle() { }
 
     @Override
-    public void gameStarted(int id) {
-
-    }
+    public void gameStarted(int id) { }
 
     @Override
     public String getAppName() {
