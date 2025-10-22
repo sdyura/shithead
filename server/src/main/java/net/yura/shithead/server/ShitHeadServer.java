@@ -5,6 +5,8 @@ import net.yura.lobby.server.LobbySession;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,8 +48,16 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     }
 
     @Override
-    public void midgamePlayerLogin(String s, String s1) {
+    public void midgamePlayerLogin(String oldName, String newName) {
+        String renameCommand;
+        try {
+            renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()) + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 
+        commandParser.execute(game, renameCommand);
+        listoner.messageFromGame(renameCommand, getAllClients());
     }
 
     @Override
@@ -76,14 +86,12 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void loadGame(byte[] bytes) {
-        // TODO maybe we want to gzip
         game = SerializerUtil.fromJSON(new String(bytes, StandardCharsets.UTF_8));
     }
 
     @Override
     public byte[] saveGameState() {
         String json = SerializerUtil.toJSON(game, null);
-        // TODO maybe we want to gzip
         return json.getBytes(StandardCharsets.UTF_8);
     }
 }
