@@ -125,8 +125,8 @@ public class ServerTest {
         Object rename1 = messageForGame(mockClient1, gameId);
         Object rename2 = messageForGame(mockClient2, gameId);
 
-        assertEquals("rename " + PLAYER_1_NAME + " new%20name", rename1);
-        assertEquals("rename " + PLAYER_1_NAME + " new%20name", rename2);
+        assertEquals("rename " + PLAYER_1_NAME + " new+name", rename1);
+        assertEquals("rename " + PLAYER_1_NAME + " new+name", rename2);
 
         // now reset it
         // TODO broken on current version of lobby server, fixed in next version

@@ -51,15 +51,13 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     public void midgamePlayerLogin(String oldName, String newName) {
         String renameCommand;
         try {
-            renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()).replace("+", "%20") + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name()).replace("+", "%20");
+            renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()) + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 
         commandParser.execute(game, renameCommand);
-        for (LobbySession session : getAllClients()) {
-            listoner.messageFromGame(renameCommand, Collections.singletonList(session));
-        }
+        listoner.messageFromGame(renameCommand, getAllClients());
     }
 
     @Override
