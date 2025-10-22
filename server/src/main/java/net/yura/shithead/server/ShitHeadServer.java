@@ -49,16 +49,16 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void midgamePlayerLogin(String oldName, String newName) {
-        game.renamePlayer(oldName, newName);
-
-        // after move, notify all players
+        String renameCommand;
         try {
-            String renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()).replace("+", "%20") + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name()).replace("+", "%20");
-            for (LobbySession session : getAllClients()) {
-                listoner.messageFromGame(renameCommand, Collections.singletonList(session));
-            }
+            renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()).replace("+", "%20") + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name()).replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
+        }
+
+        commandParser.execute(game, renameCommand);
+        for (LobbySession session : getAllClients()) {
+            listoner.messageFromGame(renameCommand, Collections.singletonList(session));
         }
     }
 
@@ -88,14 +88,12 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void loadGame(byte[] bytes) {
-        // TODO maybe we want to gzip
         game = SerializerUtil.fromJSON(new String(bytes, StandardCharsets.UTF_8));
     }
 
     @Override
     public byte[] saveGameState() {
         String json = SerializerUtil.toJSON(game, null);
-        // TODO maybe we want to gzip
         return json.getBytes(StandardCharsets.UTF_8);
     }
 }

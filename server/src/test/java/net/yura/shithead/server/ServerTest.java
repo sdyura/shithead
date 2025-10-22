@@ -66,8 +66,7 @@ public class ServerTest {
         server = null;
     }
 
-    @Test
-    public void doTesting() {
+    public int bothPlayersJoinGame() {
 
         // player 1 register for updates
         connection1.getGameTypes();
@@ -106,17 +105,36 @@ public class ServerTest {
         System.out.println("Game obj2: " + gameObj2);
         assertNotNull(gameObj2);
 
+        return game.getId();
+    }
+
+    @Test
+    public void test2PlayersJoinGame() {
+        bothPlayersJoinGame();
+    }
+
+    @Test
+    public void testMidGameLogin() {
+        int gameId = bothPlayersJoinGame();
+
         // player 1 renames
         String newName = "new name";
         connection1.setNick(newName);
 
         // get the rename command from both players
-        Object rename1 = messageForGame(mockClient1, game.getId());
-        Object rename2 = messageForGame(mockClient2, game.getId());
+        Object rename1 = messageForGame(mockClient1, gameId);
+        Object rename2 = messageForGame(mockClient2, gameId);
 
-        assertEquals("rename test-normal new%20name", rename1);
-        assertEquals("rename test-normal new%20name", rename2);
+        assertEquals("rename " + PLAYER_1_NAME + " new%20name", rename1);
+        assertEquals("rename " + PLAYER_1_NAME + " new%20name", rename2);
+
+        // now reset it
+        // TODO broken on current version of lobby server, fixed in next version
+        //server.getLobbyController().lobby.setNick(newName, "test-normal");
     }
+
+
+
 
     private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
         ArgumentCaptor<List<GameType>> gameTypeCaptor = ArgumentCaptor.captor();
