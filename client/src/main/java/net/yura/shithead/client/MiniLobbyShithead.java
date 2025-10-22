@@ -7,6 +7,7 @@ import net.yura.lobby.model.GameType;
 import net.yura.lobby.model.Player;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.Icon;
+import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.util.Properties;
 import net.yura.mobile.gui.ActionListener;
@@ -78,7 +79,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
     @Override
     public void openGameSetup(final GameType gameType) {
         final XULLoader gameSetupLoader = new XULLoader();
-        try (InputStreamReader reader = new InputStreamReader(ShitHeadClient.class.getResourceAsStream("/game_setup.xml"))) {
+        try (InputStreamReader reader = new InputStreamReader(ShitHeadApplication.class.getResourceAsStream("/game_setup.xml"))) {
             gameSetupLoader.load(reader, new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
@@ -88,7 +89,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                         TextField gamename = (TextField)gameSetupLoader.find("gamename");
                         String gameName = gamename.getText();
                         // TODO for now options cant be null, but in next version of lobby it can
-                        Game newGame = new Game(gameName, "", numPlayers, Integer.MAX_VALUE);
+                        Game newGame = new Game(gameName, "blank", numPlayers, Integer.MAX_VALUE);
                         newGame.setType(gameType);
                         lobby.createNewGame(newGame);
                     }
@@ -127,17 +128,31 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                     lobby.sendGameMessage(gameAction);
                 }
             });
-            Window gameWindow = openGameUI.gameView.getWindow();
-            gameWindow.addWindowListener(new ActionListener() {
+            ((Frame)openGameUI.gameView.getWindow()).setTitle(lobby.getCurrentOpenGame().getName());
+            ActionListener actionListener = new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
                     if (Frame.CMD_CLOSE.equals(actionCommand)) {
                         lobby.closeGame();
-                        gameWindow.setVisible(false);
                         openGameUI = null;
                     }
+                    else if ("resign".equals(actionCommand)) {
+                        lobby.resign();
+                    }
+                    else {
+                        System.err.println("unknown command: " +actionCommand);
+                    }
                 }
-            });
+            };
+
+            openGameUI.closeActionListener = actionListener;
+
+            if (lobby.getCurrentOpenGame().hasPlayer(lobby.whoAmI())) {
+                Button resign = new Button(strings.getProperty("game.resign"));
+                resign.setActionCommand("resign");
+                resign.addActionListener(actionListener);
+                ((Frame) openGameUI.gameView.getWindow()).getMenuBar().add(resign);
+            }
         }
         else {
             openGameUI.newCommand(message);

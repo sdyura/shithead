@@ -24,6 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="SwingME.Main.Class" android:value="net.yura.shithead.client.ShitHeadClient"/>
+        <meta-data android:name="SwingME.Main.Class" android:value="net.yura.shithead.client.ShitHeadApplication"/>
     </application>
 </manifest>

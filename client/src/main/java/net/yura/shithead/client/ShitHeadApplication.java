@@ -6,21 +6,18 @@ import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
 import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.OptionPane;
-import net.yura.mobile.gui.components.Panel;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
 import net.yura.shithead.common.ShitheadGame;
-import net.yura.shithead.uicomponents.GameView;
 
-public class ShitHeadClient extends Application implements ActionListener {
+public class ShitHeadApplication extends Application implements ActionListener {
 
     private Properties properties;
     private MiniLobbyClient minilobby;
@@ -42,7 +39,7 @@ public class ShitHeadClient extends Application implements ActionListener {
 
     private void openMainMenu() {
         XULLoader loader = new XULLoader();
-        try (InputStream stream = ShitHeadClient.class.getResourceAsStream("/main_menu.xml")) {
+        try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/main_menu.xml")) {
             loader.load(new InputStreamReader(stream), this, properties);
         }
         catch (Exception ex) {

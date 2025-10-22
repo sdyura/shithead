@@ -31,6 +31,6 @@ public class CardImageManager {
     }
 
     private static String getCardName(Card card) {
-        return "" + card.getRank().toInt() + card.getSuit().toChar();
+        return "" + card.getRank().toInt() + Character.toLowerCase(card.getSuit().toChar());
     }
 }
