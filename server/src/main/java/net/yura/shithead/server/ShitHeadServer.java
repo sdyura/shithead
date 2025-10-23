@@ -49,6 +49,9 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void midgamePlayerLogin(String oldName, String newName) {
+
+        // TODO is this really needed, can we just use player events in new lobby version
+
         String renameCommand;
         try {
             renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()) + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name());
