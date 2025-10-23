@@ -8,8 +8,11 @@ import net.yura.shithead.common.json.SerializerUtil;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import net.yura.shithead.common.Player;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
@@ -44,6 +47,29 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public boolean playerResigns(String s) {
+
+        List<Player> players = new ArrayList<>(game.getPlayers());
+        int index = -1;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getName().equals(s)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1) {
+            players.remove(index);
+            game.setPlayers(players);
+
+            if (players.size() == 1) {
+                return gameFinished(players.get(0).getName());
+            }
+
+            if (game.getCurrentPlayer() != null && game.getCurrentPlayer().getName().equals(s)) {
+                game.setCurrentPlayer(index % players.size());
+            }
+        }
+
         return false;
     }
 
@@ -94,4 +120,5 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         String json = SerializerUtil.toJSON(game, null);
         return json.getBytes(StandardCharsets.UTF_8);
     }
+
 }
