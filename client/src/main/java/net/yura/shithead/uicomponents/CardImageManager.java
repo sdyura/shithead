@@ -25,7 +25,7 @@ public class CardImageManager {
         String cardName = "1z";
         if (!cardImages.containsKey(cardName)) {
             Icon icon = new Icon("/cards/" + cardName + ".gif");
-            cardImages.put(cardName, icon);
+            cardImages.put(cardName, new CardBack(icon.getIconWidth(), icon.getIconHeight()));
         }
         return cardImages.get(cardName);
     }
