@@ -33,6 +33,38 @@ public class CommandParser {
         }
 
         switch (tokens[0]) {
+            case "rearrange":
+                if (tokens.length != 4) {
+                    throw new IllegalArgumentException("incomplete rearrange command");
+                }
+                try {
+                    String playerName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
+                    Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                    if (player == null) {
+                        throw new IllegalArgumentException("player not found: " + playerName);
+                    }
+                    Card handCard = SerializerUtil.cardFromString(tokens[2]);
+                    Card upCard = SerializerUtil.cardFromString(tokens[3]);
+                    game.rearrangeCards(player, handCard, upCard);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
+            case "ready":
+                if (tokens.length != 2) {
+                    throw new IllegalArgumentException("incomplete ready command");
+                }
+                try {
+                    String playerName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
+                    Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                    if (player == null) {
+                        throw new IllegalArgumentException("player not found: " + playerName);
+                    }
+                    game.playerReady(player);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
             case "play":
                 if (tokens.length < 3) {
                     throw new IllegalArgumentException("incomplete play command");

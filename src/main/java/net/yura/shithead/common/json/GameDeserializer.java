@@ -11,8 +11,11 @@ import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 public class GameDeserializer extends StdDeserializer<ShitheadGame> {
@@ -36,6 +39,8 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
 
     @Override
     public ShitheadGame deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        boolean hasDealt = false;
+        List<String> playersReady = new ArrayList<>();
         String currentPlayerName = null;
         List<Player> players = null;
         List<Card> deckCards = null;
@@ -45,7 +50,11 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
             String fieldName = jp.getCurrentName();
             jp.nextToken(); // Move to the value
 
-            if ("currentPlayerName".equals(fieldName)) {
+            if ("hasDealt".equals(fieldName)) {
+                hasDealt = jp.getBooleanValue();
+            } else if ("playersReady".equals(fieldName)) {
+                playersReady = jp.readValueAs(new TypeReference<List<String>>() {});
+            } else if ("currentPlayerName".equals(fieldName)) {
                 currentPlayerName = jp.getText();
             } else if ("players".equals(fieldName)) {
                 players = jp.readValueAs(new TypeReference<List<Player>>() {});
@@ -76,6 +85,17 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
 
         // Create the game object and populate it using the setters
         ShitheadGame game = new ShitheadGame(players.size(), deck);
+        game.setHasDealt(hasDealt);
+        Set<Player> playersReadySet = new HashSet<>();
+        for (String playerName : playersReady) {
+            for (Player p : players) {
+                if (p.getName().equals(playerName)) {
+                    playersReadySet.add(p);
+                    break;
+                }
+            }
+        }
+        game.setPlayersReady(playersReadySet);
         game.setPlayers(players);
         game.setWastePile(wastePile);
 
