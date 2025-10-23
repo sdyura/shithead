@@ -56,29 +56,33 @@ public class GameView extends Panel {
             int x = centerX;
             int y = height - 100;
             drawHand(g, player.getHand(), x, y, 20, 0, true, true);
+            drawHand(g, player.getDowncards(), x, y - 120, 20, 0, true, false);
+            drawHand(g, player.getUpcards(), x, y - 122, 20, 0, true, true);
         } else {
             int otherPlayerCount = playerCount - 1;
             if (otherPlayerCount > 0) {
                 double angle = Math.PI + (Math.PI * position / (otherPlayerCount + 1));
                 int x = centerX + (int) (radiusX * Math.cos(angle));
                 int y = centerY + (int) (radiusY * Math.sin(angle));
-                drawHand(g, player.getHand(), x, y, 0, 15, false, false);
+                drawHand(g, player.getDowncards(), x, y, 0, 15, false, false);
+                drawHand(g, player.getUpcards(), x + 2, y, 0, 15, false, true);
+                drawHand(g, player.getHand(), x + 80, y, 0, 15, false, false);
             }
         }
     }
 
-    private void drawHand(Graphics2D g, List<Card> hand, int x, int y, int dx, int dy, boolean center, boolean isLocalPlayer) {
+    private void drawHand(Graphics2D g, List<Card> hand, int x, int y, int dx, int dy, boolean center, boolean isFaceUp) {
         if (center) {
             x -= (hand.size() * dx) / 2;
         }
         for (int i = 0; i < hand.size(); i++) {
-            drawCard(g, hand.get(i), x + i * dx, y + i * dy, isLocalPlayer);
+            drawCard(g, hand.get(i), x + i * dx, y + i * dy, isFaceUp);
         }
     }
 
-    private void drawCard(Graphics2D g, Card card, int x, int y, boolean isLocalPlayer) {
+    private void drawCard(Graphics2D g, Card card, int x, int y, boolean isFaceUp) {
         Icon icon;
-        boolean isVisible = isLocalPlayer && card != null;
+        boolean isVisible = isFaceUp && card != null;
 
         if (isVisible) {
             icon = CardImageManager.getCardImage(card);
