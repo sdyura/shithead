@@ -47,29 +47,10 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public boolean playerResigns(String s) {
-
-        List<Player> players = new ArrayList<>(game.getPlayers());
-        int index = -1;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getName().equals(s)) {
-                index = i;
-                break;
-            }
+        game.removePlayer(s);
+        if (game.getPlayers().size() == 1) {
+            return gameFinished(game.getPlayers().get(0).getName());
         }
-
-        if (index != -1) {
-            players.remove(index);
-            game.setPlayers(players);
-
-            if (players.size() == 1) {
-                return gameFinished(players.get(0).getName());
-            }
-
-            if (game.getCurrentPlayer() != null && game.getCurrentPlayer().getName().equals(s)) {
-                game.setCurrentPlayer(index % players.size());
-            }
-        }
-
         return false;
     }
 

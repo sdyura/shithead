@@ -3,38 +3,27 @@ package net.yura.shithead.server;
 import net.yura.shithead.common.ShitheadGame;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ShitHeadServerTest {
 
     @Test
-    public void testPlayerResignsWithThreePlayers() {
-        ShitHeadServer server = new ShitHeadServer();
-        server.game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
-        server.game.setCurrentPlayer(0);
+    public void testCurrentPlayerAfterResignation() {
+        ShitheadGame game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
+        game.setCurrentPlayer(1); // player2's turn
 
-        boolean result = server.playerResigns("player2");
+        game.removePlayer("player1"); // player before current player resigns
 
-        assertFalse(result);
-        assertEquals(2, server.game.getPlayers().size());
+        assertEquals("player2", game.getCurrentPlayer().getName());
     }
 
     @Test
-    public void testPlayerResignsWithTwoPlayers() {
-        ShitHeadServer server = new ShitHeadServer();
-        server.game = new ShitheadGame(Arrays.asList("player1", "player2"));
-        server.game.setCurrentPlayer(0);
+    public void testCurrentPlayerResigns() {
+        ShitheadGame game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
+        game.setCurrentPlayer(1); // player2's turn
 
-        // can't mock the listoner as its not public, so we expect a NullPointerException
-        // when the gameFinished method is called.
-        try {
-            server.playerResigns("player1");
-        } catch (NullPointerException e) {
-            // expected
-        }
+        game.removePlayer("player2"); // current player resigns
 
-        assertEquals(1, server.game.getPlayers().size());
+        assertEquals("player3", game.getCurrentPlayer().getName());
     }
 }
