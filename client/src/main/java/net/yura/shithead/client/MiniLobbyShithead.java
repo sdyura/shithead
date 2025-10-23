@@ -161,7 +161,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     @Override
     public void connected(String username) {
-        MiniLobbyClient.toast("Logged in as: " + username);
+        // dont need to do anything
     }
 
     @Override
@@ -178,7 +178,17 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     @Override
     public String getAppName() {
-        return "Shithead";
+        String appNamePrefix;
+        if (Application.getPlatform() == Application.PLATFORM_ANDROID) {
+            appNamePrefix = "Android";
+        }
+        else if (Application.getPlatform() == Application.PLATFORM_IOS) {
+            appNamePrefix = "iOS";
+        }
+        else {
+            appNamePrefix = "Desktop";
+        }
+        return appNamePrefix + "Shithead";
     }
 
     @Override
