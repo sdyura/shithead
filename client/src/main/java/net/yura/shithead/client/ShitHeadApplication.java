@@ -24,7 +24,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
 
     protected void initialize(DesktopPane dp) {
 
-        dp.setLookAndFeel(DesktopPane.getSystemLookAndFeelClassName());
+        setupTheme(dp);
 
         ResourceBundle bundle = ResourceBundle.getBundle("game_text");
         properties = new Properties() {
@@ -37,7 +37,13 @@ public class ShitHeadApplication extends Application implements ActionListener {
         openMainMenu();
     }
 
+    protected void setupTheme(DesktopPane dp) {
+        dp.setLookAndFeel(DesktopPane.getSystemLookAndFeelClassName());
+    }
+
     private void openMainMenu() {
+        System.out.println("OPENING MENU");
+
         XULLoader loader = new XULLoader();
         try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/main_menu.xml")) {
             loader.load(new InputStreamReader(stream), this, properties);

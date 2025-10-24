@@ -29,3 +29,10 @@ jobs:
     - name: Summarize tests results
       uses: jeantessier/test-summary-action@v1
       if: ${{ always() }}
+
+    - name: Upload image on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: failure-image
+        path: desktop/testOutput/
