@@ -1,0 +1,4 @@
+- Implement the "seven or lower" rule for the 7 card.
+- Implement the "reverse play direction" rule for the 8 card.
+- Implement the logic to determine the starting player (usually the one with the lowest card).
+- Implement the pre-game phase where players can swap cards between their hand and upcards.
