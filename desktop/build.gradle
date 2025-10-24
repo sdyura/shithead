@@ -17,6 +17,10 @@ dependencies {
     implementation ('org.swingme:swingme-binding-desktop:4.0.0') {
         exclude group: 'junit', module: 'junit'
     }
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation 'com.github.romankh3:image-comparison:4.4.0'
+    testImplementation 'org.awaitility:awaitility:4.3.0'
 }
 
 jar {
@@ -36,4 +40,11 @@ run {
     args 'net.yura.shithead.client.ShitHeadApplication', '-width', '320', '-height', '560'
     // this does not run the actual jar, so cant see the version info in the manifest
     applicationDefaultJvmArgs = ["-DversionName=$rootProject.ext.versionName", "-DversionCode=$rootProject.ext.versionCode"]
+}
+
+test {
+    // Allow access to internal package
+    jvmArgs += [
+            "--add-exports=java.desktop/sun.awt=ALL-UNNAMED"
+    ]
 }
