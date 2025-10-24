@@ -292,4 +292,25 @@ public class ShitheadGame {
             }
         }
     }
+
+    public void removePlayer(String name) {
+        int index = -1;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getName().equals(name)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1) {
+            players.remove(index);
+            if (index < currentPlayer) {
+                currentPlayer--;
+            } else if (index == currentPlayer) {
+                if (currentPlayer >= players.size()) {
+                    currentPlayer = 0;
+                }
+            }
+        }
+    }
 }
