@@ -1,29 +1,42 @@
 package net.yura.shithead.server;
 
+import net.yura.lobby.server.ServerGameListener;
 import net.yura.shithead.common.ShitheadGame;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ShitHeadServerTest {
 
     @Test
-    public void testCurrentPlayerAfterResignation() {
-        ShitheadGame game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
-        game.setCurrentPlayer(1); // player2's turn
+    public void testPlayerResignsWithThreePlayers() {
+        ShitHeadServer server = new ShitHeadServer();
+        server.game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
+        server.game.setCurrentPlayer(0);
 
-        game.removePlayer("player1"); // player before current player resigns
+        boolean result = server.playerResigns("player2");
 
-        assertEquals("player2", game.getCurrentPlayer().getName());
+        assertFalse(result);
+        assertEquals(2, server.game.getPlayers().size());
     }
 
     @Test
-    public void testCurrentPlayerResigns() {
-        ShitheadGame game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
-        game.setCurrentPlayer(1); // player2's turn
+    public void testPlayerResignsWithTwoPlayers() {
+        ShitHeadServer server = new ShitHeadServer();
+        server.game = new ShitheadGame(Arrays.asList("player1", "player2"));
+        server.game.setCurrentPlayer(0);
 
-        game.removePlayer("player2"); // current player resigns
+        ServerGameListener listener = mock(ServerGameListener.class);
+        when(listener.gameFinished("player2")).thenReturn(true);
+        server.addServerGameListener(listener);
 
-        assertEquals("player3", game.getCurrentPlayer().getName());
+        boolean result = server.playerResigns("player1");
+
+        assertTrue(result);
+        assertEquals(1, server.game.getPlayers().size());
     }
 }

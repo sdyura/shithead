@@ -304,16 +304,12 @@ public class ShitheadGame {
 
         if (index != -1) {
             players.remove(index);
-            if (index == currentPlayer) {
-                // The current player was removed, so we need to advance the turn.
-                // We don't call advanceTurn() here because the turn has already effectively advanced
-                // by removing the current player. We just need to make sure the index is valid.
+            if (index < currentPlayer) {
+                currentPlayer--;
+            } else if (index == currentPlayer) {
                 if (currentPlayer >= players.size()) {
                     currentPlayer = 0;
                 }
-            } else if (index < currentPlayer) {
-                // A player before the current player was removed, so we need to decrement the index.
-                currentPlayer--;
             }
         }
     }
