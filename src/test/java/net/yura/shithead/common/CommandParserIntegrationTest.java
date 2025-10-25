@@ -18,6 +18,7 @@ public class CommandParserIntegrationTest {
         game.deal();
 
         String[] commands = {
+            "ready Player+1", "ready Player+2",
             "play hand 7D", "play hand 2C", "play hand QS", "play hand KC", "pickup", "play hand JC",
             "play hand 2C", "play hand 8C", "play hand 9S", "pickup", "play hand 7C", "play hand 7S",
             "play hand 7D", "play hand JC", "play hand QS", "play hand 2C", "play hand 4D",
@@ -113,6 +114,7 @@ public class CommandParserIntegrationTest {
         game.deal();
 
         String[] setupCommands = {
+            "ready Player+1", "ready Player+2",
             "play hand 7D", "play hand 2C", "play hand QS", "play hand KC", "pickup", "play hand JC"
         };
 

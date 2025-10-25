@@ -32,6 +32,7 @@ public class SerializerUtilTest {
         deck.setRandom(new Random(123)); // Use a fixed seed for predictable tests
         game = new ShitheadGame(Arrays.asList("Alice", "Bob"), deck);
         game.deal();
+        game.playerReady(game.getPlayers().get(0));
     }
 
     @Test

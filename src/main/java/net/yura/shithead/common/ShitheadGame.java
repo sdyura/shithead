@@ -19,7 +19,6 @@ import java.util.Set;
  */
 public class ShitheadGame {
 
-    private boolean hasDealt = false;
     private Set<Player> playersReady = new HashSet<>();
     private List<Player> players = new ArrayList<>();
     private final Deck deck;
@@ -86,7 +85,7 @@ public class ShitheadGame {
      * Deals three downcards, three upcards and three hand cards to each player.
      */
     public void deal() {
-        if (hasDealt) {
+        if (players.stream().mapToInt(Player::getNoCards).sum() > 0) {
             throw new IllegalStateException("Cards have already been dealt.");
         }
         deck.shuffle();
@@ -110,7 +109,6 @@ public class ShitheadGame {
         catch (CardDeckEmptyException ex) {
             throw new IllegalStateException("not enough cards in deck for initial deal", ex);
         }
-        hasDealt = true;
     }
 
     public void rearrangeCards(Player player, Card handCard, Card upCard) {
@@ -349,15 +347,15 @@ public class ShitheadGame {
     }
 
     public boolean isRearranging() {
-        return hasDealt && playersReady.size() < players.size();
+        return playersReady.size() < players.size();
     }
 
     public boolean isPlaying() {
-        return hasDealt && playersReady.size() == players.size();
+        return playersReady.size() >= players.size();
     }
 
-    public void setHasDealt(boolean hasDealt) {
-        this.hasDealt = hasDealt;
+    public Set<Player> getPlayersReady() {
+        return playersReady;
     }
 
     public void setPlayersReady(Set<Player> playersReady) {
