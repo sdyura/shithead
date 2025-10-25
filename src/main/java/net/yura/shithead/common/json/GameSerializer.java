@@ -19,6 +19,12 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         String contextPlayerName = (String) serializers.getAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY);
 
         gen.writeStartObject();
+        gen.writeBooleanField("hasDealt", !game.getDeck().getCards().isEmpty());
+        gen.writeArrayFieldStart("playersReady");
+        for (Player p : game.getPlayers()) {
+            gen.writeString(p.getName());
+        }
+        gen.writeEndArray();
         gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
 
         if (contextPlayerName == null) {
