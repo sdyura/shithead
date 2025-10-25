@@ -1,4 +1,16 @@
-- Implement the "seven or lower" rule for the 7 card.
-- Implement the "reverse play direction" rule for the 8 card.
-- Implement the logic to determine the starting player (usually the one with the lowest card).
-- Implement the pre-game phase where players can swap cards between their hand and upcards.
+# Shithead Rule Discrepancies (vs. Wikipedia)
+
+## Missing Core Rules:
+- **Rearranging Phase:** Implement the pre-game phase where players can swap their hand cards with their upcards.
+- **Starting Player Logic:** The player with the lowest card (starting with the 3 of clubs or diamonds) should begin the game. Currently, the first player in the list always starts.
+
+## Common Variations to Implement:
+- **Rule for 7s:** When a 7 is played, the next player must play a card with a rank of 7 or lower.
+- **Rule for 8s:** When an 8 is played, it is "transparent," meaning the next player must play a card based on the rank of the card *underneath* the 8.
+- **Other Special Cards:** Consider adding variations for other cards, such as reversing the direction of play or skipping the next player's turn.
+
+---
+
+# Additional Rule Variations (vs. cardgames.io)
+
+- **Rule for 5s:** When a 5 is played, it acts as a "reverse card," meaning the next player must play a card with a rank that is equal to or *lower* than 5.
