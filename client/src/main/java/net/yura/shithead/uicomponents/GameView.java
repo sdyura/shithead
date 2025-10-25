@@ -1,8 +1,8 @@
 package net.yura.shithead.uicomponents;
 
 import net.yura.mobile.gui.Graphics2D;
-import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.components.Panel;
+import java.util.ArrayList;
 import java.util.List;
 import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.layout.XULLoader;
@@ -13,6 +13,7 @@ public class GameView extends Panel {
 
     private ShitheadGame game;
     private String myUsername;
+    private final List<UICard> uiCards = new ArrayList<UICard>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
     private final int cardWidth = CardImageManager.getCardBackImage().getIconWidth();
     private final int cardHeight = CardImageManager.getCardBackImage().getIconHeight();
@@ -22,6 +23,7 @@ public class GameView extends Panel {
 
     public void setGame(ShitheadGame game) {
         this.game = game;
+        layoutCards();
         repaint();
     }
 
@@ -30,8 +32,20 @@ public class GameView extends Panel {
     }
 
     @Override
-    public void paintComponent(Graphics2D g2) {
-        super.paintComponent(g2);
+    public void doLayout() {
+        layoutCards();
+    }
+
+    @Override
+    public void paintComponent(Graphics2D g) {
+        super.paintComponent(g);
+        for (int i = 0; i < uiCards.size(); i++) {
+            uiCards.get(i).paint(g, this);
+        }
+    }
+
+    private void layoutCards() {
+        uiCards.clear();
         if (game == null) {
             return;
         }
@@ -42,12 +56,11 @@ public class GameView extends Panel {
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
             int playerPosition = (i - localPlayerIndex + players.size()) % players.size();
-            drawPlayer(g2, player, playerPosition, players.size());
+            layoutPlayer(player, playerPosition, players.size());
         }
     }
 
-    private void drawPlayer(Graphics2D g, Player player, int position, int playerCount) {
-
+    private void layoutPlayer(Player player, int position, int playerCount) {
         int width = getWidth();
         int height = getHeight();
         int centerX = width / 2;
@@ -61,46 +74,31 @@ public class GameView extends Panel {
         if (isLocalPlayer) {
             int x = centerX;
             int y = height - cardHeight;
-            drawHand(g, player.getDowncards(), x, y - padding - overlap*2,  false, false);
-            drawHand(g, player.getUpcards(), x, y - padding - overlap,  false, true);
-            drawHand(g, player.getHand(), x, y,  false, true);
+            layoutHand(player, CardLocation.DOWN_CARDS, player.getDowncards(), x, y - padding - overlap * 2, false, false);
+            layoutHand(player, CardLocation.UP_CARDS, player.getUpcards(), x, y - padding - overlap, false, true);
+            layoutHand(player, CardLocation.HAND, player.getHand(), x, y, false, true);
         } else {
             int otherPlayerCount = playerCount - 1;
             if (otherPlayerCount > 0) {
                 double angle = Math.PI + (Math.PI * position / (otherPlayerCount + 1));
                 int x = centerX + (int) (radiusX * Math.cos(angle));
                 int y = centerY + (int) (radiusY * Math.sin(angle));
-                drawHand(g, player.getDowncards(), x, y, false, false);
-                drawHand(g, player.getUpcards(), x, y + overlap,false, true);
-                drawHand(g, player.getHand(), x, y + overlap*2, false, false);
+                layoutHand(player, CardLocation.DOWN_CARDS, player.getDowncards(), x, y, false, false);
+                layoutHand(player, CardLocation.UP_CARDS, player.getUpcards(), x, y + overlap, false, true);
+                layoutHand(player, CardLocation.HAND, player.getHand(), x, y + overlap * 2, false, false);
             }
         }
     }
 
-    private void drawHand(Graphics2D g, List<Card> hand, int x, int y, boolean stack, boolean isFaceUp) {
+    private void layoutHand(Player player, CardLocation location, List<Card> hand, int x, int y, boolean stack, boolean isFaceUp) {
 
-        x -= ((hand.size() * cardWidth) + (padding * (hand.size() - 1)))/2;
+        x -= ((hand.size() * cardWidth) + (padding * (hand.size() - 1))) / 2;
 
         for (int i = 0; i < hand.size(); i++) {
-            drawCard(g, hand.get(i), x + i * (cardWidth + padding), y, isFaceUp);
-        }
-    }
-
-    private void drawCard(Graphics2D g, Card card, int x, int y, boolean isFaceUp) {
-        Icon icon;
-        boolean isVisible = isFaceUp && card != null;
-
-        if (isVisible) {
-            icon = CardImageManager.getCardImage(card);
-        } else {
-            icon = CardImageManager.getCardBackImage();
-        }
-
-        if (icon != null) {
-            icon.paintIcon(this, g, x, y);
-        } else {
-            g.setColor(0xFF808080); // Gray
-            g.fillRect(x, y, 71, 96);
+            Card card = hand.get(i);
+            UICard uiCard = new UICard(card, player, location, isFaceUp);
+            uiCard.setPosition(x + i * (cardWidth + padding), y);
+            uiCards.add(uiCard);
         }
     }
 }
