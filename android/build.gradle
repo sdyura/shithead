@@ -18,6 +18,14 @@ android {
     buildToolsVersion '34.0.0'
     namespace = "net.yura.shithead"
 
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+        // Sets Java compatibility to Java 8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -29,9 +37,11 @@ android {
     }
     // this is to avoid the @TargetApi missing on methods giving errors.
     defaultConfig {
-        minSdkVersion 4
+        // more info: https://apilevels.com/
+        minSdkVersion 14
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+        multiDexEnabled true
     }
     lint {
         abortOnError false
@@ -41,4 +51,5 @@ android {
 dependencies {
     implementation project(':client')
     implementation 'org.swingme:swingme-binding-android:1.0.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 }
