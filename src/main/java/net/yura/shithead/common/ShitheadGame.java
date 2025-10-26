@@ -133,6 +133,30 @@ public class ShitheadGame {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
         playersReady.add(player);
+        if (isPlaying()) {
+            chooseFirstPlayer();
+        }
+    }
+
+    private void chooseFirstPlayer() {
+        int bestRank = Integer.MAX_VALUE;
+        Player firstPlayer = null;
+
+        for (Player p : players) {
+            List<Card> cards = new ArrayList<>(p.getHand());
+            cards.addAll(p.getUpcards());
+            for (Card c : cards) {
+                int rank = c.getRank().toInt();
+                if (rank >= 3 && rank < bestRank) {
+                    bestRank = rank;
+                    firstPlayer = p;
+                }
+            }
+        }
+
+        if (firstPlayer != null) {
+            currentPlayer = players.indexOf(firstPlayer);
+        }
     }
 
     /**
