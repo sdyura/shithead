@@ -35,11 +35,6 @@ public class UICard {
             icon = CardImageManager.getCardBackImage();
         }
 
-        if (icon != null) {
-            icon.paintIcon(c, g, x, y);
-        } else {
-            g.setColor(0xFF808080); // Gray
-            g.fillRect(x, y, 71, 96);
-        }
+        icon.paintIcon(c, g, x, y);
     }
 }

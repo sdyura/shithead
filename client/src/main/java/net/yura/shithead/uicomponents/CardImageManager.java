@@ -2,6 +2,7 @@ package net.yura.shithead.uicomponents;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.yura.lobby.mini.GameRenderer;
 import net.yura.mobile.gui.Icon;
 import net.yura.cardsengine.Card;
 
@@ -15,17 +16,21 @@ public class CardImageManager {
         }
         String cardName = getCardName(card);
         if (!cardImages.containsKey(cardName)) {
-            Icon icon = new Icon("/cards/" + cardName + ".gif");
+            Icon img = new Icon("/cards/" + cardName + ".gif");
+            GameRenderer.ScaledIcon icon = new GameRenderer.ScaledIcon(img.getIconWidth() / 2, img.getIconHeight() / 2);
+            icon.setIcon(img);
             cardImages.put(cardName, icon);
         }
         return cardImages.get(cardName);
     }
 
     public static Icon getCardBackImage() {
-        String cardName = "1z";
+        String cardName = "1z"; // this is the joker
         if (!cardImages.containsKey(cardName)) {
-            Icon icon = new Icon("/cards/" + cardName + ".gif");
-            cardImages.put(cardName, new CardBack(icon.getIconWidth(), icon.getIconHeight()));
+            Icon img = new Icon("/cards/" + cardName + ".gif");
+            GameRenderer.ScaledIcon icon = new GameRenderer.ScaledIcon(img.getIconWidth() / 2, img.getIconHeight() / 2);
+            icon.setIcon(new CardBack(icon.getIconWidth(), icon.getIconHeight()));
+            cardImages.put(cardName, icon);
         }
         return cardImages.get(cardName);
     }
