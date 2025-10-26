@@ -361,4 +361,26 @@ public class ShitheadGame {
     public void setPlayersReady(Set<Player> playersReady) {
         this.playersReady = playersReady;
     }
+
+    public void playTopCardFromDeck() {
+        if (!isPlaying()) {
+            throw new IllegalStateException("Game is not in PLAYING state.");
+        }
+        try {
+            Card card = deck.dealCard();
+            Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
+            if (isPlayable(card.getRank(), top)) {
+                wastePile.add(card);
+                boolean burned = applySpecialRules(card.getRank());
+                if (!burned) {
+                    advanceTurn();
+                }
+            } else {
+                getCurrentPlayer().getHand().add(card);
+                pickUpWastePile();
+            }
+        } catch (CardDeckEmptyException e) {
+            // Nothing happens, deck is empty
+        }
+    }
 }

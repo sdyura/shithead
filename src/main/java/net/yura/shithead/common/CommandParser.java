@@ -66,7 +66,7 @@ public class CommandParser {
                 }
                 return;
             case "play":
-                if (tokens.length < 3) {
+                if (tokens.length < 2) {
                     throw new IllegalArgumentException("incomplete play command");
                 }
                 List<Card> cards;
@@ -94,6 +94,12 @@ public class CommandParser {
                         Card card = SerializerUtil.cardFromString(tokens[2]);
                         cards = Collections.singletonList(card);
                         break;
+                    case "deck":
+                        if (tokens.length != 2) {
+                            throw new IllegalArgumentException("should not be anything after 'play deck'");
+                        }
+                        game.playTopCardFromDeck();
+                        return;
                     default:
                         throw new IllegalArgumentException("invalid card source: " + tokens[1]);
                 }

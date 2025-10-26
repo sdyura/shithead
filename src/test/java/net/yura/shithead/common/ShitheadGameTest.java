@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Stack;
+import java.util.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -127,5 +129,69 @@ class ShitheadGameTest {
         assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.TEN, Suit.DIAMONDS))));
         assertEquals(0, game.getWastePile().size());
         assertEquals(p1, game.getCurrentPlayer(), "Player should play again after burning the pile");
+    }
+
+    @Test
+    public void testPlayDeckCardSuccess() {
+        // given
+        Deck deck = new Deck(1);
+        Vector cards = deck.getCards();
+        Stack stack = new Stack();
+        stack.addAll(cards);
+        // Make sure the top card is playable
+        stack.set(stack.size() - 1, Card.getCardByRankSuit(Rank.ACE, Suit.SPADES));
+        cards.clear();
+        cards.addAll(stack);
+
+
+        ShitheadGame game = new ShitheadGame(2, deck);
+        game.deal();
+        game.playerReady(game.getPlayers().get(0));
+        game.playerReady(game.getPlayers().get(1));
+
+        Card topCard = (Card) deck.getCards().get(deck.getCards().size() - 1);
+        int initialDeckSize = deck.getCards().size();
+
+        // when
+        new CommandParser().execute(game, "play deck");
+
+        // then
+        assertEquals(initialDeckSize - 1, deck.getCards().size());
+        assertTrue(game.getWastePile().contains(topCard));
+        assertEquals("Player 2", game.getCurrentPlayer().getName());
+    }
+
+    @Test
+    public void testPlayDeckCardFail() {
+        // given
+        ShitheadGame game = new ShitheadGame(2);
+        game.deal();
+        game.playerReady(game.getPlayers().get(0));
+        game.playerReady(game.getPlayers().get(1));
+
+        // Make the top card of the deck unplayable
+        game.setWastePile(new java.util.ArrayList<>(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES))));
+        Deck deck = game.getDeck();
+        Vector cards = deck.getCards();
+        Stack stack = new Stack();
+        stack.addAll(cards);
+        stack.set(stack.size() - 1, Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS));
+        cards.clear();
+        cards.addAll(stack);
+
+        Card topCard = (Card) deck.getCards().get(deck.getCards().size() - 1);
+        int initialDeckSize = deck.getCards().size();
+        Player currentPlayer = game.getCurrentPlayer();
+        int initialHandSize = currentPlayer.getHand().size();
+
+        // when
+        new CommandParser().execute(game, "play deck");
+
+        // then
+        assertEquals(initialDeckSize - 1, deck.getCards().size());
+        assertEquals(0, game.getWastePile().size());
+        assertEquals(initialHandSize + 2, currentPlayer.getHand().size()); // +1 for the card from the deck, +1 for the card from the waste pile
+        assertTrue(currentPlayer.getHand().contains(topCard));
+        assertEquals("Player 2", game.getCurrentPlayer().getName());
     }
 }
