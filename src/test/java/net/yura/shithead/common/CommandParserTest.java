@@ -113,4 +113,27 @@ public class CommandParserTest {
         assertTrue(game.getWastePile().contains(downCard), "The played card should be in the waste pile");
         assertFalse(player1.getDowncards().contains(downCard), "The played card should be removed from the downcards");
     }
+
+    @Test
+    public void testRearrangeCards() {
+        // --- Setup: Place specific cards in hand and up-cards ---
+        Card handCard = Card.getCardByRankSuit(Rank.ACE, Suit.SPADES);
+        Card upCard = Card.getCardByRankSuit(Rank.KING, Suit.HEARTS);
+        player1.getHand().add(handCard);
+        player1.getUpcards().add(upCard);
+
+        // In order to test the "rearrange" command, the game must be in the "rearranging" state.
+        // The setUp() method puts the game into the "playing" state, so we need to reset it here.
+        game.setPlayersReady(new java.util.HashSet<>());
+
+        // --- Action: Execute the rearrange command ---
+        // Command format: rearrange <player_name> <hand_card> <up_card>
+        parser.execute(game, "rearrange Player%201 AS KH");
+
+        // --- Verification: Check if cards were swapped ---
+        assertFalse(player1.getHand().contains(handCard), "The hand card should no longer be in the hand.");
+        assertTrue(player1.getUpcards().contains(handCard), "The hand card should now be in the up-cards.");
+        assertTrue(player1.getHand().contains(upCard), "The up-card should now be in the hand.");
+        assertFalse(player1.getUpcards().contains(upCard), "The up-card should no longer be in the up-cards.");
+    }
 }
