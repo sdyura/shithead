@@ -58,6 +58,25 @@ public class GameView extends Panel {
             int playerPosition = (i - localPlayerIndex + players.size()) % players.size();
             layoutPlayer(player, playerPosition, players.size());
         }
+
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+
+        // Deck
+        if (game.getDeck().getCards().size() > 0) {
+            UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
+            deckCard.setPosition(centerX - cardWidth - padding / 2, centerY - cardHeight / 2);
+            uiCards.add(deckCard);
+        }
+
+        // Waste Pile
+        if (!game.getWastePile().isEmpty()) {
+            List<Card> wastePile = game.getWastePile();
+            Card topCard = wastePile.get(wastePile.size() - 1);
+            UICard wastePileCard = new UICard(topCard, null, CardLocation.WASTE, true);
+            wastePileCard.setPosition(centerX + padding / 2, centerY - cardHeight / 2);
+            uiCards.add(wastePileCard);
+        }
     }
 
     private void layoutPlayer(Player player, int position, int playerCount) {
