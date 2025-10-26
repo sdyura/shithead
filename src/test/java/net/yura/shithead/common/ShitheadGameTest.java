@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShitheadGameTest {
@@ -135,6 +134,11 @@ class ShitheadGameTest {
     public void testPlayDeckCardSuccess() {
         // given
         Deck deck = new Deck(1);
+        ShitheadGame game = new ShitheadGame(2, deck);
+        game.deal();
+        game.playerReady(game.getPlayers().get(0));
+        game.playerReady(game.getPlayers().get(1));
+
         Vector cards = deck.getCards();
         Stack stack = new Stack();
         stack.addAll(cards);
@@ -143,19 +147,14 @@ class ShitheadGameTest {
         cards.clear();
         cards.addAll(stack);
 
-
-        ShitheadGame game = new ShitheadGame(2, deck);
-        game.deal();
-        game.playerReady(game.getPlayers().get(0));
-        game.playerReady(game.getPlayers().get(1));
-
         Card topCard = (Card) deck.getCards().get(deck.getCards().size() - 1);
         int initialDeckSize = deck.getCards().size();
 
         // when
-        new CommandParser().execute(game, "play deck");
+        Card playedCard = new CommandParser().parse(game, "play deck");
 
         // then
+        assertEquals(topCard, playedCard);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertTrue(game.getWastePile().contains(topCard));
         assertEquals("Player 2", game.getCurrentPlayer().getName());
@@ -185,9 +184,10 @@ class ShitheadGameTest {
         int initialHandSize = currentPlayer.getHand().size();
 
         // when
-        new CommandParser().execute(game, "play deck");
+        Card playedCard = new CommandParser().parse(game, "play deck");
 
         // then
+        assertEquals(topCard, playedCard);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertEquals(0, game.getWastePile().size());
         assertEquals(initialHandSize + 2, currentPlayer.getHand().size()); // +1 for the card from the deck, +1 for the card from the waste pile
