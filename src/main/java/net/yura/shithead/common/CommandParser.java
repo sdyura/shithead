@@ -32,6 +32,26 @@ public class CommandParser {
             }
             return card;
         }
+        if (command.startsWith("ready ")) {
+            String[] tokens = command.split(" ");
+            if (tokens.length != 2) {
+                throw new IllegalArgumentException("incomplete ready command");
+            }
+            String playerName = decodePlayerName(tokens[1]);
+            Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+            if (player == null) {
+                throw new IllegalArgumentException("player not found: " + playerName);
+            }
+            Card lowest = player.findLowestCard();
+            Card currentMin = game.getPlayersReady().values().stream().filter(Objects::nonNull).min(Comparator.comparingInt(o -> o.getRank().toInt())).orElse(null);
+            // if we are not the lowest card, then there is no point in sending it
+            if (currentMin != null && lowest != null && currentMin.getRank().toInt() <= lowest.getRank().toInt()) {
+                lowest = null;
+            }
+
+            execute(game, command + " " + lowest);
+            return lowest;
+        }
 
         execute(game, command);
         return null;
@@ -68,7 +88,7 @@ public class CommandParser {
                 if (!game.isRearranging()) {
                     throw new IllegalArgumentException("game not in rearranging mode");
                 }
-                if (tokens.length != 2) {
+                if (tokens.length != 3) {
                     throw new IllegalArgumentException("incomplete ready command");
                 }
                 playerName = decodePlayerName(tokens[1]);
@@ -76,8 +96,9 @@ public class CommandParser {
                 if (player == null) {
                     throw new IllegalArgumentException("player not found: " + playerName);
                 }
+                Card lowest = "null".equals(tokens[2]) ? null : SerializerUtil.cardFromString(tokens[2]);
 
-                game.playerReady(player);
+                game.playerReady(player, lowest);
                 return;
             case "play":
                 if (!game.isPlaying()) {

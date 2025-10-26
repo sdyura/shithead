@@ -8,7 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -33,7 +34,10 @@ public class CommandParserTest {
         player1.getUpcards().clear();
         player1.getDowncards().clear();
         game.setWastePile(new ArrayList<>());
-        game.setPlayersReady(Set.of(player1, player2));
+        game.setPlayersReady(new HashMap<>() {{ // need to use HashMap to allow nulls
+            put(player1, null);
+            put(player2, null);
+        }});
 
         // Use reflection to set a predictable deck for testing
         Deck deck = game.getDeck();
@@ -127,7 +131,7 @@ public class CommandParserTest {
 
         // In order to test the "rearrange" command, the game must be in the "rearranging" state.
         // The setUp() method puts the game into the "playing" state, so we need to reset it here.
-        game.setPlayersReady(new HashSet<>());
+        game.setPlayersReady(new HashMap<>());
 
         // --- Action: Execute the rearrange command ---
         // Command format: rearrange <player_name> <hand_card> <up_card>

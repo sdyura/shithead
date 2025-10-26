@@ -55,4 +55,17 @@ public class Player {
     public int getNoCards() {
         return hand.size() + upcards.size() + downcards.size();
     }
+
+    public Card findLowestCard() {
+        int bestRank = Integer.MAX_VALUE;
+        Card lowest = null;
+        for (Card c : getHand()) {
+            int rank = c.getRank().toInt();
+            if (rank >= 3 && rank < bestRank) {
+                bestRank = rank;
+                lowest = c;
+            }
+        }
+        return lowest;
+    }
 }

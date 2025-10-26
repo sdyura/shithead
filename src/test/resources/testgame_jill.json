@@ -12,6 +12,8 @@
     "handCount" : 3,
     "downcardsCount" : 3
   } ],
-  "playersReady" : [ "Alice" ],
+  "playersReady" : {
+    "Alice" : "7D"
+  },
   "currentPlayerName" : "Alice"
 }

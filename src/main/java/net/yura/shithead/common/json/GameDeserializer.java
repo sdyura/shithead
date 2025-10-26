@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -39,7 +41,7 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
 
     @Override
     public ShitheadGame deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        List<String> playersReady = new ArrayList<>();
+        Map<String, Card> playersReady = new HashMap<>();
         String currentPlayerName = null;
         List<Player> players = null;
         List<Card> deckCards = null;
@@ -50,7 +52,7 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
             jp.nextToken(); // Move to the value
 
             if ("playersReady".equals(fieldName)) {
-                playersReady = jp.readValueAs(new TypeReference<List<String>>() {});
+                playersReady = jp.readValueAs(new TypeReference<Map<String, Card>>() {});
             } else if ("currentPlayerName".equals(fieldName)) {
                 currentPlayerName = jp.getText();
             } else if ("players".equals(fieldName)) {
@@ -82,11 +84,11 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
 
         // Create the game object and populate it using the setters
         ShitheadGame game = new ShitheadGame(players.size(), deck);
-        Set<Player> playersReadySet = new HashSet<>();
-        for (String playerName : playersReady) {
+        Map<Player, Card> playersReadySet = new HashMap<>();
+        for (Map.Entry<String, Card> playerCard : playersReady.entrySet()) {
             for (Player p : players) {
-                if (p.getName().equals(playerName)) {
-                    playersReadySet.add(p);
+                if (p.getName().equals(playerCard.getKey())) {
+                    playersReadySet.put(p, playerCard.getValue());
                     break;
                 }
             }
