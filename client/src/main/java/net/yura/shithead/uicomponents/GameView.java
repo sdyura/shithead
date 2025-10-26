@@ -63,19 +63,31 @@ public class GameView extends Panel {
         int centerY = getHeight() / 2;
 
         // Deck
-        if (game.getDeck().getCards().size() > 0) {
-            UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
-            deckCard.setPosition(centerX - cardWidth - padding / 2, centerY - cardHeight / 2);
-            uiCards.add(deckCard);
+        int deckSize = game.getDeck().getCards().size();
+        int cardsToShowDeck = Math.min(deckSize, 3);
+        if (cardsToShowDeck > 0) {
+            int stackHeightDeck = cardHeight + (cardsToShowDeck - 1) * padding;
+            int yStartDeck = centerY - stackHeightDeck / 2;
+            for (int i = 0; i < cardsToShowDeck; i++) {
+                UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
+                deckCard.setPosition(centerX - cardWidth - padding / 2, yStartDeck + i * padding);
+                uiCards.add(deckCard);
+            }
         }
 
         // Waste Pile
-        if (!game.getWastePile().isEmpty()) {
-            List<Card> wastePile = game.getWastePile();
-            Card topCard = wastePile.get(wastePile.size() - 1);
-            UICard wastePileCard = new UICard(topCard, null, CardLocation.WASTE, true);
-            wastePileCard.setPosition(centerX + padding / 2, centerY - cardHeight / 2);
-            uiCards.add(wastePileCard);
+        List<Card> wastePile = game.getWastePile();
+        int wastePileSize = wastePile.size();
+        int cardsToShowWaste = Math.min(wastePileSize, 3);
+        if (cardsToShowWaste > 0) {
+            int stackHeightWaste = cardHeight + (cardsToShowWaste - 1) * padding;
+            int yStartWaste = centerY - stackHeightWaste / 2;
+            for (int i = 0; i < cardsToShowWaste; i++) {
+                Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
+                UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
+                wastePileCard.setPosition(centerX + padding / 2, yStartWaste + i * padding);
+                uiCards.add(wastePileCard);
+            }
         }
     }
 
