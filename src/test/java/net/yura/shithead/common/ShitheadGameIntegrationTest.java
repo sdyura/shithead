@@ -18,7 +18,16 @@ public class ShitheadGameIntegrationTest {
         deck.setRandom(new Random(2024L));
         ShitheadGame game = new ShitheadGame(2, deck);
         game.deal();
-        game.setPlayersReady(new HashSet<>(game.getPlayers()));
+
+        // --- Card Swapping Phase ---
+        // Player 1 swaps a card from hand with an up-card.
+        Player p1 = game.getPlayers().get(0);
+        game.rearrangeCards(p1, p1.getHand().get(0), p1.getUpcards().get(0));
+
+        // Both players are ready to start.
+        game.playerReady(p1);
+        game.playerReady(game.getPlayers().get(1));
+
 
         int maxTurns = 200;
         int turn = 0;
@@ -39,11 +48,10 @@ public class ShitheadGameIntegrationTest {
 
             if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
-                boolean wasBurn = cardToPlay.getRank() == net.yura.cardsengine.Rank.TEN;
                 game.playCards(Collections.singletonList(cardToPlay));
 
                 // --- Verification: Check game state after playing ---
-                if (wasBurn) {
+                if (game.getWastePile().isEmpty()) { // Pile was burned
                     assertEquals(0, game.getWastePile().size(), "Waste pile should be burned.");
                     assertEquals(currentPlayer, game.getCurrentPlayer(), "Player should get another turn after a burn.");
                 } else {
@@ -106,13 +114,65 @@ public class ShitheadGameIntegrationTest {
     }
 
     @Test
+    public void testCardSwappingPhase() {
+        // --- Setup: Create a 2-player game with a predictable deck ---
+        Deck deck = new Deck(1);
+        deck.setRandom(new Random(2023L));
+        ShitheadGame game = new ShitheadGame(2, deck);
+        game.deal();
+
+        Player p1 = game.getPlayers().get(0);
+
+        // --- Verification: Check initial state ---
+        assertTrue(game.isRearranging(), "Game should start in the REARRANGING state.");
+        assertFalse(game.isPlaying(), "Game should not be in the PLAYING state yet.");
+
+        // --- Action & Verification: Perform a valid swap ---
+        Card handCard = p1.getHand().get(0);
+        Card upCard = p1.getUpcards().get(0);
+
+        game.rearrangeCards(p1, handCard, upCard);
+
+        assertFalse(p1.getHand().contains(handCard), "The hand card should have been moved from the hand.");
+        assertTrue(p1.getUpcards().contains(handCard), "The hand card should now be in the up-cards.");
+        assertTrue(p1.getHand().contains(upCard), "The up-card should now be in the hand.");
+        assertFalse(p1.getUpcards().contains(upCard), "The up-card should have been moved from the up-cards.");
+
+        // --- Action & Verification: Attempt an invalid swap ---
+        Card notOwnedCard = Card.getCardByRankSuit(net.yura.cardsengine.Rank.ACE, net.yura.cardsengine.Suit.SPADES);
+        assertThrows(IllegalArgumentException.class, () -> {
+            game.rearrangeCards(p1, notOwnedCard, p1.getUpcards().get(1));
+        }, "Should not be able to swap a card the player does not own.");
+
+        // --- Action: Transition to PLAYING state ---
+        game.playerReady(p1);
+        game.playerReady(game.getPlayers().get(1));
+
+        // --- Verification: Check final state ---
+        assertFalse(game.isRearranging(), "Game should no longer be in the REARRANGING state.");
+        assertTrue(game.isPlaying(), "Game should now be in the PLAYING state.");
+
+        // --- Action & Verification: Attempt swap after game has started ---
+        assertThrows(IllegalStateException.class, () -> {
+            game.rearrangeCards(p1, p1.getHand().get(0), p1.getUpcards().get(0));
+        }, "Should not be able to swap cards after the game has started.");
+    }
+
     public void testFull3PlayerGameWithRuleBasedPlayer() {
         // This test has its own setup for a 3-player game.
         Deck deck = new Deck(1);
         deck.setRandom(new Random(2025L));
         ShitheadGame game = new ShitheadGame(3, deck);
         game.deal();
-        game.setPlayersReady(new HashSet<>(game.getPlayers()));
+
+        // --- Card Swapping Phase for 3 players ---
+        for (Player p : game.getPlayers()) {
+            // As a simple strategy, swap the first hand card with the first up-card.
+            if (!p.getHand().isEmpty() && !p.getUpcards().isEmpty()) {
+                game.rearrangeCards(p, p.getHand().get(0), p.getUpcards().get(0));
+            }
+            game.playerReady(p);
+        }
 
         int maxTurns = 300;
         int turn = 0;
