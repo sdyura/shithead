@@ -51,4 +51,8 @@ public class Player {
     public List<Card> getDowncards() {
         return downcards;
     }
+
+    public int getNoCards() {
+        return hand.size() + upcards.size() + downcards.size();
+    }
 }

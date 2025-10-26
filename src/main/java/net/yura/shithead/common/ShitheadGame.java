@@ -6,7 +6,9 @@ import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Basic implementation of the Shithead card game rules.
@@ -17,6 +19,7 @@ import java.util.List;
  */
 public class ShitheadGame {
 
+    private Set<Player> playersReady = new HashSet<>();
     private List<Player> players = new ArrayList<>();
     private final Deck deck;
     private List<Card> wastePile = new ArrayList<>();
@@ -82,6 +85,9 @@ public class ShitheadGame {
      * Deals three downcards, three upcards and three hand cards to each player.
      */
     public void deal() {
+        if (players.stream().mapToInt(Player::getNoCards).sum() > 0) {
+            throw new IllegalStateException("Cards have already been dealt.");
+        }
         deck.shuffle();
         try {
             for (int i = 0; i < 3; i++) {
@@ -103,6 +109,29 @@ public class ShitheadGame {
         catch (CardDeckEmptyException ex) {
             throw new IllegalStateException("not enough cards in deck for initial deal", ex);
         }
+    }
+
+    public void rearrangeCards(Player player, Card handCard, Card upCard) {
+        if (!isRearranging()) {
+            throw new IllegalStateException("Game is not in REARRANGING state.");
+        }
+        if (!player.getHand().contains(handCard)) {
+            throw new IllegalArgumentException("Player does not have the specified card in their hand.");
+        }
+        if (!player.getUpcards().contains(upCard)) {
+            throw new IllegalArgumentException("Player does not have the specified card in their upcards.");
+        }
+        player.getHand().remove(handCard);
+        player.getUpcards().remove(upCard);
+        player.getHand().add(upCard);
+        player.getUpcards().add(handCard);
+    }
+
+    public void playerReady(Player player) {
+        if (!isRearranging()) {
+            throw new IllegalStateException("Game is not in REARRANGING state.");
+        }
+        playersReady.add(player);
     }
 
     /**
@@ -127,6 +156,9 @@ public class ShitheadGame {
      * @return {@code true} if the play was successful, {@code false} otherwise
      */
     public boolean playCards(List<Card> cards) {
+        if (!isPlaying()) {
+            throw new IllegalStateException("Game is not in PLAYING state.");
+        }
         Player player = getCurrentPlayer();
 
         if (cards.isEmpty()) {
@@ -312,5 +344,21 @@ public class ShitheadGame {
                 }
             }
         }
+    }
+
+    public boolean isRearranging() {
+        return playersReady.size() < players.size();
+    }
+
+    public boolean isPlaying() {
+        return playersReady.size() >= players.size();
+    }
+
+    public Set<Player> getPlayersReady() {
+        return playersReady;
+    }
+
+    public void setPlayersReady(Set<Player> playersReady) {
+        this.playersReady = playersReady;
     }
 }

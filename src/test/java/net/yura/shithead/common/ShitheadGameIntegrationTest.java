@@ -4,6 +4,7 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +18,7 @@ public class ShitheadGameIntegrationTest {
         deck.setRandom(new Random(2024L));
         ShitheadGame game = new ShitheadGame(2, deck);
         game.deal();
+        game.setPlayersReady(new HashSet<>(game.getPlayers()));
 
         int maxTurns = 200;
         int turn = 0;
@@ -110,6 +112,7 @@ public class ShitheadGameIntegrationTest {
         deck.setRandom(new Random(2025L));
         ShitheadGame game = new ShitheadGame(3, deck);
         game.deal();
+        game.setPlayersReady(new HashSet<>(game.getPlayers()));
 
         int maxTurns = 300;
         int turn = 0;

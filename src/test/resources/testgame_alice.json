@@ -1,5 +1,4 @@
 {
-  "currentPlayerName" : "Alice",
   "cardsInDeck" : 34,
   "wastePile" : [ ],
   "players" : [ {
@@ -12,5 +11,7 @@
     "upcards" : [ "XH", "3S", "KD" ],
     "handCount" : 3,
     "downcardsCount" : 3
-  } ]
+  } ],
+  "playersReady" : [ "Alice" ],
+  "currentPlayerName" : "Alice"
 }

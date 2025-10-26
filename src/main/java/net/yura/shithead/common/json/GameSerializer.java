@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
+import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -19,7 +20,6 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         String contextPlayerName = (String) serializers.getAttribute(PlayerSerializer.PLAYER_CONTEXT_KEY);
 
         gen.writeStartObject();
-        gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
 
         if (contextPlayerName == null) {
             // Full serialization for persistence
@@ -30,7 +30,14 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         }
 
         gen.writeObjectField("wastePile", game.getWastePile());
+
         gen.writeObjectField("players", game.getPlayers());
+        gen.writeArrayFieldStart("playersReady");
+        for (Player p : game.getPlayersReady()) {
+            gen.writeString(p.getName());
+        }
+        gen.writeEndArray();
+        gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
         gen.writeEndObject();
     }
 
@@ -41,7 +48,7 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
             @SuppressWarnings("unchecked")
             Stack<Card> cards = (Stack<Card>) cardsField.get(game.getDeck());
             return new ArrayList<>(cards);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Could not get deck cards via reflection", e);
         }
     }

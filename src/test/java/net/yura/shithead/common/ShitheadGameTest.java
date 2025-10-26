@@ -8,6 +8,7 @@ import net.yura.cardsengine.Suit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,11 +24,10 @@ class ShitheadGameTest {
         game = new ShitheadGame(2);
         try {
             // Get players for easier testing
-            java.lang.reflect.Field playersField = ShitheadGame.class.getDeclaredField("players");
-            playersField.setAccessible(true);
-            List<Player> players = (List<Player>) playersField.get(game);
+            List<Player> players = game.getPlayers();
             p1 = players.get(0);
             p2 = players.get(1);
+            game.setPlayersReady(new HashSet<>(players));
 
             // Inject an empty deck to prevent hand refilling, which would break the tests
             java.lang.reflect.Field deckField = ShitheadGame.class.getDeclaredField("deck");
