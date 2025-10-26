@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * Basic implementation of the Shithead card game rules.
@@ -360,5 +361,39 @@ public class ShitheadGame {
 
     public void setPlayersReady(Set<Player> playersReady) {
         this.playersReady = playersReady;
+    }
+
+    public Card getTopCardFromDeck() {
+        Vector cards = deck.getCards();
+        if (cards.isEmpty()) {
+            return null;
+        }
+        return (Card) cards.get(cards.size() - 1);
+    }
+
+    public void playCardFromDeck(Card card) {
+        if (!isPlaying()) {
+            throw new IllegalStateException("Game is not in PLAYING state.");
+        }
+        Card topCard = getTopCardFromDeck();
+        if (topCard == null || !topCard.equals(card)) {
+            throw new IllegalArgumentException("Card is not the top card of the deck.");
+        }
+        try {
+            deck.dealCard();
+            Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
+            if (isPlayable(card.getRank(), top)) {
+                wastePile.add(card);
+                boolean burned = applySpecialRules(card.getRank());
+                if (!burned) {
+                    advanceTurn();
+                }
+            } else {
+                getCurrentPlayer().getHand().add(card);
+                pickUpWastePile();
+            }
+        } catch (CardDeckEmptyException e) {
+            // Nothing happens, deck is empty
+        }
     }
 }

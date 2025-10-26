@@ -20,6 +20,13 @@ public class CommandParser {
             execute(game, "play down " + card);
             return card;
         }
+        if (command.equals("play deck")) {
+            Card card = game.getTopCardFromDeck();
+            if (card != null) {
+                execute(game, "play deck " + card);
+            }
+            return card;
+        }
 
         execute(game, command);
         return null;
@@ -94,6 +101,12 @@ public class CommandParser {
                         Card card = SerializerUtil.cardFromString(tokens[2]);
                         cards = Collections.singletonList(card);
                         break;
+                    case "deck":
+                        if (tokens.length != 3) {
+                            throw new IllegalArgumentException("incomplete play deck command");
+                        }
+                        game.playCardFromDeck(SerializerUtil.cardFromString(tokens[2]));
+                        return;
                     default:
                         throw new IllegalArgumentException("invalid card source: " + tokens[1]);
                 }
