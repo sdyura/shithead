@@ -5,11 +5,11 @@ import net.yura.cardsengine.CardDeckEmptyException;
 import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Basic implementation of the Shithead card game rules.
@@ -20,6 +20,10 @@ import java.util.Vector;
  */
 public class ShitheadGame {
 
+    /**
+     * map of player that is ready to there lowest card, this card will be used to decide who goes first.
+     * Note! the lowest card for a player may be null!
+     */
     private Set<Player> playersReady = new HashSet<>();
     private List<Player> players = new ArrayList<>();
     private final Deck deck;
@@ -133,30 +137,48 @@ public class ShitheadGame {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
         playersReady.add(player);
+
         if (isPlaying()) {
             chooseFirstPlayer();
         }
     }
 
+    /**
+     * for this method to work we NEED each player to have the lowest card set in the hand
+     */
     private void chooseFirstPlayer() {
         int bestRank = Integer.MAX_VALUE;
         Player firstPlayer = null;
 
-        for (Player p : players) {
-            List<Card> cards = new ArrayList<>(p.getHand());
-            cards.addAll(p.getUpcards());
-            for (Card c : cards) {
+        for (Player pc : playersReady) {
+            Card c = findLowestStartCard(pc.getUpcards());
+            if (c != null) {
                 int rank = c.getRank().toInt();
-                if (rank >= 3 && rank < bestRank) {
+                if (rank < bestRank) {
                     bestRank = rank;
-                    firstPlayer = p;
+                    firstPlayer = pc;
                 }
             }
         }
 
+        // in very rare situations no player will have a valid starting card
+        // in this case the player at index 0 will go first
         if (firstPlayer != null) {
             currentPlayer = players.indexOf(firstPlayer);
         }
+    }
+
+    public static Card findLowestStartCard(Collection<Card> cards) {
+        int bestRank = Integer.MAX_VALUE;
+        Card lowest = null;
+        for (Card c : cards) {
+            int rank = c.getRank().toInt();
+            if (rank >= 3 && rank < bestRank) {
+                bestRank = rank;
+                lowest = c;
+            }
+        }
+        return lowest;
     }
 
     /**
@@ -388,11 +410,11 @@ public class ShitheadGame {
     }
 
     public Card getTopCardFromDeck() {
-        Vector cards = deck.getCards();
+        List<Card> cards = deck.getCards();
         if (cards.isEmpty()) {
             return null;
         }
-        return (Card) cards.get(cards.size() - 1);
+        return cards.get(cards.size() - 1);
     }
 
     public void playCardFromDeck(Card card) {
