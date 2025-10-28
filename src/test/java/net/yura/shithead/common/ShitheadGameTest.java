@@ -234,8 +234,8 @@ class ShitheadGameTest {
     @Test
     void testChooseFirstPlayer() {
         // given
-        p1.getHand().add(Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS));
-        p2.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
+        p1.getUpcards().add(Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS));
+        p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
 
         // when
         game.playerReady(p1);

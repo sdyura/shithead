@@ -8,11 +8,8 @@ import net.yura.shithead.common.json.SerializerUtil;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import net.yura.shithead.common.Player;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
@@ -28,7 +25,7 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         // TODO may need to shuffle the players
         game = new ShitheadGame(Arrays.asList(players));
         game.deal();
-        getInputFromClient(game.getCurrentPlayer().getName());
+        // we are in re-arrange mode, anyone can go
     }
 
     @Override
@@ -58,6 +55,7 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     public void midgamePlayerLogin(String oldName, String newName) {
 
         // TODO is this really needed, can we just use player events in new lobby version
+        //game.renamePlayer(oldName, newName);
 
         String renameCommand;
         try {
@@ -71,21 +69,22 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     }
 
     @Override
-    public void playerTimedOut(String s) {
+    public void playerTimedOut(String username) {
 
     }
 
     @Override
     public void objectFromPlayer(String username, Object o) {
-        if (!username.equals(game.getCurrentPlayer().getName())) {
+        if (game.isPlaying() && !username.equals(game.getCurrentPlayer().getName())) {
             throw new RuntimeException("not your turn");
         }
         String command = (String) o;
         commandParser.execute(game, command);
 
         // after move, notify all players
-        for (LobbySession session : getAllClients()) {
-            listoner.messageFromGame(command, Collections.singletonList(session));
+        listoner.messageFromGame(command, getAllClients());
+        if (game.isPlaying()) {
+            getInputFromClient(game.getCurrentPlayer().getName());
         }
     }
 
