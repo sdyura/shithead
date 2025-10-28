@@ -8,7 +8,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class CommandParser {
 
@@ -27,6 +29,26 @@ public class CommandParser {
             }
             return card;
         }
+        if (command.startsWith("ready ")) {
+            String[] tokens = command.split(" ");
+            if (tokens.length != 2) {
+                throw new IllegalArgumentException("incomplete ready command");
+            }
+            String playerName = decodePlayerName(tokens[1]);
+            Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+            if (player == null) {
+                throw new IllegalArgumentException("player not found: " + playerName);
+            }
+            Card lowest = player.findLowestCard();
+            Card currentMin = game.getPlayersReady().values().stream().filter(Objects::nonNull).min(Comparator.comparingInt(o -> o.getRank().toInt())).orElse(null);
+            // if we are not the lowest card, then there is no point in sending it
+            if (currentMin != null && lowest != null && currentMin.getRank().toInt() <= lowest.getRank().toInt()) {
+                lowest = null;
+            }
+
+            execute(game, command + " " + lowest);
+            return lowest;
+        }
 
         execute(game, command);
         return null;
@@ -41,38 +63,41 @@ public class CommandParser {
 
         switch (tokens[0]) {
             case "rearrange":
+                if (!game.isRearranging()) {
+                    throw new IllegalArgumentException("game not in rearranging mode");
+                }
                 if (tokens.length != 4) {
                     throw new IllegalArgumentException("incomplete rearrange command");
                 }
-                try {
-                    String playerName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
-                    Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
-                    if (player == null) {
-                        throw new IllegalArgumentException("player not found: " + playerName);
-                    }
-                    Card handCard = SerializerUtil.cardFromString(tokens[2]);
-                    Card upCard = SerializerUtil.cardFromString(tokens[3]);
-                    game.rearrangeCards(player, handCard, upCard);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                String playerName = decodePlayerName(tokens[1]);
+                Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                if (player == null) {
+                    throw new IllegalArgumentException("player not found: " + playerName);
                 }
+                Card handCard = SerializerUtil.cardFromString(tokens[2]);
+                Card upCard = SerializerUtil.cardFromString(tokens[3]);
+                game.rearrangeCards(player, handCard, upCard);
                 return;
             case "ready":
-                if (tokens.length != 2) {
+                if (!game.isRearranging()) {
+                    throw new IllegalArgumentException("game not in rearranging mode");
+                }
+                if (tokens.length != 3) {
                     throw new IllegalArgumentException("incomplete ready command");
                 }
-                try {
-                    String playerName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
-                    Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
-                    if (player == null) {
-                        throw new IllegalArgumentException("player not found: " + playerName);
-                    }
-                    game.playerReady(player);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                playerName = decodePlayerName(tokens[1]);
+                player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                if (player == null) {
+                    throw new IllegalArgumentException("player not found: " + playerName);
                 }
+                Card lowest = "null".equals(tokens[2]) ? null : SerializerUtil.cardFromString(tokens[2]);
+
+                game.playerReady(player, lowest);
                 return;
             case "play":
+                if (!game.isPlaying()) {
+                    throw new IllegalArgumentException("game not in playing mode");
+                }
                 if (tokens.length < 3) {
                     throw new IllegalArgumentException("incomplete play command");
                 }
@@ -122,6 +147,9 @@ public class CommandParser {
                 return;
 
             case "pickup":
+                if (!game.isPlaying()) {
+                    throw new IllegalArgumentException("game not in playing mode");
+                }
                 game.pickUpWastePile();
                 return;
 
@@ -129,17 +157,21 @@ public class CommandParser {
                 if (tokens.length != 3) {
                     throw new IllegalArgumentException("incomplete rename command");
                 }
-                try {
-                    String oldName = URLDecoder.decode(tokens[1], StandardCharsets.UTF_8.name());
-                    String newName = URLDecoder.decode(tokens[2], StandardCharsets.UTF_8.name());
-                    game.renamePlayer(oldName, newName);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
+                String oldName = decodePlayerName(tokens[1]);
+                String newName = decodePlayerName(tokens[2]);
+                game.renamePlayer(oldName, newName);
                 return;
 
             default:
                 throw new IllegalArgumentException("unknown command: " + tokens[0]);
+        }
+    }
+
+    private static String decodePlayerName(String encoded) {
+        try {
+            return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
