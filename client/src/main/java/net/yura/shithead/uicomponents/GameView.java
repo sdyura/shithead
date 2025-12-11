@@ -15,8 +15,6 @@ public class GameView extends Panel {
     private String myUsername;
     private final List<UICard> uiCards = new ArrayList<UICard>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
-    private final int cardWidth = CardImageManager.getCardBackImage().getIconWidth();
-    private final int cardHeight = CardImageManager.getCardBackImage().getIconHeight();
 
     public GameView() {
     }
@@ -66,11 +64,11 @@ public class GameView extends Panel {
         int deckSize = game.getDeck().getCards().size();
         int cardsToShowDeck = Math.min(deckSize, 3);
         if (cardsToShowDeck > 0) {
-            int stackHeightDeck = cardHeight + (cardsToShowDeck - 1) * padding;
+            int stackHeightDeck = CardImageManager.cardHeight + (cardsToShowDeck - 1) * padding;
             int yStartDeck = centerY - stackHeightDeck / 2;
             for (int i = 0; i < cardsToShowDeck; i++) {
                 UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
-                deckCard.setPosition(centerX - cardWidth - padding / 2, yStartDeck + i * padding);
+                deckCard.setPosition(centerX - CardImageManager.cardWidth - padding / 2, yStartDeck + i * padding);
                 uiCards.add(deckCard);
             }
         }
@@ -80,7 +78,7 @@ public class GameView extends Panel {
         int wastePileSize = wastePile.size();
         int cardsToShowWaste = Math.min(wastePileSize, 3);
         if (cardsToShowWaste > 0) {
-            int stackHeightWaste = cardHeight + (cardsToShowWaste - 1) * padding;
+            int stackHeightWaste = CardImageManager.cardHeight + (cardsToShowWaste - 1) * padding;
             int yStartWaste = centerY - stackHeightWaste / 2;
             for (int i = 0; i < cardsToShowWaste; i++) {
                 Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
@@ -104,7 +102,7 @@ public class GameView extends Panel {
 
         if (isLocalPlayer) {
             int x = centerX;
-            int y = height - cardHeight;
+            int y = height - CardImageManager.cardHeight;
             layoutHand(player, CardLocation.DOWN_CARDS, player.getDowncards(), x, y - padding - overlap * 2, false, false);
             layoutHand(player, CardLocation.UP_CARDS, player.getUpcards(), x, y - padding - overlap, false, true);
             layoutHand(player, CardLocation.HAND, player.getHand(), x, y, false, true);
@@ -123,12 +121,12 @@ public class GameView extends Panel {
 
     private void layoutHand(Player player, CardLocation location, List<Card> hand, int x, int y, boolean stack, boolean isFaceUp) {
 
-        x -= ((hand.size() * cardWidth) + (padding * (hand.size() - 1))) / 2;
+        x -= ((hand.size() * CardImageManager.cardWidth) + (padding * (hand.size() - 1))) / 2;
 
         for (int i = 0; i < hand.size(); i++) {
             Card card = hand.get(i);
             UICard uiCard = new UICard(card, player, location, isFaceUp);
-            uiCard.setPosition(x + i * (cardWidth + padding), y);
+            uiCard.setPosition(x + i * (CardImageManager.cardWidth + padding), y);
             uiCards.add(uiCard);
         }
     }
