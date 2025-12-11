@@ -6,9 +6,9 @@ import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -20,7 +20,11 @@ import java.util.Vector;
  */
 public class ShitheadGame {
 
-    private Set<Player> playersReady = new HashSet<>();
+    /**
+     * map of player that is ready to there lowest card, this card will be used to decide who goes first.
+     * Note! the lowest card for a player may be null!
+     */
+    private Map<Player,Card> playersReady = new HashMap<>();
     private List<Player> players = new ArrayList<>();
     private final Deck deck;
     private List<Card> wastePile = new ArrayList<>();
@@ -128,11 +132,44 @@ public class ShitheadGame {
         player.getUpcards().add(handCard);
     }
 
-    public void playerReady(Player player) {
+    void playerReady(Player player) {
+        playerReady(player, player.findLowestCard());
+    }
+
+    public void playerReady(Player player, Card lowest) {
         if (!isRearranging()) {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
-        playersReady.add(player);
+        playersReady.put(player, lowest);
+
+        if (isPlaying()) {
+            chooseFirstPlayer();
+        }
+    }
+
+    /**
+     * for this method to work we NEED each player to have the lowest card set in the hand
+     */
+    private void chooseFirstPlayer() {
+        int bestRank = Integer.MAX_VALUE;
+        Player firstPlayer = null;
+
+        for (Map.Entry<Player,Card> pc : playersReady.entrySet()) {
+            Card c = pc.getValue();
+            if (c != null) {
+                int rank = c.getRank().toInt();
+                if (rank < bestRank) {
+                    bestRank = rank;
+                    firstPlayer = pc.getKey();
+                }
+            }
+        }
+
+        // in very rare situations no player will have a valid starting card
+        // in this case the player at index 0 will go first
+        if (firstPlayer != null) {
+            currentPlayer = players.indexOf(firstPlayer);
+        }
     }
 
     /**
@@ -355,11 +392,11 @@ public class ShitheadGame {
         return playersReady.size() >= players.size();
     }
 
-    public Set<Player> getPlayersReady() {
+    public Map<Player, Card> getPlayersReady() {
         return playersReady;
     }
 
-    public void setPlayersReady(Set<Player> playersReady) {
+    public void setPlayersReady(Map<Player,Card> playersReady) {
         this.playersReady = playersReady;
     }
 
