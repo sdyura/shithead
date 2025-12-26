@@ -57,12 +57,7 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         // TODO is this really needed, can we just use player events in new lobby version
         //game.renamePlayer(oldName, newName);
 
-        String renameCommand;
-        try {
-            renameCommand = "rename " + URLEncoder.encode(oldName, StandardCharsets.UTF_8.name()) + " " + URLEncoder.encode(newName, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        String renameCommand = "rename " + CommandParser.encodePlayerName(oldName) + " " + CommandParser.encodePlayerName(newName);
 
         commandParser.execute(game, renameCommand);
         listoner.messageFromGame(renameCommand, getAllClients());

@@ -15,6 +15,7 @@ import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
+import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 
 public class ShitHeadApplication extends Application implements ActionListener {
@@ -83,8 +84,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
             final GameUI gameUI = new GameUI(properties, game, new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
-                    // TODO how do i handle hidden cards???
-                    // TODO gameUI.newCommand(actionCommand);
+                    new CommandParser().parse(game, actionCommand);
+                    //gameUI.newCommand(actionCommand);
                 }
             });
         }

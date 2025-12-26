@@ -153,4 +153,12 @@ public class CommandParser {
             throw new RuntimeException(e);
         }
     }
+
+    public static String encodePlayerName(String encoded) {
+        try {
+            return URLEncoder.encode(encoded, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

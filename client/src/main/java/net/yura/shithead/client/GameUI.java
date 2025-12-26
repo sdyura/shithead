@@ -19,6 +19,7 @@ public class GameUI implements ActionListener {
     GameView gameView;
     ActionListener gameCommandActionListener;
     ActionListener closeActionListener;
+    private String playerUsername = "Player 1"; // TODO hard coded
 
     public GameUI(Properties properties, ShitheadGame game, ActionListener gameCommandActionListener) {
         this.game = game;
@@ -34,7 +35,7 @@ public class GameUI implements ActionListener {
 
         gameView = (GameView) loader.find("game_view");
         gameView.setGame(game);
-        gameView.setPlayerID("Player 1");
+        gameView.setPlayerID(playerUsername);
 
         Frame frame = (Frame)loader.getRoot();
 
@@ -61,7 +62,14 @@ public class GameUI implements ActionListener {
             }
             close();
         }
-        // TODO game actions!!
+        else if ("play".equals(actionCommand)) {
+            // TODO for now, only ready command
+            gameCommandActionListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+        }
+        else {
+            // TODO game actions!!
+            System.out.println("unknown command " + actionCommand);
+        }
     }
 
     public void close() {
