@@ -28,7 +28,6 @@ class ShitheadGameTest {
             List<Player> players = game.getPlayers();
             p1 = players.get(0);
             p2 = players.get(1);
-            game.setPlayersReady(new HashSet<>(players));
 
             // Inject an empty deck to prevent hand refilling, which would break the tests
             java.lang.reflect.Field deckField = ShitheadGame.class.getDeclaredField("deck");
@@ -50,22 +49,26 @@ class ShitheadGameTest {
 
     @Test
     void testGameFlowAndWinCondition() {
-        // Setup P1
-        p1.getHand().add(Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES));
+        // All players are ready
+        game.playerReady(p1);
+        game.playerReady(p2);
+
+        // Setup P1 to start
+        p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES));
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.QUEEN, Suit.HEARTS));
 
         // Setup P2
-        p2.getHand().add(Card.getCardByRankSuit(Rank.SIX, Suit.HEARTS));
+        p2.getHand().add(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS));
         p2.getUpcards().add(Card.getCardByRankSuit(Rank.KING, Suit.CLUBS));
         p2.getDowncards().add(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS));
 
         // P1 plays from hand
-        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES))));
         assertTrue(p1.getHand().isEmpty());
         assertEquals(p2, game.getCurrentPlayer());
 
         // P2 plays from hand
-        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.SIX, Suit.HEARTS))));
+        assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS))));
         assertTrue(p2.getHand().isEmpty());
         assertEquals(p1, game.getCurrentPlayer());
 
@@ -77,17 +80,28 @@ class ShitheadGameTest {
 
     @Test
     void testPickUpWastePile() {
+        // Setup so P1 plays a King and P2 must pick it up.
+        // P1 must start
+        p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS)); // To start
         p1.getHand().add(Card.getCardByRankSuit(Rank.KING, Suit.CLUBS));
-        p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES)); // Ensure p1 doesn't win immediately
+        p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES));
 
-        // P1 plays a King
+        // P2 has a high card and an unplayable card
+        p2.getHand().add(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS)); // to not start
+        p2.getHand().add(Card.getCardByRankSuit(Rank.SIX, Suit.DIAMONDS));
+
+        game.playerReady(p1);
+        game.playerReady(p2); // P1 starts.
+
+        // P1 plays the 3.
+        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS)));
+        // P2's turn. Plays the 4.
+        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS)));
+        // P1's turn. Plays the King.
         game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.CLUBS)));
-        assertEquals(1, game.getWastePile().size());
-        assertEquals(p2, game.getCurrentPlayer());
 
-        // P2 has a 3, cannot play on a King
-        p2.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
-        assertFalse(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS))));
+        // P2's turn. Top card is King. P2 has a 6. Cannot play.
+        assertFalse(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.SIX, Suit.DIAMONDS))));
 
         // P2 picks up the pile
         int cardsInHandBefore = p2.getHand().size();
@@ -101,7 +115,21 @@ class ShitheadGameTest {
 
     @Test
     void testPlayFromDowncards() {
+        // Ensure hands and upcards are empty for both players
+        p1.getHand().clear();
+        p1.getUpcards().clear();
+        p2.getHand().clear();
+        p2.getUpcards().clear();
+
         p1.getDowncards().add(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS));
+        p2.getDowncards().add(Card.getCardByRankSuit(Rank.KING, Suit.HEARTS));
+
+
+        // All players are ready
+        game.playerReady(p1);
+        game.playerReady(p2);
+        // Since hand and upcards are empty, the first player will be p1 (index 0) by default.
+        // No need to set it manually.
 
         // P1 plays their downcard (blind)
         assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS))));
@@ -111,13 +139,18 @@ class ShitheadGameTest {
 
     @Test
     void testPlaySpecialCards() {
+        // All players are ready
+        game.playerReady(p1);
+        game.playerReady(p2);
+
         // Give players upcards so they don't win immediately
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS));
         p2.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.CLUBS));
 
         // Test playing a Two on any card
-        p1.getHand().add(Card.getCardByRankSuit(Rank.KING, Suit.SPADES));
-        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES)));
+        p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES));
+        p2.getHand().add(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS));
+        game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES)));
 
         p2.getHand().add(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS));
         assertTrue(game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS))));
@@ -138,6 +171,8 @@ class ShitheadGameTest {
         game.deal();
         game.playerReady(game.getPlayers().get(0));
         game.playerReady(game.getPlayers().get(1));
+        Player originalPlayer = game.getCurrentPlayer();
+        Player otherPlayer = game.getPlayers().stream().filter(p -> p != originalPlayer).findFirst().get();
 
         Vector cards = deck.getCards();
         Stack stack = new Stack();
@@ -157,7 +192,7 @@ class ShitheadGameTest {
         assertEquals(topCard, playedCard);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertTrue(game.getWastePile().contains(topCard));
-        assertEquals("Player 2", game.getCurrentPlayer().getName());
+        assertEquals(otherPlayer, game.getCurrentPlayer());
     }
 
     @Test
@@ -167,6 +202,8 @@ class ShitheadGameTest {
         game.deal();
         game.playerReady(game.getPlayers().get(0));
         game.playerReady(game.getPlayers().get(1));
+        Player originalPlayer = game.getCurrentPlayer();
+        Player otherPlayer = game.getPlayers().stream().filter(p -> p != originalPlayer).findFirst().get();
 
         // Make the top card of the deck unplayable
         game.setWastePile(new java.util.ArrayList<>(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES))));
@@ -180,8 +217,7 @@ class ShitheadGameTest {
 
         Card topCard = (Card) deck.getCards().get(deck.getCards().size() - 1);
         int initialDeckSize = deck.getCards().size();
-        Player currentPlayer = game.getCurrentPlayer();
-        int initialHandSize = currentPlayer.getHand().size();
+        int initialHandSize = originalPlayer.getHand().size();
 
         // when
         Card playedCard = new CommandParser().parse(game, "play deck");
@@ -190,8 +226,22 @@ class ShitheadGameTest {
         assertEquals(topCard, playedCard);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertEquals(0, game.getWastePile().size());
-        assertEquals(initialHandSize + 2, currentPlayer.getHand().size()); // +1 for the card from the deck, +1 for the card from the waste pile
-        assertTrue(currentPlayer.getHand().contains(topCard));
-        assertEquals("Player 2", game.getCurrentPlayer().getName());
+        assertEquals(initialHandSize + 2, originalPlayer.getHand().size()); // +1 for the card from the deck, +1 for the card from the waste pile
+        assertTrue(originalPlayer.getHand().contains(topCard));
+        assertEquals(otherPlayer, game.getCurrentPlayer());
+    }
+
+    @Test
+    void testChooseFirstPlayer() {
+        // given
+        p1.getUpcards().add(Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS));
+        p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
+
+        // when
+        game.playerReady(p1);
+        game.playerReady(p2);
+
+        // then
+        assertEquals(p2, game.getCurrentPlayer());
     }
 }

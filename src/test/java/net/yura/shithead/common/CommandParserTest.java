@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
@@ -124,7 +125,7 @@ public class CommandParserTest {
 
         // In order to test the "rearrange" command, the game must be in the "rearranging" state.
         // The setUp() method puts the game into the "playing" state, so we need to reset it here.
-        game.setPlayersReady(new java.util.HashSet<>());
+        game.setPlayersReady(new HashSet<>());
 
         // --- Action: Execute the rearrange command ---
         // Command format: rearrange <player_name> <hand_card> <up_card>
