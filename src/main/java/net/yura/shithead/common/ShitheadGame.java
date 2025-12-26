@@ -151,8 +151,7 @@ public class ShitheadGame {
 
         // first find the best rank
         for (Player pc : playersReady) {
-            List<Card> combined = getCombinedHandAndUpcards(pc);
-            Card c = findLowestStartCard(combined);
+            Card c = findLowestStartCard(pc.getUpcards());
             if (c != null) {
                 int rank = c.getRank().toInt();
                 if (rank < bestRank) {
@@ -171,8 +170,7 @@ public class ShitheadGame {
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             if (playersReady.contains(p)) {
-                List<Card> combined = getCombinedHandAndUpcards(p);
-                for (Card c : combined) {
+                for (Card c : p.getUpcards()) {
                     if (c.getRank().toInt() == bestRank) {
                         currentPlayer = i;
                         return;
@@ -180,13 +178,6 @@ public class ShitheadGame {
                 }
             }
         }
-    }
-
-    private List<Card> getCombinedHandAndUpcards(Player p) {
-        List<Card> combined = new ArrayList<>();
-        combined.addAll(p.getUpcards());
-        combined.addAll(p.getHand());
-        return combined;
     }
 
     public static Card findLowestStartCard(Collection<Card> cards) {

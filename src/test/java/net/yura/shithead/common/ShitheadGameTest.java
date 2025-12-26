@@ -233,9 +233,9 @@ class ShitheadGameTest {
 
     @Test
     void testChooseFirstPlayer() {
-        // P2 has lowest card in hand
+        // P2 has lowest card in upcards
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS));
-        p2.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
+        p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
         game.playerReady(p1);
         game.playerReady(p2);
         assertEquals(p2, game.getCurrentPlayer());
@@ -244,7 +244,7 @@ class ShitheadGameTest {
     @Test
     void testChooseFirstPlayerTie() {
         // Both players have a 3, P1 should be chosen as they are first in the list
-        p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS));
+        p1.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS));
         p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
         game.playerReady(p1);
         game.playerReady(p2);
