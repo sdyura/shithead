@@ -1,27 +1,46 @@
 package net.yura.shithead.uicomponents;
 
 import net.yura.mobile.gui.Graphics2D;
+import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Panel;
-import java.util.ArrayList;
-import java.util.List;
-import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.layout.XULLoader;
+import net.yura.mobile.gui.plaf.LookAndFeel;
+import net.yura.mobile.logging.Logger;
+import net.yura.shithead.ShitheadActionListener;
+import net.yura.shithead.ShitheadUtil;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import net.yura.cardsengine.Card;
+import net.yura.mobile.gui.ActionListener;
 
-public class GameView extends Panel {
-
+public class GameView extends Panel implements ActionListener {
     private ShitheadGame game;
     private String myUsername;
     private final List<UICard> uiCards = new ArrayList<UICard>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
+    private Button playButton;
+    private ShitheadActionListener actionListener;
 
     public GameView() {
     }
 
+    public void setup(XULLoader loader, ShitheadActionListener actionListener) {
+        this.actionListener = actionListener;
+        setName("GameView");
+        playButton = (Button) loader.find("play_button");
+        playButton.addActionListener(this);
+    }
+
     public void setGame(ShitheadGame game) {
         this.game = game;
+        if (game != null) {
+            ShitheadUtil.sortCards(game.getCurrentPlayer().getHand());
+        }
         layoutCards();
+        updatePlayButton();
         repaint();
     }
 
@@ -128,6 +147,97 @@ public class GameView extends Panel {
             UICard uiCard = new UICard(card, player, location, isFaceUp);
             uiCard.setPosition(x + i * (CardImageManager.cardWidth + padding), y);
             uiCards.add(uiCard);
+        }
+    }
+    private void updatePlayButton() {
+        if (game == null) {
+            playButton.setVisible(false);
+            return;
+        }
+        playButton.setVisible(true);
+        Player.State state = game.getCurrentPlayer().getState();
+        List<UICard> selectedCards = getSelectedCards();
+        switch (state) {
+            case SWAPPING:
+                playButton.setText("Ready");
+                playButton.setEnabled(true);
+                break;
+            case PLAYING:
+                if (selectedCards.isEmpty()) {
+                    playButton.setText("Pickup");
+                    playButton.setEnabled(true);
+                } else {
+                    playButton.setText("Play");
+                    playButton.setEnabled(game.isPlayable(selectedCards.stream().map(UICard::getCard).collect(Collectors.toList())));
+                }
+                break;
+            default:
+                playButton.setVisible(false);
+        }
+    }
+
+    private List<UICard> getSelectedCards() {
+        return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
+    }
+    @Override
+    public void processMouseEvent(int type, int x, int y, int modifiers) {
+        super.processMouseEvent(type, x, y, modifiers);
+        if (type == LookAndFeel.POINTER_RELEASED) {
+            for (int i = uiCards.size() - 1; i >= 0; i--) {
+                UICard uiCard = uiCards.get(i);
+                if (uiCard.contains(x, y)) {
+                    onCardClick(uiCard);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void onCardClick(UICard uiCard) {
+        if (game == null || !myUsername.equals(game.getCurrentPlayer().getName())) {
+            return;
+        }
+        Player.State state = game.getCurrentPlayer().getState();
+        if (state == Player.State.SWAPPING) {
+            if (uiCard.getLocation() == CardLocation.HAND || uiCard.getLocation() == CardLocation.UP_CARDS) {
+                uiCard.toggleSelection();
+                List<UICard> selectedCards = getSelectedCards();
+                if (selectedCards.size() == 2) {
+                    UICard card1 = selectedCards.get(0);
+                    UICard card2 = selectedCards.get(1);
+                    actionListener.actionPerformed("swap " + card1.getCard() + " " + card2.getCard());
+                    card1.setSelected(false);
+                    card2.setSelected(false);
+                }
+            }
+        } else if (state == Player.State.PLAYING) {
+            if (uiCard.getPlayer() != null && uiCard.getPlayer().getName().equals(myUsername)
+                    && (uiCard.getLocation() == CardLocation.HAND || uiCard.getLocation() == CardLocation.UP_CARDS)) {
+                uiCard.toggleSelection();
+                updatePlayButton();
+            }
+        }
+        repaint();
+    }
+    @Override
+    public void actionPerformed(String actionCommand) {
+        if ("play".equals(actionCommand)) {
+            Player.State state = game.getCurrentPlayer().getState();
+            if (state == Player.State.SWAPPING) {
+                actionListener.actionPerformed("ready");
+            } else if (state == Player.State.PLAYING) {
+                List<UICard> selectedCards = getSelectedCards();
+                if (selectedCards.isEmpty()) {
+                    actionListener.actionPerformed("pickup");
+                } else {
+                    String cardsString = selectedCards.stream()
+                            .map(c -> c.getCard().toString())
+                            .collect(Collectors.joining(" "));
+                    actionListener.actionPerformed("play hand " + cardsString);
+                }
+            }
+        } else {
+            Logger.warn("Unknown action in GameView: " + actionCommand);
         }
     }
 }

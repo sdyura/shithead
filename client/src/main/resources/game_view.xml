@@ -3,4 +3,7 @@
 <dialog columns="1" gap="10" i18n="true" text="app.title">
     <menubar name="menu_bar"/>
     <panel name="game_view" property="class=net.yura.shithead.uicomponents.GameView" weightx="1" weighty="1"/>
+    <panel columns="1" halign="right" valign="bottom">
+        <button action="play" name="play_button" text="play_button"/>
+    </panel>
 </dialog>
