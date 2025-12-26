@@ -42,7 +42,9 @@ public class UICard {
 
         icon.paintIcon(c, g, x, y);
         if (selected) {
-            selectionBorder.paintBorder(c, g, x, y, icon.getIconWidth(), icon.getIconHeight());
+            g.translate(x, y);
+            selectionBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
+            g.translate(-x, -y);
         }
     }
 

@@ -33,7 +33,6 @@ public class GameUI implements ActionListener {
         }
 
         gameView = (GameView) loader.find("game_view");
-        gameView.setup(loader, gameCommandActionListener);
         gameView.setGame(game);
         gameView.setPlayerID("Player 1");
 
