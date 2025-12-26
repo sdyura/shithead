@@ -233,15 +233,31 @@ class ShitheadGameTest {
 
     @Test
     void testChooseFirstPlayer() {
-        // given
+        // P2 has lowest card in hand
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS));
-        p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
-
-        // when
+        p2.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
         game.playerReady(p1);
         game.playerReady(p2);
-
-        // then
         assertEquals(p2, game.getCurrentPlayer());
+    }
+
+    @Test
+    void testChooseFirstPlayerTie() {
+        // Both players have a 3, P1 should be chosen as they are first in the list
+        p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS));
+        p2.getUpcards().add(Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS));
+        game.playerReady(p1);
+        game.playerReady(p2);
+        assertEquals(p1, game.getCurrentPlayer());
+    }
+
+    @Test
+    void testChooseFirstPlayerNoValidCards() {
+        // No player has a valid starting card (rank >= 3)
+        p1.getUpcards().add(Card.getCardByRankSuit(Rank.TWO, Suit.CLUBS));
+        p2.getHand().add(Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS));
+        game.playerReady(p1);
+        game.playerReady(p2);
+        assertEquals(p1, game.getCurrentPlayer()); // Should default to P1 (index 0)
     }
 }

@@ -148,24 +148,45 @@ public class ShitheadGame {
      */
     private void chooseFirstPlayer() {
         int bestRank = Integer.MAX_VALUE;
-        Player firstPlayer = null;
 
+        // first find the best rank
         for (Player pc : playersReady) {
-            Card c = findLowestStartCard(pc.getUpcards());
+            List<Card> combined = getCombinedHandAndUpcards(pc);
+            Card c = findLowestStartCard(combined);
             if (c != null) {
                 int rank = c.getRank().toInt();
                 if (rank < bestRank) {
                     bestRank = rank;
-                    firstPlayer = pc;
                 }
             }
         }
 
-        // in very rare situations no player will have a valid starting card
-        // in this case the player at index 0 will go first
-        if (firstPlayer != null) {
-            currentPlayer = players.indexOf(firstPlayer);
+        // if no one has a valid card, player 0 starts
+        if (bestRank == Integer.MAX_VALUE) {
+            currentPlayer = 0;
+            return;
         }
+
+        // now find the first player with that rank
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (playersReady.contains(p)) {
+                List<Card> combined = getCombinedHandAndUpcards(p);
+                for (Card c : combined) {
+                    if (c.getRank().toInt() == bestRank) {
+                        currentPlayer = i;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private List<Card> getCombinedHandAndUpcards(Player p) {
+        List<Card> combined = new ArrayList<>();
+        combined.addAll(p.getUpcards());
+        combined.addAll(p.getHand());
+        return combined;
     }
 
     public static Card findLowestStartCard(Collection<Card> cards) {
