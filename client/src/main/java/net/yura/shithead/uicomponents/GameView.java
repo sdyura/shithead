@@ -1,16 +1,19 @@
 package net.yura.shithead.uicomponents;
 
+import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Graphics2D;
+import net.yura.mobile.gui.KeyEvent;
 import net.yura.mobile.gui.components.Panel;
-import java.util.ArrayList;
-import java.util.List;
-import net.yura.cardsengine.Card;
+import net.yura.mobile.gui.layout.GridBagLayout;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import net.yura.cardsengine.Card;
 
 public class GameView extends Panel {
-
     private ShitheadGame game;
     private String myUsername;
     private final List<UICard> uiCards = new ArrayList<UICard>();
@@ -31,6 +34,7 @@ public class GameView extends Panel {
 
     @Override
     public void doLayout() {
+        super.doLayout();
         layoutCards();
     }
 
@@ -128,6 +132,24 @@ public class GameView extends Panel {
             UICard uiCard = new UICard(card, player, location, isFaceUp);
             uiCard.setPosition(x + i * (CardImageManager.cardWidth + padding), y);
             uiCards.add(uiCard);
+        }
+    }
+
+    private List<UICard> getSelectedCards() {
+        return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
+    }
+    @Override
+    public void processMouseEvent(int type, int x, int y, KeyEvent buttons) {
+
+        if (type == DesktopPane.RELEASED) {
+            for (int i = uiCards.size() - 1; i >= 0; i--) {
+                UICard uiCard = uiCards.get(i);
+                if (uiCard.contains(x, y)) {
+                    uiCard.toggleSelection();
+                    repaint();
+                    break;
+                }
+            }
         }
     }
 }
