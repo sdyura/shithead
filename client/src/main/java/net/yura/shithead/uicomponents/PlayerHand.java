@@ -48,4 +48,23 @@ public class PlayerHand {
     public List<UICard> getUiCards() {
         return uiCards;
     }
+
+    public void paint(Graphics2D g, Component c) {
+        for (UICard card : uiCards) {
+            card.paint(g, c);
+        }
+    }
+
+    public boolean processMouseEvent(int type, int x, int y, net.yura.mobile.gui.KeyEvent buttons) {
+        if (type == net.yura.mobile.gui.DesktopPane.RELEASED) {
+            for (int i = uiCards.size() - 1; i >= 0; i--) {
+                UICard uiCard = uiCards.get(i);
+                if (uiCard.contains(x, y)) {
+                    uiCard.toggleSelection();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

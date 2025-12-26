@@ -44,6 +44,10 @@ public class GameView extends Panel {
     @Override
     public void paintComponent(Graphics2D g) {
         super.paintComponent(g);
+        for (PlayerHand hand : playerHands.values()) {
+            hand.paint(g, this);
+        }
+        // paint deck and waste pile
         for (int i = 0; i < uiCards.size(); i++) {
             uiCards.get(i).paint(g, this);
         }
@@ -128,7 +132,6 @@ public class GameView extends Panel {
                 hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false);
             }
         }
-        uiCards.addAll(hand.getUiCards());
     }
 
     private List<UICard> getSelectedCards() {
@@ -143,7 +146,13 @@ public class GameView extends Panel {
                 if (uiCard.contains(x, y)) {
                     uiCard.toggleSelection();
                     repaint();
-                    break;
+                    return;
+                }
+            }
+            for (PlayerHand hand : playerHands.values()) {
+                if (hand.processMouseEvent(type, x, y, buttons)) {
+                    repaint();
+                    return;
                 }
             }
         }
