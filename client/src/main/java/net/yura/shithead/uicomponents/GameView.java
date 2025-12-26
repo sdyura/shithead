@@ -18,8 +18,7 @@ import net.yura.cardsengine.Card;
 public class GameView extends Panel {
     private ShitheadGame game;
     private String myUsername;
-    private final CardPile deckPile = new CardPile();
-    private final CardPile wastePile = new CardPile();
+    private final List<UICard> uiCards = new ArrayList<UICard>();
     private final Map<Player, PlayerHand> playerHands = new HashMap<Player, PlayerHand>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
 
@@ -45,16 +44,13 @@ public class GameView extends Panel {
     @Override
     public void paintComponent(Graphics2D g) {
         super.paintComponent(g);
-        for (PlayerHand hand : playerHands.values()) {
-            hand.paint(g, this);
+        for (int i = 0; i < uiCards.size(); i++) {
+            uiCards.get(i).paint(g, this);
         }
-        deckPile.paint(g, this);
-        wastePile.paint(g, this);
     }
 
     private void layoutCards() {
-        deckPile.clear();
-        wastePile.clear();
+        uiCards.clear();
         playerHands.clear();
         if (game == null) {
             return;
@@ -81,22 +77,22 @@ public class GameView extends Panel {
             for (int i = 0; i < cardsToShowDeck; i++) {
                 UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
                 deckCard.setPosition(centerX - CardImageManager.cardWidth - padding / 2, yStartDeck + i * padding);
-                deckPile.addCard(deckCard);
+                uiCards.add(deckCard);
             }
         }
 
         // Waste Pile
-        List<Card> gameWastePile = game.getWastePile();
-        int wastePileSize = gameWastePile.size();
+        List<Card> wastePile = game.getWastePile();
+        int wastePileSize = wastePile.size();
         int cardsToShowWaste = Math.min(wastePileSize, 3);
         if (cardsToShowWaste > 0) {
             int stackHeightWaste = CardImageManager.cardHeight + (cardsToShowWaste - 1) * padding;
             int yStartWaste = centerY - stackHeightWaste / 2;
             for (int i = 0; i < cardsToShowWaste; i++) {
-                Card card = gameWastePile.get(wastePileSize - cardsToShowWaste + i);
+                Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
                 UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
                 wastePileCard.setPosition(centerX + padding / 2, yStartWaste + i * padding);
-                wastePile.addCard(wastePileCard);
+                uiCards.add(wastePileCard);
             }
         }
     }
@@ -117,9 +113,9 @@ public class GameView extends Panel {
 
         if (isLocalPlayer) {
             hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2);
-            hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false, padding);
-            hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true, padding);
-            hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2 + padding, true, padding);
+            hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
+            hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
+            hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2 + padding, true);
         } else {
             int otherPlayerCount = playerCount - 1;
             if (otherPlayerCount > 0) {
@@ -127,50 +123,27 @@ public class GameView extends Panel {
                 int x = centerX + (int) (radiusX * Math.cos(angle));
                 int y = centerY + (int) (radiusY * Math.sin(angle));
                 hand.setPosition(x, y);
-                hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false, padding);
-                hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true, padding);
-                hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false, padding);
+                hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
+                hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
+                hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false);
             }
         }
+        uiCards.addAll(hand.getUiCards());
     }
 
     private List<UICard> getSelectedCards() {
-        List<UICard> selectedCards = new ArrayList<>();
-        for (PlayerHand hand : playerHands.values()) {
-            for (UICard card : hand.getUiCards()) {
-                if (card.isSelected()) {
-                    selectedCards.add(card);
-                }
-            }
-        }
-        for (UICard card : wastePile.getUiCards()) {
-            if (card.isSelected()) {
-                selectedCards.add(card);
-            }
-        }
-        return selectedCards;
+        return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
     }
-
     @Override
     public void processMouseEvent(int type, int x, int y, KeyEvent buttons) {
-        if (type == DesktopPane.RELEASED) {
-            for (PlayerHand hand : playerHands.values()) {
-                for (int i = hand.getUiCards().size() - 1; i >= 0; i--) {
-                    UICard uiCard = hand.getUiCards().get(i);
-                    if (uiCard.contains(x, y)) {
-                        uiCard.toggleSelection();
-                        repaint();
-                        return;
-                    }
-                }
-            }
 
-            for (int i = wastePile.getUiCards().size() - 1; i >= 0; i--) {
-                UICard uiCard = wastePile.getUiCards().get(i);
+        if (type == DesktopPane.RELEASED) {
+            for (int i = uiCards.size() - 1; i >= 0; i--) {
+                UICard uiCard = uiCards.get(i);
                 if (uiCard.contains(x, y)) {
                     uiCard.toggleSelection();
                     repaint();
-                    return;
+                    break;
                 }
             }
         }

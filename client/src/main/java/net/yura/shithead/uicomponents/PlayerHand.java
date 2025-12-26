@@ -13,6 +13,7 @@ public class PlayerHand {
     private List<UICard> uiCards = new ArrayList<UICard>();
     private int x;
     private int y;
+    private static final int padding = XULLoader.adjustSizeToDensity(2);
 
     public PlayerHand(Player player) {
         this.player = player;
@@ -23,12 +24,6 @@ public class PlayerHand {
         this.y = y;
     }
 
-    public void paint(Graphics2D g, Component c) {
-        for (int i = 0; i < uiCards.size(); i++) {
-            uiCards.get(i).paint(g, c);
-        }
-    }
-
     public void addCard(UICard card) {
         uiCards.add(card);
     }
@@ -37,7 +32,7 @@ public class PlayerHand {
         uiCards.clear();
     }
 
-    public void layoutHand(CardLocation location, List<Card> cards, int yOffset, boolean isFaceUp, int padding) {
+    public void layoutHand(CardLocation location, List<Card> cards, int yOffset, boolean isFaceUp) {
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
         int startX = this.x - handWidth / 2;
         int startY = this.y + yOffset;
