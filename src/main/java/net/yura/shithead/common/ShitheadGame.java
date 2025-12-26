@@ -148,35 +148,34 @@ public class ShitheadGame {
      */
     private void chooseFirstPlayer() {
         int bestRank = Integer.MAX_VALUE;
+        Player firstPlayer = null;
 
-        // first find the best rank
-        for (Player pc : playersReady) {
-            Card c = findLowestStartCard(pc.getUpcards());
-            if (c != null) {
-                int rank = c.getRank().toInt();
-                if (rank < bestRank) {
-                    bestRank = rank;
-                }
-            }
-        }
-
-        // if no one has a valid card, player 0 starts
-        if (bestRank == Integer.MAX_VALUE) {
-            currentPlayer = 0;
-            return;
-        }
-
-        // now find the first player with that rank
-        for (int i = 0; i < players.size(); i++) {
-            Player p = players.get(i);
+        // Iterate over the ordered list of players to ensure deterministic selection
+        for (Player p : players) {
+            // Only consider players who are ready
             if (playersReady.contains(p)) {
-                for (Card c : p.getUpcards()) {
-                    if (c.getRank().toInt() == bestRank) {
-                        currentPlayer = i;
-                        return;
+                Card c = findLowestStartCard(p.getUpcards());
+                if (c != null) {
+                    int rank = c.getRank().toInt();
+                    // If this player's lowest card is better than the best we've seen,
+                    // they become the new candidate for the first player.
+                    // Because we iterate in player order, the first player with the
+                    // best rank will be selected and will not be overridden by another
+                    // player with the same rank.
+                    if (rank < bestRank) {
+                        bestRank = rank;
+                        firstPlayer = p;
                     }
                 }
             }
+        }
+
+        // in very rare situations no player will have a valid starting card
+        // in this case the player at index 0 will go first
+        if (firstPlayer != null) {
+            currentPlayer = players.indexOf(firstPlayer);
+        } else {
+            currentPlayer = 0;
         }
     }
 
