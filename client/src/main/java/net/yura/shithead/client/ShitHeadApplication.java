@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import net.yura.cardsengine.Card;
 import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
@@ -15,7 +17,9 @@ import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
+import net.yura.shithead.common.AutoPlay;
 import net.yura.shithead.common.CommandParser;
+import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 
 public class ShitHeadApplication extends Application implements ActionListener {
@@ -81,13 +85,21 @@ public class ShitHeadApplication extends Application implements ActionListener {
             ShitheadGame game = new ShitheadGame(4);
             game.deal();
             game.playerReady(game.getPlayers().get(0));
+            Player me = game.getPlayers().get(1);
             game.playerReady(game.getPlayers().get(2));
             game.playerReady(game.getPlayers().get(3));
 
-            final GameUI gameUI = new GameUI(properties, game, "Player 2", new ActionListener() {
+            final GameUI gameUI = new GameUI(properties, game, me.getName(), new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
-                    new CommandParser().parse(game, actionCommand);
+                    CommandParser parser = new CommandParser();
+                    parser.parse(game, actionCommand);
+
+                    while (!game.isFinished() && game.getCurrentPlayer() != me) {
+                        Card card = AutoPlay.findBestVisibleCard(game);
+                        parser.parse(game, card == null ? "pickup" : "play " + (game.getCurrentPlayer().getHand().contains(card) ? "hand " : "up ") + card);
+                    }
+
                     DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
                     DesktopPane.getDesktopPane().getSelectedFrame().repaint();
                     //gameUI.newCommand(actionCommand);

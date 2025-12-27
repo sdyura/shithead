@@ -1,6 +1,5 @@
 package net.yura.shithead.uicomponents;
 
-import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.KeyEvent;
@@ -83,13 +82,13 @@ public class GameView extends Panel {
         }
 
         for (PlayerHand hand : playerHands.values()) {
-            hand.setCurrentPlayer(false);
+            hand.setWaitingForInput(false);
         }
 
         if (game.isRearranging()) {
             for (Player player : game.getPlayers()) {
                 if (!game.getPlayersReady().contains(player)) {
-                    playerHands.get(player).setCurrentPlayer(true);
+                    playerHands.get(player).setWaitingForInput(true);
                 }
             }
         } else {
@@ -97,7 +96,7 @@ public class GameView extends Panel {
             if (currentPlayer != null) {
                 PlayerHand hand = playerHands.get(currentPlayer);
                 if (hand != null) {
-                    hand.setCurrentPlayer(true);
+                    hand.setWaitingForInput(true);
                 }
             }
         }
@@ -144,7 +143,7 @@ public class GameView extends Panel {
         int radiusY = height / 2 - 50;
         int overlap = XULLoader.adjustSizeToDensity(20);
 
-        PlayerHand hand = new PlayerHand(game, player, gameCommandListener);
+        PlayerHand hand = new PlayerHand(game, player, isLocalPlayer, gameCommandListener);
         playerHands.put(player, hand);
 
         if (isLocalPlayer) {
@@ -172,20 +171,17 @@ public class GameView extends Panel {
         if (type == DesktopPane.RELEASED) {
             for (int i = uiCards.size() - 1; i >= 0; i--) {
                 UICard uiCard = uiCards.get(i);
-                if (uiCard.contains(x, y)) {
-                    uiCard.toggleSelection();
-                    repaint();
-                    return;
+                // if user clicks on waste pile during our turn, this mean we should pick up the waste pile
+                if (uiCard.contains(x, y) && uiCard.getLocation() == CardLocation.WASTE && game.getCurrentPlayer().getName().equals(myUsername)) {
+                    gameCommandListener.pickUpWaste();
                 }
             }
             for (PlayerHand hand : playerHands.values()) {
                 // only allow clicking on my own cards
-                if (hand.player.getName().equals(myUsername)) {
-                    if (hand.isCurrentPlayer()) {
-                        if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
-                            repaint();
-                            return;
-                        }
+                if (hand.player.getName().equals(myUsername) && hand.isWaitingForInput()) {
+                    if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
+                        repaint();
+                        return;
                     }
                 }
             }

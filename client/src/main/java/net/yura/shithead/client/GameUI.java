@@ -11,6 +11,7 @@ import net.yura.shithead.common.CardComparator;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
+import net.yura.shithead.uicomponents.CardLocation;
 import net.yura.shithead.uicomponents.GameView;
 import net.yura.shithead.uicomponents.GameViewListener;
 
@@ -64,6 +65,16 @@ public class GameUI implements ActionListener, GameViewListener {
     @Override
     public void swapCards(Card card1, Card card2) {
         gameCommandListener.actionPerformed("swap " + CommandParser.encodePlayerName(playerUsername) +" " + card1 + " " + card2);
+    }
+
+    @Override
+    public void playVisibleCard(boolean hand, Card card) {
+        gameCommandListener.actionPerformed("play " + (hand ? "hand " : "up ") + card);
+    }
+
+    @Override
+    public void pickUpWaste() {
+        gameCommandListener.actionPerformed("pickup");
     }
 
     @Override

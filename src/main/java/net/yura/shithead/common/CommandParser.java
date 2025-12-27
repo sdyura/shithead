@@ -14,6 +14,9 @@ import java.util.Objects;
 
 public class CommandParser {
 
+    /**
+     * commands from UI, can be used for playing hidden cards
+     */
     public Card parse(ShitheadGame game, String command) {
         if (command.startsWith("play down ")) {
             int index = Integer.parseInt(command.substring("play down ".length()));
@@ -34,6 +37,9 @@ public class CommandParser {
         return null;
     }
 
+    /**
+     * game engine mutation command (no hidden cards)
+     */
     public void execute(ShitheadGame game, String command) {
 
         String[] tokens = command.split(" ");

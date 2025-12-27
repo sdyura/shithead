@@ -19,13 +19,15 @@ public class PlayerHand {
     private final List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
-    private boolean isCurrentPlayer = false;
+    final private boolean isCurrentPlayer;
+    private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
-    public PlayerHand(ShitheadGame game, Player player, GameViewListener gameCommandListener) {
+    public PlayerHand(ShitheadGame game, Player player, boolean isLocalPlayer, GameViewListener gameCommandListener) {
         this.game = game;
         this.player = player;
         this.gameCommandListener = gameCommandListener;
+        this.isCurrentPlayer = isLocalPlayer;
     }
 
     public void setPosition(int x, int y) {
@@ -33,12 +35,12 @@ public class PlayerHand {
         this.y = y;
     }
 
-    public void setCurrentPlayer(boolean isCurrentPlayer) {
-        this.isCurrentPlayer = isCurrentPlayer;
+    public void setWaitingForInput(boolean isCurrentPlayer) {
+        this.isWaitingForInput = isCurrentPlayer;
     }
 
-    public boolean isCurrentPlayer() {
-        return isCurrentPlayer;
+    public boolean isWaitingForInput() {
+        return isWaitingForInput;
     }
 
     public void addCard(UICard card) {
@@ -70,7 +72,7 @@ public class PlayerHand {
     }
 
     public void paint(Graphics2D g, Component c) {
-        if (isCurrentPlayer) {
+        if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
             int arrowWidth = XULLoader.adjustSizeToDensity(10);
             int arrowHeight = XULLoader.adjustSizeToDensity(15);
@@ -105,6 +107,10 @@ public class PlayerHand {
                         else {
                             System.out.println("too many cards selected???? " + selected);
                         }
+                    }
+                    else if (!game.isFinished()) {
+                        // TODO if we have 2 of the same rank, we want to ONLY select it, so we can then play more then 1 at a time
+                        gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, uiCard.getCard());
                     }
                     return true;
                 }

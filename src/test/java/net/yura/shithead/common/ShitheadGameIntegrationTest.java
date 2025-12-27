@@ -4,8 +4,6 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,11 +38,9 @@ public class ShitheadGameIntegrationTest {
             int initialHandSize = currentPlayer.getHand().size();
             int initialWastePileSize = game.getWastePile().size();
 
-            Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
-
             // --- Player Logic: Find a valid card to play ---
             // The AI finds the best card from hand or up-cards.
-            Card cardToPlay = findBestPlayableCard(game, currentPlayer, topCard);
+            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
 
             if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
@@ -99,20 +95,6 @@ public class ShitheadGameIntegrationTest {
         return null; // Should not happen in a 2-player game
     }
 
-    private Card findBestPlayableCard(ShitheadGame game, Player player, Card topCard) {
-        Card bestCard = null;
-        List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
-
-        for (Card card : source) {
-            if (game.isPlayable(card.getRank(), topCard)) {
-                if (bestCard == null || card.getRank().toInt() < bestCard.getRank().toInt()) {
-                    bestCard = card;
-                }
-            }
-        }
-        return bestCard;
-    }
-
     @Test
     public void testCardSwappingPhase() {
         // --- Setup: Create a 2-player game with a predictable deck ---
@@ -158,6 +140,7 @@ public class ShitheadGameIntegrationTest {
         }, "Should not be able to swap cards after the game has started.");
     }
 
+    @Test
     public void testFull3PlayerGameWithRuleBasedPlayer() {
         // This test has its own setup for a 3-player game.
         Deck deck = new Deck(1);
@@ -183,10 +166,8 @@ public class ShitheadGameIntegrationTest {
             int initialHandSize = currentPlayer.getHand().size();
             int initialWastePileSize = game.getWastePile().size();
 
-            Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
-
             // --- Player Logic: Find a valid card to play ---
-            Card cardToPlay = findBestPlayableCard(game, currentPlayer, topCard);
+            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
 
             if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
