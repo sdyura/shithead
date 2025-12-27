@@ -58,9 +58,7 @@ public class PlayerHand {
             g.setColor(0xFF00FF00); // Green
             int arrowWidth = XULLoader.adjustSizeToDensity(10);
             int arrowHeight = XULLoader.adjustSizeToDensity(15);
-            int[] xPoints = {0, -arrowWidth, arrowWidth};
-            int[] yPoints = {0, -arrowHeight, -arrowHeight};
-            g.fillPolygon(xPoints, yPoints, 3);
+            g.fillTriangle(0,0, -arrowWidth, -arrowHeight, arrowWidth, -arrowHeight);
         }
         for (UICard card : uiCards) {
             card.paint(g, c);
