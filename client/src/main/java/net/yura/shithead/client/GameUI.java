@@ -7,13 +7,18 @@ import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.MenuBar;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
+import net.yura.shithead.common.CardComparator;
 import net.yura.shithead.common.CommandParser;
+import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.uicomponents.GameView;
 import net.yura.shithead.uicomponents.GameViewListener;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GameUI implements ActionListener, GameViewListener {
 
@@ -73,7 +78,7 @@ public class GameUI implements ActionListener, GameViewListener {
             gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
         }
         else if ("sort".equals(actionCommand)) {
-            game.sortHand(playerUsername);
+            sortHand(playerUsername);
             gameView.repaint();
         }
         else {
@@ -89,5 +94,29 @@ public class GameUI implements ActionListener, GameViewListener {
     public void newCommand(String message) {
         new CommandParser().execute(game, message);
         gameView.repaint();
+    }
+
+    private void sortHand(String playerName) {
+        Player player = getPlayer(playerName);
+        if (player != null) {
+            List<Card> hand = player.getHand();
+            List<Card> sortedHand = new ArrayList<>(hand);
+            sortedHand.sort(new CardComparator());
+            if (hand.equals(sortedHand)) {
+                Collections.reverse(hand);
+            } else {
+                hand.clear();
+                hand.addAll(sortedHand);
+            }
+        }
+    }
+
+    private Player getPlayer(String playerName) {
+        for (Player player : game.getPlayers()) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null;
     }
 }
