@@ -306,4 +306,21 @@ class ShitheadGameTest {
         assertEquals(u1, p1.getUpcards().get(0));
         assertEquals(u3, p1.getUpcards().get(2));
     }
+
+    @Test
+    void testCannotRearrangeCardsWhenReady() {
+        // given
+        Card handCard = Card.getCardByRankSuit(Rank.ACE, Suit.SPADES);
+        Card upCard = Card.getCardByRankSuit(Rank.KING, Suit.HEARTS);
+        p1.getHand().add(handCard);
+        p1.getUpcards().add(upCard);
+
+        // when
+        game.playerReady(p1);
+
+        // then
+        assertThrows(IllegalStateException.class, () -> {
+            game.rearrangeCards(p1, handCard, upCard);
+        });
+    }
 }

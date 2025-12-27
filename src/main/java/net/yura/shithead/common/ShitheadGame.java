@@ -116,6 +116,9 @@ public class ShitheadGame {
         if (!isRearranging()) {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
+        if (playersReady.contains(player)) {
+            throw new IllegalStateException("Player is already ready and cannot rearrange cards.");
+        }
 
         List<Card> hand = player.getHand();
         List<Card> upcards = player.getUpcards();

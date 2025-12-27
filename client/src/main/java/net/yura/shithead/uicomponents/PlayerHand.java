@@ -82,7 +82,7 @@ public class PlayerHand {
             for (int i = uiCards.size() - 1; i >= 0; i--) {
                 UICard uiCard = uiCards.get(i);
                 if (uiCard.contains(x, y)) {
-                    if (game.isRearranging()) {
+                    if (game.isRearranging() && !game.getPlayersReady().contains(player)) {
                         List<UICard> selected = getSelectedUiCards();
                         if (selected.isEmpty() || uiCard == selected.get(0)) {
                             uiCard.toggleSelection();
