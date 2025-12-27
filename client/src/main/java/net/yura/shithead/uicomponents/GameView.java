@@ -71,6 +71,26 @@ public class GameView extends Panel {
             layoutPlayer(player, playerPosition, players.size());
         }
 
+        for (PlayerHand hand : playerHands.values()) {
+            hand.setCurrentPlayer(false);
+        }
+
+        if (game.isRearranging()) {
+            for (Player player : game.getPlayers()) {
+                if (!game.getPlayersReady().contains(player)) {
+                    playerHands.get(player).setCurrentPlayer(true);
+                }
+            }
+        } else {
+            Player currentPlayer = game.getCurrentPlayer();
+            if (currentPlayer != null) {
+                PlayerHand hand = playerHands.get(currentPlayer);
+                if (hand != null) {
+                    hand.setCurrentPlayer(true);
+                }
+            }
+        }
+
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
