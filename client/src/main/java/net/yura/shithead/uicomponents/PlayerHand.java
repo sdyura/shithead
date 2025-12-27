@@ -37,6 +37,10 @@ public class PlayerHand {
         this.isCurrentPlayer = isCurrentPlayer;
     }
 
+    public boolean isCurrentPlayer() {
+        return isCurrentPlayer;
+    }
+
     public void addCard(UICard card) {
         uiCards.add(card);
     }

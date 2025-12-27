@@ -181,9 +181,11 @@ public class GameView extends Panel {
             for (PlayerHand hand : playerHands.values()) {
                 // only allow clicking on my own cards
                 if (hand.player.getName().equals(myUsername)) {
-                    if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
-                        repaint();
-                        return;
+                    if (hand.isCurrentPlayer()) {
+                        if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
+                            repaint();
+                            return;
+                        }
                     }
                 }
             }
