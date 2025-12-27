@@ -112,20 +112,39 @@ public class ShitheadGame {
         }
     }
 
-    public void rearrangeCards(Player player, Card handCard, Card upCard) {
+    public void rearrangeCards(Player player, Card card1, Card card2) {
         if (!isRearranging()) {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
-        if (!player.getHand().contains(handCard)) {
-            throw new IllegalArgumentException("Player does not have the specified card in their hand.");
+
+        List<Card> hand = player.getHand();
+        List<Card> upcards = player.getUpcards();
+
+        Card handCard;
+        Card upCard;
+
+        if (hand.contains(card1) && upcards.contains(card2)) {
+            handCard = card1;
+            upCard = card2;
+        } else if (hand.contains(card2) && upcards.contains(card1)) {
+            handCard = card2;
+            upCard = card1;
+        } else {
+            if (!hand.contains(card1) && !hand.contains(card2)) {
+                throw new IllegalArgumentException("Player does not have the specified card in their hand.");
+            }
+            if (!upcards.contains(card1) && !upcards.contains(card2)) {
+                throw new IllegalArgumentException("Player does not have the specified card in their upcards.");
+            }
+            // This covers swapping two hand cards, or two upcards
+            throw new IllegalArgumentException("Cards must be from different piles.");
         }
-        if (!player.getUpcards().contains(upCard)) {
-            throw new IllegalArgumentException("Player does not have the specified card in their upcards.");
-        }
-        player.getHand().remove(handCard);
-        player.getUpcards().remove(upCard);
-        player.getHand().add(upCard);
-        player.getUpcards().add(handCard);
+
+        int handIndex = hand.indexOf(handCard);
+        int upIndex = upcards.indexOf(upCard);
+
+        hand.set(handIndex, upCard);
+        upcards.set(upIndex, handCard);
     }
 
     public void playerReady(Player player) {

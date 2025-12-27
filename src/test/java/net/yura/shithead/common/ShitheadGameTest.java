@@ -244,4 +244,66 @@ class ShitheadGameTest {
         // then
         assertEquals(p2, game.getCurrentPlayer());
     }
+
+    @Test
+    void testRearrangeCardsMaintainsPosition() {
+        // given
+        Card h1 = Card.getCardByRankSuit(Rank.ACE, Suit.SPADES);
+        Card h2 = Card.getCardByRankSuit(Rank.TWO, Suit.SPADES);
+        Card h3 = Card.getCardByRankSuit(Rank.THREE, Suit.SPADES);
+        p1.getHand().addAll(List.of(h1, h2, h3));
+
+        Card u1 = Card.getCardByRankSuit(Rank.FOUR, Suit.CLUBS);
+        Card u2 = Card.getCardByRankSuit(Rank.FIVE, Suit.CLUBS);
+        Card u3 = Card.getCardByRankSuit(Rank.SIX, Suit.CLUBS);
+        p1.getUpcards().addAll(List.of(u1, u2, u3));
+
+        // when
+        game.rearrangeCards(p1, h2, u3); // Swap 2nd hand card with 3rd up card
+
+        // then
+        assertEquals(3, p1.getHand().size());
+        assertEquals(3, p1.getUpcards().size());
+
+        // Check that the cards are in the correct new positions
+        assertEquals(u3, p1.getHand().get(1));
+        assertEquals(h2, p1.getUpcards().get(2));
+
+        // Check that other cards have not moved
+        assertEquals(h1, p1.getHand().get(0));
+        assertEquals(h3, p1.getHand().get(2));
+        assertEquals(u1, p1.getUpcards().get(0));
+        assertEquals(u2, p1.getUpcards().get(1));
+    }
+
+    @Test
+    void testRearrangeCardsOrderIndependent() {
+        // given
+        Card h1 = Card.getCardByRankSuit(Rank.ACE, Suit.DIAMONDS);
+        Card h2 = Card.getCardByRankSuit(Rank.TWO, Suit.DIAMONDS);
+        Card h3 = Card.getCardByRankSuit(Rank.THREE, Suit.DIAMONDS);
+        p1.getHand().addAll(List.of(h1, h2, h3));
+
+        Card u1 = Card.getCardByRankSuit(Rank.SEVEN, Suit.HEARTS);
+        Card u2 = Card.getCardByRankSuit(Rank.EIGHT, Suit.HEARTS);
+        Card u3 = Card.getCardByRankSuit(Rank.NINE, Suit.HEARTS);
+        p1.getUpcards().addAll(List.of(u1, u2, u3));
+
+        // when
+        game.rearrangeCards(p1, u2, h1); // Swap 2nd up card with 1st hand card (arguments reversed)
+
+        // then
+        assertEquals(3, p1.getHand().size());
+        assertEquals(3, p1.getUpcards().size());
+
+        // Check that the cards are in the correct new positions
+        assertEquals(u2, p1.getHand().get(0));
+        assertEquals(h1, p1.getUpcards().get(1));
+
+        // Check that other cards have not moved
+        assertEquals(h2, p1.getHand().get(1));
+        assertEquals(h3, p1.getHand().get(2));
+        assertEquals(u1, p1.getUpcards().get(0));
+        assertEquals(u3, p1.getUpcards().get(2));
+    }
 }
