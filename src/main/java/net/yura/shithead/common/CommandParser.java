@@ -42,7 +42,7 @@ public class CommandParser {
         }
 
         switch (tokens[0]) {
-            case "rearrange":
+            case "swap":
                 if (!game.isRearranging()) {
                     throw new IllegalArgumentException("game not in rearranging mode");
                 }

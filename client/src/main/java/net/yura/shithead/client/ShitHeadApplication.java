@@ -85,6 +85,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 @Override
                 public void actionPerformed(String actionCommand) {
                     new CommandParser().parse(game, actionCommand);
+                    DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
+                    DesktopPane.getDesktopPane().getSelectedFrame().repaint();
                     //gameUI.newCommand(actionCommand);
                 }
             });

@@ -1,5 +1,6 @@
 package net.yura.shithead.client;
 
+import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Frame;
@@ -9,21 +10,22 @@ import net.yura.mobile.util.Properties;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.uicomponents.GameView;
+import net.yura.shithead.uicomponents.GameViewListener;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class GameUI implements ActionListener {
+public class GameUI implements ActionListener, GameViewListener {
 
     ShitheadGame game;
     GameView gameView;
-    ActionListener gameCommandActionListener;
+    ActionListener gameCommandListener;
     ActionListener closeActionListener;
     private String playerUsername = "Player 1"; // TODO hard coded
 
     public GameUI(Properties properties, ShitheadGame game, ActionListener gameCommandActionListener) {
         this.game = game;
-        this.gameCommandActionListener = gameCommandActionListener;
+        this.gameCommandListener = gameCommandActionListener;
 
         XULLoader loader = new XULLoader();
         try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/game_view.xml")) {
@@ -34,8 +36,8 @@ public class GameUI implements ActionListener {
         }
 
         gameView = (GameView) loader.find("game_view");
-        gameView.setGame(game);
-        gameView.setPlayerID(playerUsername);
+        gameView.setGameCommandListener(this);
+        gameView.setGame(game, playerUsername);
 
         Frame frame = (Frame)loader.getRoot();
 
@@ -53,6 +55,10 @@ public class GameUI implements ActionListener {
         frame.setVisible(true);
     }
 
+    @Override
+    public void swapCards(Card card1, Card card2) {
+        gameCommandListener.actionPerformed("swap " + CommandParser.encodePlayerName(playerUsername) +" " + card1 + " " + card2);
+    }
 
     @Override
     public void actionPerformed(String actionCommand) {
@@ -64,7 +70,7 @@ public class GameUI implements ActionListener {
         }
         else if ("play".equals(actionCommand)) {
             // TODO for now, only ready command
-            gameCommandActionListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+            gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
         }
         else {
             // TODO game actions!!

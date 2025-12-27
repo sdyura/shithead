@@ -1,10 +1,10 @@
 package net.yura.shithead.uicomponents;
 
+import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.KeyEvent;
 import net.yura.mobile.gui.components.Panel;
-import net.yura.mobile.gui.layout.GridBagLayout;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import net.yura.cardsengine.Card;
 
 public class GameView extends Panel {
+
+    private GameViewListener gameCommandListener;
+
     private ShitheadGame game;
     private String myUsername;
     private final List<UICard> uiCards = new ArrayList<UICard>();
@@ -25,14 +27,15 @@ public class GameView extends Panel {
     public GameView() {
     }
 
-    public void setGame(ShitheadGame game) {
-        this.game = game;
-        layoutCards();
-        repaint();
+    public void setGameCommandListener(GameViewListener gameCommandListener) {
+        this.gameCommandListener = gameCommandListener;
     }
 
-    public void setPlayerID(String playerID) {
+    public void setGame(ShitheadGame game, String playerID) {
+        this.game = game;
         this.myUsername = playerID;
+        layoutCards();
+        repaint();
     }
 
     @Override
@@ -76,7 +79,7 @@ public class GameView extends Panel {
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
             int playerPosition = (i - localPlayerIndex + players.size()) % players.size();
-            layoutPlayer(player, playerPosition, players.size());
+            layoutPlayer(player, playerPosition, i == localPlayerIndex);
         }
 
         for (PlayerHand hand : playerHands.values()) {
@@ -131,7 +134,8 @@ public class GameView extends Panel {
         }
     }
 
-    private void layoutPlayer(Player player, int position, int playerCount) {
+    private void layoutPlayer(Player player, int position, boolean isLocalPlayer) {
+        int playerCount = game.getPlayers().size();
         int width = getWidth();
         int height = getHeight();
         int centerX = width / 2;
@@ -140,10 +144,8 @@ public class GameView extends Panel {
         int radiusY = height / 2 - 50;
         int overlap = XULLoader.adjustSizeToDensity(20);
 
-        PlayerHand hand = new PlayerHand(player);
+        PlayerHand hand = new PlayerHand(game, player, gameCommandListener);
         playerHands.put(player, hand);
-
-        boolean isLocalPlayer = position == 0;
 
         if (isLocalPlayer) {
             hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2);
@@ -177,9 +179,12 @@ public class GameView extends Panel {
                 }
             }
             for (PlayerHand hand : playerHands.values()) {
-                if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
-                    repaint();
-                    return;
+                // only allow clicking on my own cards
+                if (hand.player.getName().equals(myUsername)) {
+                    if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
+                        repaint();
+                        return;
+                    }
                 }
             }
         }

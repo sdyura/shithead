@@ -129,7 +129,7 @@ public class CommandParserTest {
 
         // --- Action: Execute the rearrange command ---
         // Command format: rearrange <player_name> <hand_card> <up_card>
-        parser.execute(game, "rearrange Player%201 AS KH");
+        parser.execute(game, "swap Player%201 AS KH");
 
         // --- Verification: Check if cards were swapped ---
         assertFalse(player1.getHand().contains(handCard), "The hand card should no longer be in the hand.");

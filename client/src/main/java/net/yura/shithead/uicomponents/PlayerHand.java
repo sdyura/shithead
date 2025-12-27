@@ -6,18 +6,26 @@ import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.yura.cardsengine.Card;
+import net.yura.shithead.common.ShitheadGame;
 
 public class PlayerHand {
-    private Player player;
-    private List<UICard> uiCards = new ArrayList<UICard>();
+
+    private GameViewListener gameCommandListener;
+
+    private final ShitheadGame game;
+    final Player player;
+    private final List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
     private boolean isCurrentPlayer = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
-    public PlayerHand(Player player) {
+    public PlayerHand(ShitheadGame game, Player player, GameViewListener gameCommandListener) {
+        this.game = game;
         this.player = player;
+        this.gameCommandListener = gameCommandListener;
     }
 
     public void setPosition(int x, int y) {
@@ -53,6 +61,10 @@ public class PlayerHand {
         return uiCards;
     }
 
+    private List<UICard> getSelectedUiCards() {
+        return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
+    }
+
     public void paint(Graphics2D g, Component c) {
         if (isCurrentPlayer) {
             g.setColor(0xFF00FF00); // Green
@@ -70,7 +82,24 @@ public class PlayerHand {
             for (int i = uiCards.size() - 1; i >= 0; i--) {
                 UICard uiCard = uiCards.get(i);
                 if (uiCard.contains(x, y)) {
-                    uiCard.toggleSelection();
+                    if (game.isRearranging()) {
+                        List<UICard> selected = getSelectedUiCards();
+                        if (selected.isEmpty() || uiCard == selected.get(0)) {
+                            uiCard.toggleSelection();
+                        }
+                        else if (selected.size() == 1) {
+                            selected.get(0).toggleSelection();
+                            if (selected.get(0).getLocation() == uiCard.getLocation()) {
+                                uiCard.toggleSelection();
+                            }
+                            else if (selected.get(0) != uiCard) {
+                                gameCommandListener.swapCards(uiCard.getCard(), selected.get(0).getCard());
+                            }
+                        }
+                        else {
+                            System.out.println("too many cards selected???? " + selected);
+                        }
+                    }
                     return true;
                 }
             }
