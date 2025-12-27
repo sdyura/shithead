@@ -13,6 +13,7 @@ public class PlayerHand {
     private List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
+    private boolean isCurrentPlayer = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
     public PlayerHand(Player player) {
@@ -22,6 +23,10 @@ public class PlayerHand {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setCurrentPlayer(boolean isCurrentPlayer) {
+        this.isCurrentPlayer = isCurrentPlayer;
     }
 
     public void addCard(UICard card) {
@@ -49,6 +54,12 @@ public class PlayerHand {
     }
 
     public void paint(Graphics2D g, Component c) {
+        if (isCurrentPlayer) {
+            g.setColor(0xFF00FF00); // Green
+            int arrowWidth = XULLoader.adjustSizeToDensity(10);
+            int arrowHeight = XULLoader.adjustSizeToDensity(15);
+            g.fillTriangle(0,0, -arrowWidth, -arrowHeight, arrowWidth, -arrowHeight);
+        }
         for (UICard card : uiCards) {
             card.paint(g, c);
         }
