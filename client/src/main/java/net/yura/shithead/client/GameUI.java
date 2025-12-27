@@ -72,6 +72,10 @@ public class GameUI implements ActionListener, GameViewListener {
             // TODO for now, only ready command
             gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
         }
+        else if ("sort".equals(actionCommand)) {
+            game.sortHand(playerUsername);
+            gameView.repaint();
+        }
         else {
             // TODO game actions!!
             System.out.println("unknown command " + actionCommand);

@@ -457,4 +457,28 @@ public class ShitheadGame {
             // Nothing happens, deck is empty
         }
     }
+
+    public void sortHand(String playerName) {
+        Player player = getPlayer(playerName);
+        if (player != null) {
+            List<Card> hand = player.getHand();
+            List<Card> sortedHand = new ArrayList<>(hand);
+            sortedHand.sort(new CardComparator());
+            if (hand.equals(sortedHand)) {
+                Collections.reverse(hand);
+            } else {
+                hand.clear();
+                hand.addAll(sortedHand);
+            }
+        }
+    }
+
+    private Player getPlayer(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null;
+    }
 }
