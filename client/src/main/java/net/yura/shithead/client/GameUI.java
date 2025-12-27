@@ -78,7 +78,10 @@ public class GameUI implements ActionListener, GameViewListener {
             gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
         }
         else if ("sort".equals(actionCommand)) {
-            sortHand(playerUsername);
+            Player player = getPlayer(playerUsername);
+            if (player != null) {
+                sortHand(player);
+            }
             gameView.repaint();
         }
         else {
@@ -96,8 +99,7 @@ public class GameUI implements ActionListener, GameViewListener {
         gameView.repaint();
     }
 
-    private void sortHand(String playerName) {
-        Player player = getPlayer(playerName);
+    public static void sortHand(Player player) {
         if (player != null) {
             List<Card> hand = player.getHand();
             List<Card> sortedHand = new ArrayList<>(hand);
