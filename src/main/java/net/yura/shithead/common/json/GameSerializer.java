@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class GameSerializer extends JsonSerializer<ShitheadGame> {
@@ -32,11 +33,14 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         gen.writeObjectField("wastePile", game.getWastePile());
 
         gen.writeObjectField("players", game.getPlayers());
-        gen.writeArrayFieldStart("playersReady");
-        for (Player p : game.getPlayersReady()) {
-            gen.writeString(p.getName());
+
+        gen.writeFieldName("playersReady");
+        gen.writeStartObject();
+        for (Map.Entry<Player,Card> pc : game.getPlayersReady().entrySet()) {
+            gen.writeObjectField(pc.getKey().getName(), pc.getValue());
         }
-        gen.writeEndArray();
+        gen.writeEndObject();
+
         gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
         gen.writeEndObject();
     }
