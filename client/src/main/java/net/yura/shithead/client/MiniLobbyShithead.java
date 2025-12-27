@@ -122,7 +122,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
     public void stringForGame(String message) {
         if (openGameUI == null) {
             ShitheadGame onlineGame = SerializerUtil.fromJSON(message);
-            openGameUI = new GameUI(strings, onlineGame, new ActionListener() {
+            openGameUI = new GameUI(strings, onlineGame, lobby.whoAmI(), new ActionListener() {
                 @Override
                 public void actionPerformed(String gameAction) {
                     lobby.sendGameMessage(gameAction);

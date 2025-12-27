@@ -80,8 +80,11 @@ public class ShitHeadApplication extends Application implements ActionListener {
 
             ShitheadGame game = new ShitheadGame(4);
             game.deal();
+            game.playerReady(game.getPlayers().get(0));
+            game.playerReady(game.getPlayers().get(2));
+            game.playerReady(game.getPlayers().get(3));
 
-            final GameUI gameUI = new GameUI(properties, game, new ActionListener() {
+            final GameUI gameUI = new GameUI(properties, game, "Player 2", new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
                     new CommandParser().parse(game, actionCommand);

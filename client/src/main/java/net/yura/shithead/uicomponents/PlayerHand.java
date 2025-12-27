@@ -76,6 +76,8 @@ public class PlayerHand {
             int arrowHeight = XULLoader.adjustSizeToDensity(15);
             g.fillTriangle(0,0, -arrowWidth, -arrowHeight, arrowWidth, -arrowHeight);
         }
+        g.setColor(0xFF000000);
+        g.drawString(player.getName(), -g.getFont().getWidth(player.getName()) / 2, -g.getFont().getHeight());
         for (UICard card : uiCards) {
             card.paint(g, c);
         }

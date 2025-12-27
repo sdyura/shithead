@@ -22,14 +22,15 @@ import java.util.List;
 
 public class GameUI implements ActionListener, GameViewListener {
 
-    ShitheadGame game;
-    GameView gameView;
-    ActionListener gameCommandListener;
+    final ShitheadGame game;
+    final GameView gameView;
+    final ActionListener gameCommandListener;
     ActionListener closeActionListener;
-    private String playerUsername = "Player 1"; // TODO hard coded
+    private final String playerUsername;
 
-    public GameUI(Properties properties, ShitheadGame game, ActionListener gameCommandActionListener) {
+    public GameUI(Properties properties, ShitheadGame game, String playerUsername, ActionListener gameCommandActionListener) {
         this.game = game;
+        this.playerUsername = playerUsername;
         this.gameCommandListener = gameCommandActionListener;
 
         XULLoader loader = new XULLoader();
@@ -82,6 +83,7 @@ public class GameUI implements ActionListener, GameViewListener {
             if (player != null) {
                 sortHand(player);
             }
+            gameView.revalidate();
             gameView.repaint();
         }
         else {
