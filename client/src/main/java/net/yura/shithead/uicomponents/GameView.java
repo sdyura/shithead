@@ -45,7 +45,9 @@ public class GameView extends Panel {
     public void paintComponent(Graphics2D g) {
         super.paintComponent(g);
         for (PlayerHand hand : playerHands.values()) {
+            g.translate(hand.x, hand.y);
             hand.paint(g, this);
+            g.translate(-hand.x, -hand.y);
         }
         // paint deck and waste pile
         for (int i = 0; i < uiCards.size(); i++) {
@@ -134,9 +136,6 @@ public class GameView extends Panel {
         }
     }
 
-    private List<UICard> getSelectedCards() {
-        return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
-    }
     @Override
     public void processMouseEvent(int type, int x, int y, KeyEvent buttons) {
 
@@ -150,7 +149,7 @@ public class GameView extends Panel {
                 }
             }
             for (PlayerHand hand : playerHands.values()) {
-                if (hand.processMouseEvent(type, x, y, buttons)) {
+                if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
                     repaint();
                     return;
                 }

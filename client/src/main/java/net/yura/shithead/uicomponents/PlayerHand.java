@@ -11,8 +11,8 @@ import net.yura.cardsengine.Card;
 public class PlayerHand {
     private Player player;
     private List<UICard> uiCards = new ArrayList<UICard>();
-    private int x;
-    private int y;
+    int x;
+    int y;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
     public PlayerHand(Player player) {
@@ -34,13 +34,12 @@ public class PlayerHand {
 
     public void layoutHand(CardLocation location, List<Card> cards, int yOffset, boolean isFaceUp) {
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
-        int startX = this.x - handWidth / 2;
-        int startY = this.y + yOffset;
+        int startX = - handWidth / 2;
 
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             UICard uiCard = new UICard(card, this.player, location, isFaceUp);
-            uiCard.setPosition(startX + i * (CardImageManager.cardWidth + padding), startY);
+            uiCard.setPosition(startX + i * (CardImageManager.cardWidth + padding), yOffset);
             addCard(uiCard);
         }
     }
