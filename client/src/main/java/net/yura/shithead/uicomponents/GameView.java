@@ -63,7 +63,15 @@ public class GameView extends Panel {
         }
 
         List<Player> players = game.getPlayers();
-        int localPlayerIndex = 0; // TODO fix hard coded
+        int localPlayerIndex = 0;
+        if (myUsername != null) {
+            for (int i = 0; i < players.size(); i++) {
+                if (myUsername.equals(players.get(i).getName())) {
+                    localPlayerIndex = i;
+                    break;
+                }
+            }
+        }
 
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
