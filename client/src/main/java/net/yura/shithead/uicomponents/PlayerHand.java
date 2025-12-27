@@ -37,6 +37,10 @@ public class PlayerHand {
         this.isCurrentPlayer = isCurrentPlayer;
     }
 
+    public boolean isCurrentPlayer() {
+        return isCurrentPlayer;
+    }
+
     public void addCard(UICard card) {
         uiCards.add(card);
     }
@@ -82,7 +86,7 @@ public class PlayerHand {
             for (int i = uiCards.size() - 1; i >= 0; i--) {
                 UICard uiCard = uiCards.get(i);
                 if (uiCard.contains(x, y)) {
-                    if (game.isRearranging() && !game.getPlayersReady().contains(player)) {
+                    if (game.isRearranging()) {
                         List<UICard> selected = getSelectedUiCards();
                         if (selected.isEmpty() || uiCard == selected.get(0)) {
                             uiCard.toggleSelection();
