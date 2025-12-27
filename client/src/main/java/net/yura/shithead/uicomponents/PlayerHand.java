@@ -19,7 +19,7 @@ public class PlayerHand {
     private final List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
-    final private boolean isCurrentPlayer;
+    final private boolean isLocalPlayer;
     private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
@@ -27,7 +27,7 @@ public class PlayerHand {
         this.game = game;
         this.player = player;
         this.gameCommandListener = gameCommandListener;
-        this.isCurrentPlayer = isLocalPlayer;
+        this.isLocalPlayer = isLocalPlayer;
     }
 
     public void setPosition(int x, int y) {
@@ -54,10 +54,18 @@ public class PlayerHand {
     public void layoutHand(CardLocation location, List<Card> cards, int yOffset, boolean isFaceUp) {
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
         int startX = - handWidth / 2;
+        Card top = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
 
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
             UICard uiCard = new UICard(card, this.player, location, isFaceUp);
+            if (card != null && isLocalPlayer && isWaitingForInput && isFaceUp) {
+                boolean activePile = (!player.getHand().isEmpty() && location == CardLocation.HAND) ||
+                        (player.getHand().isEmpty() && !player.getUpcards().isEmpty() && location == CardLocation.UP_CARDS);
+                if (activePile) {
+                    uiCard.setPlayable(game.isPlayable(card.getRank(), top));
+                }
+            }
             uiCard.setPosition(startX + i * (CardImageManager.cardWidth + padding), yOffset);
             addCard(uiCard);
         }

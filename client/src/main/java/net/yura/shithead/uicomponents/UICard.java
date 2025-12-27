@@ -17,8 +17,10 @@ public class UICard {
     private int x;
     private int y;
     private boolean selected;
+    private boolean isPlayable;
 
     private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);
+    private static final Border playableBorder = new LineBorder(0xFFFFBF00, 2);
 
     public UICard(Card card, Player player, CardLocation location, boolean faceUp) {
         this.card = card;
@@ -45,6 +47,10 @@ public class UICard {
             g.translate(x, y);
             selectionBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);
+        } else if (isPlayable) {
+            g.translate(x, y);
+            playableBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
+            g.translate(-x, -y);
         }
     }
 
@@ -70,6 +76,10 @@ public class UICard {
 
     public void toggleSelection() {
         selected = !selected;
+    }
+
+    public void setPlayable(boolean isPlayable) {
+        this.isPlayable = isPlayable;
     }
 
     public boolean contains(int px, int py) {
