@@ -20,23 +20,30 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GameUI implements ActionListener, GameViewListener {
 
-    final ShitheadGame game;
+    // UI components
+    Properties uiTextString;
     final GameView gameView;
+    final Button playButton;
     final ActionListener gameCommandListener;
     ActionListener closeActionListener;
+
+    // game properties
+    final ShitheadGame game;
     private final String playerUsername;
 
     public GameUI(Properties properties, ShitheadGame game, String playerUsername, ActionListener gameCommandActionListener) {
         this.game = game;
         this.playerUsername = playerUsername;
         this.gameCommandListener = gameCommandActionListener;
+        this.uiTextString = properties;
 
         XULLoader loader = new XULLoader();
         try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/game_view.xml")) {
-            loader.load(new InputStreamReader(stream), this, properties);
+            loader.load(new InputStreamReader(stream), this, uiTextString);
         }
         catch (Exception ex) {
             throw new IllegalStateException(ex);
@@ -45,6 +52,8 @@ public class GameUI implements ActionListener, GameViewListener {
         gameView = (GameView) loader.find("game_view");
         gameView.setGameCommandListener(this);
         gameView.setGame(game, playerUsername);
+        playButton = (Button) loader.find("play_button");
+        updateButton();
 
         Frame frame = (Frame)loader.getRoot();
 
@@ -68,8 +77,9 @@ public class GameUI implements ActionListener, GameViewListener {
     }
 
     @Override
-    public void playVisibleCard(boolean hand, Card card) {
-        gameCommandListener.actionPerformed("play " + (hand ? "hand " : "up ") + card);
+    public void playVisibleCard(boolean hand, List<Card> cards) {
+        gameCommandListener.actionPerformed("play " + (hand ? "hand " : "up ") + cards.stream().map(Object::toString).collect(Collectors.joining(" ")));
+        updateButton();
     }
 
     @Override
@@ -96,8 +106,14 @@ public class GameUI implements ActionListener, GameViewListener {
             close();
         }
         else if ("play".equals(actionCommand)) {
-            // TODO for now, only ready command
-            gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+            if (game.isRearranging()) {
+                gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+            }
+            else {
+                gameView.clearSelectedCards();
+                playVisibleCard(!getPlayer(playerUsername).getHand().isEmpty(), gameView.getSelectedCards());
+            }
+            updateButton();
         }
         else if ("sort".equals(actionCommand)) {
             Player player = getPlayer(playerUsername);
@@ -110,6 +126,23 @@ public class GameUI implements ActionListener, GameViewListener {
         else {
             // TODO game actions!!
             System.out.println("unknown command " + actionCommand);
+        }
+    }
+
+    @Override
+    public void updateButton() {
+        Player player = getPlayer(playerUsername);
+        if (game.isRearranging() && player != null && !game.getPlayersReady().contains(player)) {
+            playButton.setText(uiTextString.getString("game.ready"));
+            playButton.setFocusable(true);
+        }
+        else if (!gameView.getSelectedCards().isEmpty()) {
+            playButton.setText(uiTextString.getString("game.play"));
+            playButton.setFocusable(true);
+        }
+        else {
+            playButton.setText(uiTextString.getString("game.play"));
+            playButton.setFocusable(false);
         }
     }
 

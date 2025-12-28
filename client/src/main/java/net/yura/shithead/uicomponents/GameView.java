@@ -8,9 +8,12 @@ import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import net.yura.cardsengine.Card;
 
 public class GameView extends Panel {
@@ -99,7 +102,7 @@ public class GameView extends Panel {
             int stackHeightDeck = CardImageManager.cardHeight + (cardsToShowDeck - 1) * padding;
             int yStartDeck = centerY - stackHeightDeck / 2;
             for (int i = 0; i < cardsToShowDeck; i++) {
-                UICard deckCard = new UICard(null, null, CardLocation.DECK, false);
+                UICard deckCard = new UICard(null, CardLocation.DECK, false);
                 deckCard.setPosition(centerX - CardImageManager.cardWidth - padding / 2, yStartDeck + i * padding);
                 uiCards.add(deckCard);
             }
@@ -114,7 +117,7 @@ public class GameView extends Panel {
             int yStartWaste = centerY - stackHeightWaste / 2;
             for (int i = 0; i < wastePileSize; i++) {
                 Card card = wastePile.get(i);
-                UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
+                UICard wastePileCard = new UICard(card, CardLocation.WASTE, true);
                 wastePileCard.setPosition(centerX + padding / 2, yStartWaste);
                 uiCards.add(wastePileCard);
                 if (i < (wastePileSize - 3)) {
@@ -130,6 +133,25 @@ public class GameView extends Panel {
                     }
                 }
             }
+        }
+    }
+
+    private PlayerHand getPlayerHand(String username) {
+        return playerHands.values().stream().filter(p -> p.player.getName().equals(username)).findAny().orElse(null);
+    }
+
+    public List<Card> getSelectedCards() {
+        PlayerHand hand = getPlayerHand(myUsername);
+        if (hand == null) {
+            return Collections.emptyList();
+        }
+        return hand.getUiCards().stream().filter(UICard::isSelected).map(UICard::getCard).collect(Collectors.toList());
+    }
+
+    public void clearSelectedCards() {
+        PlayerHand hand = playerHands.get(myUsername);
+        if (hand != null) {
+            hand.getUiCards().forEach(c -> c.setSelected(false));
         }
     }
 

@@ -11,20 +11,18 @@ import net.yura.shithead.common.Player;
 public class UICard {
 
     private Card card;
-    private Player player;
     private CardLocation location;
     private boolean faceUp;
     private int x;
     private int y;
     private boolean selected;
-    private boolean isPlayable;
+    private boolean playable;
 
     private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);
     private static final Border playableBorder = new LineBorder(0xFFFFBF00, 2);
 
-    public UICard(Card card, Player player, CardLocation location, boolean faceUp) {
+    public UICard(Card card, CardLocation location, boolean faceUp) {
         this.card = card;
-        this.player = player;
         this.location = location;
         this.faceUp = faceUp;
     }
@@ -47,7 +45,7 @@ public class UICard {
             g.translate(x, y);
             selectionBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);
-        } else if (isPlayable) {
+        } else if (playable) {
             g.translate(x, y);
             playableBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);
@@ -58,16 +56,16 @@ public class UICard {
         return card;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
     public CardLocation getLocation() {
         return location;
     }
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public boolean isPlayable() {
+        return playable;
     }
 
     public void setSelected(boolean selected) {
@@ -79,7 +77,7 @@ public class UICard {
     }
 
     public void setPlayable(boolean isPlayable) {
-        this.isPlayable = isPlayable;
+        this.playable = isPlayable;
     }
 
     public boolean contains(int px, int py) {

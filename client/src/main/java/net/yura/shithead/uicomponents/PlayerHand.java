@@ -5,6 +5,7 @@ import net.yura.mobile.gui.components.Component;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.yura.cardsengine.Card;
@@ -58,7 +59,7 @@ public class PlayerHand {
 
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
-            UICard uiCard = new UICard(card, this.player, location, isFaceUp);
+            UICard uiCard = new UICard(card, location, isFaceUp);
             if (card != null && isLocalPlayer && isWaitingForInput && isFaceUp) {
                 boolean activePile = (!player.getHand().isEmpty() && location == CardLocation.HAND) ||
                         (player.getHand().isEmpty() && !player.getUpcards().isEmpty() && location == CardLocation.UP_CARDS);
@@ -122,9 +123,21 @@ public class PlayerHand {
                             // TODO do we want to be able to pick the index of the downcard we play
                             gameCommandListener.playDowncard();
                         }
-                        else {
+                        else if (uiCard.isPlayable()) {
                             // TODO if we have 2 of the same rank, we want to ONLY select it, so we can then play more then 1 at a time
-                            gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, uiCard.getCard());
+                            CardLocation location = uiCard.getLocation();
+                            long sameRank = uiCards.stream().filter(c -> c.getLocation() == location).filter(c -> c.getCard().getRank() == uiCard.getCard().getRank()).count();
+                            if (sameRank == 1) {
+                                uiCards.forEach(c -> c.setSelected(false)); // deselect all
+                                gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, Collections.singletonList(uiCard.getCard()));
+                            }
+                            else {
+                                // deselect all cards that are NOT this rank, when we have multiple of multiple ranks
+                                uiCards.stream().filter(c -> c.getCard().getRank() != uiCard.getCard().getRank()).forEach(c -> c.setSelected(false));
+                                // if there is more then 1 then we just toggle the selection
+                                uiCard.toggleSelection();
+                                gameCommandListener.updateButton();
+                            }
                         }
                     }
                     return true;
