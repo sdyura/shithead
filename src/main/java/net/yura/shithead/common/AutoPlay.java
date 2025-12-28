@@ -13,34 +13,40 @@ public class AutoPlay {
      * This method ONLY works for hand or UP cards
      */
     public static Card findBestVisibleCard(ShitheadGame game) {
-
         Player player = game.getCurrentPlayer();
-
         Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
-
-        Card bestCard = null;
-        Card aTwo = null; // Store a 2 in case it's the only option
         List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
+
+        List<Card> playableNormalCards = new ArrayList<>();
+        List<Card> playablePriorityCards = new ArrayList<>();
 
         for (Card card : source) {
             if (game.isPlayable(card.getRank(), topCard)) {
-                // If the waste is empty, we want to save our 2s
-                if (game.getWastePile().isEmpty() && card.getRank() == Rank.TWO) {
-                    if (aTwo == null) {
-                        aTwo = card;
-                    }
-                    // Continue to see if we have other, better options
-                    continue;
-                }
-
-                if (bestCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestCard.getRank())) {
-                    bestCard = card;
+                if (card.getRank() == Rank.TWO) {
+                    playablePriorityCards.add(card);
+                } else {
+                    playableNormalCards.add(card);
                 }
             }
         }
-        // If we found a non-2 card, play it.
-        // Otherwise, play the 2 if it's our only option.
-        return bestCard != null ? bestCard : aTwo;
+
+        if (!playableNormalCards.isEmpty()) {
+            return findLowestRank(playableNormalCards);
+        }
+        if (!playablePriorityCards.isEmpty()) {
+            return findLowestRank(playablePriorityCards);
+        }
+        return null;
+    }
+
+    private static Card findLowestRank(List<Card> cards) {
+        Card bestCard = null;
+        for (Card card : cards) {
+            if (bestCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestCard.getRank())) {
+                bestCard = card;
+            }
+        }
+        return bestCard;
     }
 
     public static List<Card> findBestVisibleCards(ShitheadGame game) {

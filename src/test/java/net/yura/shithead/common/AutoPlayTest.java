@@ -43,7 +43,7 @@ public class AutoPlayTest {
     }
 
     @Test
-    public void testFindBestVisibleCardPrefersThreeOverTwoWhenWasteIsEmpty() {
+    public void testFindBestVisibleCardPrefersNormalCardOverTwo() {
         // Given
         ShitheadGame game = mock(ShitheadGame.class);
         Player player = mock(Player.class);
@@ -64,5 +64,29 @@ public class AutoPlayTest {
 
         // Then
         assertEquals(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS), bestCard);
+    }
+
+    @Test
+    public void testFindBestVisibleCardPrefersNormalCardOverTwoWhenWasteIsNotEmpty() {
+        // Given
+        ShitheadGame game = mock(ShitheadGame.class);
+        Player player = mock(Player.class);
+        when(game.getCurrentPlayer()).thenReturn(player);
+        when(game.getWastePile()).thenReturn(Collections.singletonList(Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS)));
+
+        List<Card> hand = Arrays.asList(
+                Card.getCardByRankSuit(Rank.FIVE, Suit.CLUBS),
+                Card.getCardByRankSuit(Rank.TWO, Suit.SPADES)
+        );
+        when(player.getHand()).thenReturn(hand);
+
+        when(game.isPlayable(Rank.TWO, Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS))).thenReturn(true);
+        when(game.isPlayable(Rank.FIVE, Card.getCardByRankSuit(Rank.FOUR, Suit.HEARTS))).thenReturn(true);
+
+        // When
+        Card bestCard = AutoPlay.findBestVisibleCard(game);
+
+        // Then
+        assertEquals(Card.getCardByRankSuit(Rank.FIVE, Suit.CLUBS), bestCard);
     }
 }
