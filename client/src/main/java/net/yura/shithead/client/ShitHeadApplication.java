@@ -96,14 +96,24 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 public void actionPerformed(String actionCommand) {
                     CommandParser parser = new CommandParser();
                     parser.parse(game, actionCommand);
-
-                    while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
-                        parser.parse(game, AutoPlay.getValidGameCommand(game));
-                    }
-
                     DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
                     DesktopPane.getDesktopPane().getSelectedFrame().repaint();
-                    //gameUI.newCommand(actionCommand);
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    break;
+                                }
+                                parser.parse(game, AutoPlay.getValidGameCommand(game));
+                                DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
+                                DesktopPane.getDesktopPane().getSelectedFrame().repaint();
+                            }
+                        }
+                    }.start();
                 }
             });
         }

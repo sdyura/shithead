@@ -106,17 +106,29 @@ public class GameView extends Panel {
         }
 
         // Waste Pile
+        int dip = XULLoader.adjustSizeToDensity(1);
         List<Card> wastePile = game.getWastePile();
         int wastePileSize = wastePile.size();
-        int cardsToShowWaste = Math.min(wastePileSize, 3);
-        if (cardsToShowWaste > 0) {
-            int stackHeightWaste = CardImageManager.cardHeight + (cardsToShowWaste - 1) * padding;
+        if (wastePileSize > 0) {
+            int stackHeightWaste = CardImageManager.cardHeight + (Math.min(wastePileSize, 3) - 1) * padding;
             int yStartWaste = centerY - stackHeightWaste / 2;
-            for (int i = 0; i < cardsToShowWaste; i++) {
-                Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
+            for (int i = 0; i < wastePileSize; i++) {
+                Card card = wastePile.get(i);
                 UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
-                wastePileCard.setPosition(centerX + padding / 2, yStartWaste + i * padding);
+                wastePileCard.setPosition(centerX + padding / 2, yStartWaste);
                 uiCards.add(wastePileCard);
+                if (i < (wastePileSize - 3)) {
+                    yStartWaste = yStartWaste + dip;
+                }
+                else {
+                    if ((i == (wastePileSize - 3) && card.getRank() == wastePile.get(wastePileSize - 1).getRank() && wastePile.get(wastePileSize - 2).getRank() == wastePile.get(wastePileSize - 1).getRank()) ||
+                        (i == (wastePileSize - 2) && card.getRank() == wastePile.get(wastePileSize - 1).getRank())) {
+                        yStartWaste = yStartWaste + padding * 4;
+                    }
+                    else {
+                        yStartWaste = yStartWaste + padding;
+                    }
+                }
             }
         }
     }
