@@ -46,3 +46,12 @@ task runConsole(type: JavaExec) {
     standardInput = System.in
 }
 
+task generateMoveSequence(type: JavaExec) {
+    main = 'org.junit.platform.console.ConsoleLauncher'
+    classpath = sourceSets.test.runtimeClasspath
+    args = [
+        '--select-class',
+        'net.yura.shithead.common.MoveSequenceGenerator',
+        '--disable-ansi-colors'
+    ]
+}
