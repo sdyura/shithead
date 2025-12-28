@@ -1,6 +1,7 @@
 package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
+import net.yura.cardsengine.Rank;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class AutoPlay {
 
         for (Card card : source) {
             if (game.isPlayable(card.getRank(), topCard)) {
-                if (bestCard == null || card.getRank().toInt() < bestCard.getRank().toInt()) {
+                if (bestCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestCard.getRank()) || bestCard.getRank() == Rank.TWO) {
                     bestCard = card;
                 }
             }

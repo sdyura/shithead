@@ -323,4 +323,24 @@ class ShitheadGameTest {
             game.rearrangeCards(p1, handCard, upCard);
         });
     }
+
+    @Test
+    void testPlayAceOnKing() {
+        // All players are ready
+        game.playerReady(p1);
+        game.playerReady(p2);
+
+        // Set up the waste pile with a King on top
+        game.setWastePile(new java.util.ArrayList<>(Collections.singletonList(Card.getCardByRankSuit(Rank.KING, Suit.SPADES))));
+
+        // Give player 1 an Ace
+        Card ace = Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS);
+        p1.getHand().add(ace);
+
+        // Set the current player to p1
+        game.setCurrentPlayer(0);
+
+        // Attempt to play the Ace on the King
+        assertTrue(game.playCards(Collections.singletonList(ace)), "An Ace should be playable on a King");
+    }
 }
