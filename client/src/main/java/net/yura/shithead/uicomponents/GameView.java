@@ -108,15 +108,52 @@ public class GameView extends Panel {
         // Waste Pile
         List<Card> wastePile = game.getWastePile();
         int wastePileSize = wastePile.size();
-        int cardsToShowWaste = Math.min(wastePileSize, 3);
-        if (cardsToShowWaste > 0) {
-            int stackHeightWaste = CardImageManager.cardHeight + (cardsToShowWaste - 1) * padding;
+        if (wastePileSize > 0) {
+            int dip1 = XULLoader.adjustSizeToDensity(1);
+            int largePadding = 4 * padding;
+            int smallPadding = padding;
+
+            // Calculate vertical offsets for each card in the waste pile
+            List<Integer> offsets = new ArrayList<>();
+            if (wastePileSize > 1) {
+                Card topCard = wastePile.get(wastePileSize - 1);
+                for (int i = 0; i < wastePileSize - 1; i++) {
+                    int index_above = i + 1;
+                    int posFromTop_above = wastePileSize - 1 - index_above;
+
+                    if (posFromTop_above < 2) {
+                        Card card_below = wastePile.get(i);
+                        Card card_above = wastePile.get(index_above);
+                        if (card_below.getRank() == card_above.getRank() && card_above.getRank() == topCard.getRank()) {
+                            offsets.add(largePadding);
+                        } else {
+                            offsets.add(smallPadding);
+                        }
+                    } else {
+                        offsets.add(dip1);
+                    }
+                }
+            }
+
+            // Calculate total stack height for vertical centering
+            int totalOffsets = 0;
+            for (Integer offset : offsets) {
+                totalOffsets += offset;
+            }
+            int stackHeightWaste = CardImageManager.cardHeight + totalOffsets;
             int yStartWaste = centerY - stackHeightWaste / 2;
-            for (int i = 0; i < cardsToShowWaste; i++) {
-                Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
+
+            // Position each card in the waste pile
+            int currentY = yStartWaste;
+            for (int i = 0; i < wastePileSize; i++) {
+                Card card = wastePile.get(i);
                 UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
-                wastePileCard.setPosition(centerX + padding / 2, yStartWaste + i * padding);
+                wastePileCard.setPosition(centerX + padding / 2, currentY);
                 uiCards.add(wastePileCard);
+
+                if (i < offsets.size()) {
+                    currentY += offsets.get(i);
+                }
             }
         }
     }
