@@ -79,6 +79,10 @@ public class PlayerHand {
         return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
     }
 
+    public List<Card> getSelectedCards() {
+        return getSelectedUiCards().stream().map(UICard::getCard).collect(Collectors.toList());
+    }
+
     public void paint(Graphics2D g, Component c) {
         if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
@@ -123,8 +127,25 @@ public class PlayerHand {
                             gameCommandListener.playDowncard();
                         }
                         else {
-                            // TODO if we have 2 of the same rank, we want to ONLY select it, so we can then play more then 1 at a time
-                            gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, uiCard.getCard());
+                            if (uiCard.isPlayable()) {
+                                List<UICard> selectedUiCards = getSelectedUiCards();
+                                if (selectedUiCards.isEmpty()) {
+                                    uiCard.setSelected(true);
+                                }
+                                else {
+                                    if (selectedUiCards.get(0).getCard().getRank() == uiCard.getCard().getRank() && selectedUiCards.get(0).getLocation() == uiCard.getLocation()) {
+                                        uiCard.toggleSelection();
+                                    }
+                                    else {
+                                        for (UICard card : selectedUiCards) {
+                                            card.setSelected(false);
+                                        }
+                                        uiCard.setSelected(true);
+                                    }
+                                }
+                                List<UICard> selectedCards = getSelectedUiCards();
+                                gameCommandListener.selectionChanged(selectedCards.stream().map(UICard::getCard).collect(Collectors.toList()), selectedCards.isEmpty() ? null : selectedCards.get(0).getLocation());
+                            }
                         }
                     }
                     return true;

@@ -82,6 +82,10 @@ public class UICard {
         this.isPlayable = isPlayable;
     }
 
+    public boolean isPlayable() {
+        return isPlayable;
+    }
+
     public boolean contains(int px, int py) {
         return px >= x && px <= x + CardImageManager.cardWidth &&
                py >= y && py <= y + CardImageManager.cardHeight;

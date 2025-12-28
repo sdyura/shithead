@@ -28,11 +28,16 @@ public class GameUI implements ActionListener, GameViewListener {
     final ActionListener gameCommandListener;
     ActionListener closeActionListener;
     private final String playerUsername;
+    private final Properties properties;
+    private List<Card> selectedCards;
+    private CardLocation selectedCardsLocation;
+    private final Button playButton;
 
     public GameUI(Properties properties, ShitheadGame game, String playerUsername, ActionListener gameCommandActionListener) {
         this.game = game;
         this.playerUsername = playerUsername;
         this.gameCommandListener = gameCommandActionListener;
+        this.properties = properties;
 
         XULLoader loader = new XULLoader();
         try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/game_view.xml")) {
@@ -45,6 +50,8 @@ public class GameUI implements ActionListener, GameViewListener {
         gameView = (GameView) loader.find("game_view");
         gameView.setGameCommandListener(this);
         gameView.setGame(game, playerUsername);
+
+        playButton = (Button) loader.find("play_button");
 
         Frame frame = (Frame)loader.getRoot();
 
@@ -68,8 +75,13 @@ public class GameUI implements ActionListener, GameViewListener {
     }
 
     @Override
-    public void playVisibleCard(boolean hand, Card card) {
-        gameCommandListener.actionPerformed("play " + (hand ? "hand " : "up ") + card);
+    public void playVisibleCards(List<Card> cards, CardLocation location) {
+        StringBuilder cardsString = new StringBuilder();
+        for (Card card : cards) {
+            cardsString.append(card.toString());
+            cardsString.append(" ");
+        }
+        gameCommandListener.actionPerformed("play " + (location == CardLocation.HAND ? "hand " : "up ") + cardsString.toString().trim());
     }
 
     @Override
@@ -88,6 +100,18 @@ public class GameUI implements ActionListener, GameViewListener {
     }
 
     @Override
+    public void selectionChanged(List<Card> cards, CardLocation location) {
+        this.selectedCards = cards;
+        this.selectedCardsLocation = location;
+        if (selectedCards.isEmpty()) {
+            playButton.setText(properties.getProperty("game.ready"));
+        }
+        else {
+            playButton.setText(properties.getProperty("game.play"));
+        }
+    }
+
+    @Override
     public void actionPerformed(String actionCommand) {
         if (Frame.CMD_CLOSE.equals(actionCommand)) {
             if (closeActionListener != null) {
@@ -96,8 +120,13 @@ public class GameUI implements ActionListener, GameViewListener {
             close();
         }
         else if ("play".equals(actionCommand)) {
-            // TODO for now, only ready command
-            gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+            if (selectedCards != null && !selectedCards.isEmpty()) {
+                playVisibleCards(selectedCards, selectedCardsLocation);
+                selectionChanged(Collections.emptyList(), null);
+            }
+            else {
+                gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
+            }
         }
         else if ("sort".equals(actionCommand)) {
             Player player = getPlayer(playerUsername);
