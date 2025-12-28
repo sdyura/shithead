@@ -183,16 +183,13 @@ public class GameView extends Panel {
             hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
             hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2 + padding, true);
         } else {
-            int otherPlayerCount = playerCount - 1;
-            if (otherPlayerCount > 0) {
-                double angle = Math.PI + (Math.PI * position / (otherPlayerCount + 1));
-                int x = centerX + (int) (radiusX * Math.cos(angle));
-                int y = centerY + (int) (radiusY * Math.sin(angle));
-                hand.setPosition(x, y);
-                hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
-                hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
-                hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false);
-            }
+            double angle = Math.PI + (Math.PI * position / playerCount);
+            int x = centerX + (int) (radiusX * Math.cos(angle));
+            int y = centerY + (int) (radiusY * Math.sin(angle));
+            hand.setPosition(x, y);
+            hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
+            hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
+            hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false);
         }
     }
 
