@@ -4,6 +4,7 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,7 +82,7 @@ public class ShitheadGameIntegrationTest {
         }
 
         // --- Final Verification ---
-        assertTrue(turn < maxTurns, "Game did not finish within the turn limit, possible infinite loop.");
+        assertTrue(turn < maxTurns, "Game did not finish within the turn limit (" + maxTurns + "), possible infinite loop.");
         assertTrue(game.isFinished(), "Game should be finished.");
         assertEquals(1, game.getPlayers().size(), "There should be one loser left.");
     }
@@ -157,7 +158,7 @@ public class ShitheadGameIntegrationTest {
             game.playerReady(p);
         }
 
-        int maxTurns = 500;
+        int maxTurns = 100;
         int turn = 0;
 
         // --- Game Loop (3-Player) ---
@@ -167,12 +168,12 @@ public class ShitheadGameIntegrationTest {
             int initialWastePileSize = game.getWastePile().size();
 
             // --- Player Logic: Find a valid card to play ---
-            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
+            List<Card> cardsToPlay = AutoPlay.findBestVisibleCards(game);
 
-            if (cardToPlay != null) {
+            if (!cardsToPlay.isEmpty()) {
                 // --- Action: Play a valid card ---
                 Player playerBeforeMove = currentPlayer;
-                game.playCards(Collections.singletonList(cardToPlay));
+                game.playCards(cardsToPlay);
                 Player playerAfterMove = game.getCurrentPlayer();
 
                 // --- Verification: Check game state after playing ---
@@ -181,7 +182,7 @@ public class ShitheadGameIntegrationTest {
                     assertEquals(0, game.getWastePile().size(), "3P: Waste pile should be empty if player gets another turn.");
                 } else {
                     // Turn advanced normally.
-                    assertEquals(initialWastePileSize + 1, game.getWastePile().size(), "3P: Waste pile should increase by one if turn advances.");
+                    assertEquals(initialWastePileSize + cardsToPlay.size(), game.getWastePile().size(), "3P: Waste pile should increase by one if turn advances.");
                 }
             } else {
                 // --- Action: No playable card found ---
@@ -209,7 +210,7 @@ public class ShitheadGameIntegrationTest {
         }
 
         // --- Final Verification ---
-        assertTrue(turn < maxTurns, "Game did not finish within the turn limit for 3 players.");
+        assertTrue(turn < maxTurns, "Game did not finish within the turn limit (" + maxTurns + ") for 3 players.");
         assertTrue(game.isFinished(), "3-player game should be finished.");
         assertEquals(1, game.getPlayers().size(), "There should be one loser left in a 3-player game.");
     }

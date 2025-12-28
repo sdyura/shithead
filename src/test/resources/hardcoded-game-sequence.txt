@@ -8,191 +8,81 @@ play hand QS
 play hand KC
 pickup
 play hand 5S
-play hand 7C
+play hand 7C 7S 7D
 play hand 2H
 play hand 4D
 play hand 5H
-play hand 7S
-play hand 8H
 play hand 8C
+play hand 8H
+play hand 9S
 play hand JD
 play hand JC
 play hand 2S
-play hand 7D
 play hand 8S
-play hand 9S
 play hand AC
 pickup
 play hand 3H
-play hand 7D
+play hand 8C 8H 8S
 play hand JS
 play hand AC
 play hand 2C
-play hand 8S
+play hand 2S
 play hand 9D
 play hand 9S
 play hand XS
 play hand XC
-play hand QC
-play hand 2S
+play hand QC QH
+play hand 2H
 play hand 3D
 play hand 4D
-play hand QH
-play hand 2H
 play hand 8D
-play hand 8H
+play hand JD JC
 play hand KS
-play hand KC
+play hand KC KH
 play hand AH
 pickup
-play hand 4S
-play hand 8D
-pickup
-play hand 8H
-play hand 8D
-play hand KS
-pickup
-play hand KC
-play hand KS
-play hand AH
-pickup
-play hand 2H
-play hand 4C
+play hand 4S 4C
 play hand 4D
-play hand 4S
-play hand QH
-play hand KC
-play hand 2S
-play hand 6C
-play hand 7C
-play hand 7H
-play hand 7S
-play hand 8H
-play hand 8C
+play hand 5C
 play hand 8D
-play hand JD
-play hand KS
-play hand KH
+pickup
+play hand 3D
+play hand 4H 4S 4C 4D
+play hand 5C
+play hand JD JC
+pickup
+play hand KS KC KH
+pickup
 play hand AH
 pickup
-play hand 4H
+play hand 2H
+play hand 5C
+play hand 5S 5H
 play hand 6C
-play hand 6S
-play hand 7C
-play hand QD
-play hand KS
+play hand 7C 7S 7D
+play hand 7H
+play hand 8D
+play hand QS QC QH
+play hand KS KC KH
+pickup
+play hand JD JC
+play hand QD QS QC QH
+play hand 6S 6D
 play hand XD
-play hand 5C
-play hand 7H
-pickup
-play hand 7S
-play hand 7H
-play hand 8H
-pickup
-play hand 8C
-play hand 8H
-play hand 8D
-pickup
-play hand JD
-pickup
-play hand KH
-pickup
 play hand AH
 pickup
-play hand 2S
-play hand 5C
-play hand QH
-play hand KH
-play hand KC
-play hand AH
-play hand 2H
-play hand 6D
-play hand JC
-play hand JD
-play hand QS
-pickup
-play hand 3D
-play hand 6D
-play hand QC
-play hand QS
-pickup
-play hand JC
-play hand QC
-play hand 2H
-play hand 3D
-play hand 5C
-play hand 5S
-play hand JD
-play hand QS
-play hand QH
-pickup
-play hand KH
-play hand 2H
-play hand KC
-pickup
-play hand AH
-play hand 2H
-play hand 2S
-play hand 3D
-play hand 7S
-play hand JC
-pickup
-play hand 4C
-play hand 7S
-play hand JD
-play hand JC
-play hand QC
-play hand 2S
-play hand 4D
-play hand 2H
-play hand 4S
-play hand 7H
-play hand QS
-play hand AH
-pickup
-play hand 3D
-play hand 4S
-play hand 8C
-play hand QS
-pickup
-play hand 7H
-play hand 8H
-play hand AH
-pickup
-play hand 2H
-play hand 3D
-play hand 4D
-play hand 4S
-play hand 2S
-play hand 7H
-play hand 7S
-play hand 8D
-play hand JD
-play hand QS
-play hand QH
-play hand AH
-pickup
-play hand 8C
-play hand 8D
-play hand 8H
-play hand JD
-play up XH
 play up 3S
-play hand 7H
+play hand 8D
+play up XH
 play up KD
+play hand KS KC KH
 play hand AH
 play down 0
-play hand 7S
-play hand 7H
-play hand QS
-play hand KD
-play hand 2S
-play hand 3S
-play hand 3D
+play up 3C
 play hand 9C
-play hand QH
+play up JH
 play hand AH
-play hand 2H
+pickup
 play down 0
-play hand JC
+play hand 9C
 play down 0

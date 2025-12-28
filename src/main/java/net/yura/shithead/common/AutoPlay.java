@@ -3,6 +3,8 @@ package net.yura.shithead.common;
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Rank;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AutoPlay {
@@ -27,5 +29,30 @@ public class AutoPlay {
             }
         }
         return bestCard;
+    }
+
+    public static List<Card> findBestVisibleCards(ShitheadGame game) {
+
+        Card bestCard = findBestVisibleCard(game);
+
+        if (bestCard == null) {
+            return Collections.emptyList();
+        }
+
+        // two/ten/ace are the best cards that go on all cards, we wont want to give them away if we have 2
+        if (bestCard.getRank() != Rank.TWO && bestCard.getRank() != Rank.TEN && bestCard.getRank() != Rank.ACE) {
+            List<Card> cardsToPlay = new ArrayList<>();
+
+            Player player = game.getCurrentPlayer();
+            List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
+
+            for (Card card : source) {
+                if (card.getRank() == bestCard.getRank()) {
+                    cardsToPlay.add(card);
+                }
+            }
+            return cardsToPlay;
+        }
+        return Collections.singletonList(bestCard);
     }
 }
