@@ -41,18 +41,18 @@ public class ShitheadGameIntegrationTest {
 
             // --- Player Logic: Find a valid card to play ---
             // The AI finds the best card from hand or up-cards.
-            List<Card> cardsToPlay = AutoPlay.findBestVisibleCards(game);
+            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
 
-            if (!cardsToPlay.isEmpty()) {
+            if (cardToPlay != null) {
                 // --- Action: Play a valid card ---
-                game.playCards(cardsToPlay);
+                game.playCards(Collections.singletonList(cardToPlay));
 
                 // --- Verification: Check game state after playing ---
                 if (game.getWastePile().isEmpty()) { // Pile was burned
                     assertEquals(0, game.getWastePile().size(), "Waste pile should be burned.");
                     assertEquals(currentPlayer, game.getCurrentPlayer(), "Player should get another turn after a burn.");
                 } else {
-                    assertEquals(initialWastePileSize + cardsToPlay.size(), game.getWastePile().size(), "Waste pile should increase by one.");
+                    assertEquals(initialWastePileSize + 1, game.getWastePile().size(), "Waste pile should increase by one.");
                     assertEquals(otherPlayer, game.getCurrentPlayer(), "Turn should advance to the next player.");
                 }
             } else {
@@ -82,7 +82,7 @@ public class ShitheadGameIntegrationTest {
         }
 
         // --- Final Verification ---
-        assertTrue(turn < maxTurns, "Game did not finish within the turn limit, possible infinite loop.");
+        assertTrue(turn < maxTurns, "Game did not finish within the turn limit (" + maxTurns + "), possible infinite loop.");
         assertTrue(game.isFinished(), "Game should be finished.");
         assertEquals(1, game.getPlayers().size(), "There should be one loser left.");
     }
@@ -158,7 +158,7 @@ public class ShitheadGameIntegrationTest {
             game.playerReady(p);
         }
 
-        int maxTurns = 500;
+        int maxTurns = 100;
         int turn = 0;
 
         // --- Game Loop (3-Player) ---
@@ -210,7 +210,7 @@ public class ShitheadGameIntegrationTest {
         }
 
         // --- Final Verification ---
-        assertTrue(turn < maxTurns, "Game did not finish within the turn limit for 3 players.");
+        assertTrue(turn < maxTurns, "Game did not finish within the turn limit (" + maxTurns + ") for 3 players.");
         assertTrue(game.isFinished(), "3-player game should be finished.");
         assertEquals(1, game.getPlayers().size(), "There should be one loser left in a 3-player game.");
     }

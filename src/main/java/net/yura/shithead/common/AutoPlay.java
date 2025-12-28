@@ -12,7 +12,7 @@ public class AutoPlay {
     /**
      * This method ONLY works for hand or UP cards
      */
-    public static List<Card> findBestVisibleCards(ShitheadGame game) {
+    public static Card findBestVisibleCard(ShitheadGame game) {
 
         Player player = game.getCurrentPlayer();
 
@@ -28,17 +28,31 @@ public class AutoPlay {
                 }
             }
         }
+        return bestCard;
+    }
+
+    public static List<Card> findBestVisibleCards(ShitheadGame game) {
+
+        Card bestCard = findBestVisibleCard(game);
 
         if (bestCard == null) {
             return Collections.emptyList();
         }
 
-        List<Card> cardsToPlay = new ArrayList<>();
-        for (Card card : source) {
-            if (card.getRank() == bestCard.getRank()) {
-                cardsToPlay.add(card);
+        // two/ten/ace are the best cards that go on all cards, we wont want to give them away if we have 2
+        if (bestCard.getRank() != Rank.TWO && bestCard.getRank() != Rank.TEN && bestCard.getRank() != Rank.ACE) {
+            List<Card> cardsToPlay = new ArrayList<>();
+
+            Player player = game.getCurrentPlayer();
+            List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
+
+            for (Card card : source) {
+                if (card.getRank() == bestCard.getRank()) {
+                    cardsToPlay.add(card);
+                }
             }
+            return cardsToPlay;
         }
-        return cardsToPlay;
+        return Collections.singletonList(bestCard);
     }
 }

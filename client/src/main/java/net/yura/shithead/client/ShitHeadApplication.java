@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import net.yura.cardsengine.Card;
 import net.yura.lobby.mini.MiniLobbyClient;
@@ -102,14 +103,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
                             parser.parse(game, "pickup");
                         }
                         else {
-                            Card card = cards.get(0);
-                            StringBuilder command = new StringBuilder("play ");
-                            command.append(game.getCurrentPlayer().getHand().contains(card) ? "hand " : "up ");
-                            for (Card c : cards) {
-                                command.append(c);
-                                command.append(" ");
-                            }
-                            parser.parse(game, command.toString().trim());
+                            parser.parse(game, "play " + (game.getCurrentPlayer().getHand().contains(cards.get(0)) ? "hand " : "up ") +
+                                    cards.stream().map(Object::toString).collect(Collectors.joining(" ")));
                         }
                     }
 
