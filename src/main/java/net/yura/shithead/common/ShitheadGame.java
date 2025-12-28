@@ -337,14 +337,6 @@ public class ShitheadGame {
         return burned;
     }
 
-    private int getCardRankValue(Rank rank) {
-        int rankValue = rank.toInt();
-        if (rankValue == 1) { // Ace
-            return 14;
-        }
-        return rankValue;
-    }
-
     public boolean isPlayable(Rank rank, Card top) {
         if (rank == Rank.TWO || rank == Rank.TEN || top == null) {
             return true;
@@ -352,7 +344,7 @@ public class ShitheadGame {
         if (top.getRank() == Rank.TWO) {
             return true;
         }
-        return getCardRankValue(rank) >= getCardRankValue(top.getRank());
+        return CardComparator.getRankValue(rank) >= CardComparator.getRankValue(top.getRank());
     }
 
     private void advanceTurn() {
