@@ -2,10 +2,10 @@ package net.yura.shithead.common;
 
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Rank;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AutoPlay {
 
@@ -54,5 +54,24 @@ public class AutoPlay {
             return cardsToPlay;
         }
         return Collections.singletonList(bestCard);
+    }
+
+    public static String getValidGameCommand(ShitheadGame game) {
+        Player player = game.getCurrentPlayer();
+        if (player.getHand().isEmpty() && player.getUpcards().isEmpty()) {
+            return "play down 0";
+        }
+
+        List<Card> cards = AutoPlay.findBestVisibleCards(game);
+
+        if (!cards.isEmpty()) {
+            return "play " + (game.getCurrentPlayer().getHand().contains(cards.get(0)) ? "hand " : "up ") +
+                    cards.stream().map(Object::toString).collect(Collectors.joining(" "));
+        }
+
+        if (!game.getDeck().getCards().isEmpty()) {
+            return "play deck";
+        }
+        return "pickup";
     }
 }

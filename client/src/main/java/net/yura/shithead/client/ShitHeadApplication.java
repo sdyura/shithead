@@ -98,14 +98,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
                     parser.parse(game, actionCommand);
 
                     while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
-                        List<Card> cards = AutoPlay.findBestVisibleCards(game);
-                        if (cards.isEmpty()) {
-                            parser.parse(game, "pickup");
-                        }
-                        else {
-                            parser.parse(game, "play " + (game.getCurrentPlayer().getHand().contains(cards.get(0)) ? "hand " : "up ") +
-                                    cards.stream().map(Object::toString).collect(Collectors.joining(" ")));
-                        }
+                        parser.parse(game, AutoPlay.getValidGameCommand(game));
                     }
 
                     DesktopPane.getDesktopPane().getSelectedFrame().revalidate();

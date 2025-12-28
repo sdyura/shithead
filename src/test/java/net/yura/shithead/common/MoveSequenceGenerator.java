@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class MoveSequenceGenerator {
 
@@ -33,20 +32,7 @@ public class MoveSequenceGenerator {
         commands.add("ready Player+2");
 
         while (!game.isFinished()) {
-            Player currentPlayer = game.getCurrentPlayer();
-            List<Card> cardsToPlay = AutoPlay.findBestVisibleCards(game);
-
-            String command;
-            if (!cardsToPlay.isEmpty()) {
-                command = "play " + getCardLocation(currentPlayer, cardsToPlay.get(0)) + " " + cardsToPlay.stream().map(Object::toString)
-                        .collect(Collectors.joining(" "));
-            } else {
-                if (!currentPlayer.getHand().isEmpty() || !currentPlayer.getUpcards().isEmpty()) {
-                    command = "pickup";
-                } else {
-                    command = "play down 0";
-                }
-            }
+            String command = AutoPlay.getValidGameCommand(game);
 
             System.out.println("playing: " + command);
 
