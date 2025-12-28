@@ -13,22 +13,28 @@ public class AutoPlay {
      * This method ONLY works for hand or UP cards
      */
     public static Card findBestVisibleCard(ShitheadGame game) {
-
         Player player = game.getCurrentPlayer();
-
         Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
-
-        Card bestCard = null;
         List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
+
+        Card bestNormalCard = null;
+        Card bestPriorityCard = null;
 
         for (Card card : source) {
             if (game.isPlayable(card.getRank(), topCard)) {
-                if (bestCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestCard.getRank()) || bestCard.getRank() == Rank.TWO) {
-                    bestCard = card;
+                if (card.getRank() == Rank.TWO) {
+                    if (bestPriorityCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestPriorityCard.getRank())) {
+                        bestPriorityCard = card;
+                    }
+                } else {
+                    if (bestNormalCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestNormalCard.getRank())) {
+                        bestNormalCard = card;
+                    }
                 }
             }
         }
-        return bestCard;
+
+        return bestNormalCard != null ? bestNormalCard : bestPriorityCard;
     }
 
     public static List<Card> findBestVisibleCards(ShitheadGame game) {
