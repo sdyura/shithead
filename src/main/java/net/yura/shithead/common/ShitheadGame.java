@@ -309,6 +309,9 @@ public class ShitheadGame {
      * After picking up the pile, the turn advances to the next player.
      */
     public void pickUpWastePile() {
+        if (isFinished()) {
+            throw new IllegalStateException("game finished");
+        }
         Player player = getCurrentPlayer();
         player.getHand().addAll(wastePile);
         wastePile.clear();
@@ -369,14 +372,6 @@ public class ShitheadGame {
         return Collections.unmodifiableList(wastePile);
     }
 
-    /**
-     * Returns whether the game has finished. The last remaining player is the
-     * loser of the game.
-     */
-    public boolean isFinished() {
-        return players.size() <= 1;
-    }
-
     public Deck getDeck() {
         return deck;
     }
@@ -411,12 +406,20 @@ public class ShitheadGame {
         }
     }
 
+    /**
+     * Returns whether the game has finished. The last remaining player is the
+     * loser of the game.
+     */
+    public boolean isFinished() {
+        return players.size() <= 1;
+    }
+
     public boolean isRearranging() {
         return playersReady.size() < players.size();
     }
 
     public boolean isPlaying() {
-        return playersReady.size() >= players.size();
+        return !isRearranging() && !isFinished();
     }
 
     public Set<Player> getPlayersReady() {

@@ -22,16 +22,18 @@ public class CommandParserTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        game = new ShitheadGame(1);
+        // need minimum 2 players otherwise the game is over
+        game = new ShitheadGame(2);
         parser = new CommandParser();
         player1 = game.getPlayers().get(0);
+        Player player2 = game.getPlayers().get(1);
 
         // Clear all card piles for a clean slate
         player1.getHand().clear();
         player1.getUpcards().clear();
         player1.getDowncards().clear();
         game.setWastePile(new ArrayList<>());
-        game.setPlayersReady(Set.of(player1));
+        game.setPlayersReady(Set.of(player1, player2));
 
         // Use reflection to set a predictable deck for testing
         Deck deck = game.getDeck();

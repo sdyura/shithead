@@ -51,6 +51,13 @@ public class GameView extends Panel {
             hand.paint(g, this);
             g.translate(-hand.x, -hand.y);
         }
+
+        if (game.isFinished()) {
+            String text = "Game Over!";
+            g.setColor(0xFF000000);
+            g.drawString(text, (getWidth() - g.getFont().getWidth(text)) / 2, getHeight() / 2 - CardImageManager.cardHeight / 2 - g.getFont().getHeight());
+        }
+
         // paint deck and waste pile
         for (int i = 0; i < uiCards.size(); i++) {
             uiCards.get(i).paint(g, this);
