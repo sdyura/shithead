@@ -95,7 +95,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
                     CommandParser parser = new CommandParser();
                     parser.parse(game, actionCommand);
 
-                    while (!game.isFinished() && game.getCurrentPlayer() != me) {
+                    while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
                         Card card = AutoPlay.findBestVisibleCard(game);
                         parser.parse(game, card == null ? "pickup" : "play " + (game.getCurrentPlayer().getHand().contains(card) ? "hand " : "up ") + card);
                     }
