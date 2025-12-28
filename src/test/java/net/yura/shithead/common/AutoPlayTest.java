@@ -6,6 +6,7 @@ import net.yura.cardsengine.Suit;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,5 +40,29 @@ public class AutoPlayTest {
         assertEquals(2, bestCards.size());
         assertTrue(bestCards.contains(Card.getCardByRankSuit(Rank.EIGHT, Suit.CLUBS)));
         assertTrue(bestCards.contains(Card.getCardByRankSuit(Rank.EIGHT, Suit.DIAMONDS)));
+    }
+
+    @Test
+    public void testFindBestVisibleCardPrefersThreeOverTwoWhenWasteIsEmpty() {
+        // Given
+        ShitheadGame game = mock(ShitheadGame.class);
+        Player player = mock(Player.class);
+        when(game.getCurrentPlayer()).thenReturn(player);
+        when(game.getWastePile()).thenReturn(Collections.emptyList());
+
+        List<Card> hand = Arrays.asList(
+                Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS),
+                Card.getCardByRankSuit(Rank.TWO, Suit.SPADES)
+        );
+        when(player.getHand()).thenReturn(hand);
+
+        when(game.isPlayable(Rank.TWO, null)).thenReturn(true);
+        when(game.isPlayable(Rank.THREE, null)).thenReturn(true);
+
+        // When
+        Card bestCard = AutoPlay.findBestVisibleCard(game);
+
+        // Then
+        assertEquals(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS), bestCard);
     }
 }
