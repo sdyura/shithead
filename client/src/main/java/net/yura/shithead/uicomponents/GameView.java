@@ -22,6 +22,9 @@ public class GameView extends Panel {
     private final List<UICard> uiCards = new ArrayList<UICard>();
     private final Map<Player, PlayerHand> playerHands = new HashMap<Player, PlayerHand>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
+    private int wastePileX;
+    private int wastePileY;
+    private int wastePileSize;
 
     public GameView() {
     }
@@ -58,6 +61,16 @@ public class GameView extends Panel {
             g.drawString(text, (getWidth() - g.getFont().getWidth(text)) / 2, getHeight() / 2 - CardImageManager.cardHeight / 2 - g.getFont().getHeight());
         }
 
+        int dip = XULLoader.adjustSizeToDensity(1);
+        int cardsToShowWaste = Math.min(this.wastePileSize, 3);
+        int hiddenCards = this.wastePileSize - cardsToShowWaste;
+        if (hiddenCards > 0) {
+            g.setColor(0xFF000000); // Black
+            for (int i = 0; i < hiddenCards; i++) {
+                g.drawRect(wastePileX, wastePileY - (i + 1) * dip, CardImageManager.cardWidth - 1, 0);
+            }
+        }
+
         // paint deck and waste pile
         for (int i = 0; i < uiCards.size(); i++) {
             uiCards.get(i).paint(g, this);
@@ -67,6 +80,7 @@ public class GameView extends Panel {
     private void layoutCards() {
         uiCards.clear();
         playerHands.clear();
+        wastePileSize = 0;
         if (game == null) {
             return;
         }
@@ -107,15 +121,42 @@ public class GameView extends Panel {
 
         // Waste Pile
         List<Card> wastePile = game.getWastePile();
-        int wastePileSize = wastePile.size();
-        int cardsToShowWaste = Math.min(wastePileSize, 3);
+        this.wastePileSize = wastePile.size();
+        int cardsToShowWaste = Math.min(this.wastePileSize, 3);
         if (cardsToShowWaste > 0) {
-            int stackHeightWaste = CardImageManager.cardHeight + (cardsToShowWaste - 1) * padding;
-            int yStartWaste = centerY - stackHeightWaste / 2;
+            int[] paddings = new int[cardsToShowWaste];
             for (int i = 0; i < cardsToShowWaste; i++) {
-                Card card = wastePile.get(wastePileSize - cardsToShowWaste + i);
+                int cardIndex = this.wastePileSize - cardsToShowWaste + i;
+                if (i > 0) {
+                    Card currentCard = wastePile.get(cardIndex);
+                    Card previousCard = wastePile.get(cardIndex - 1);
+                    if (currentCard.getRank() == previousCard.getRank()) {
+                        paddings[i] = padding * 4;
+                    } else {
+                        paddings[i] = padding;
+                    }
+                }
+            }
+
+            int totalPadding = 0;
+            for (int p : paddings) {
+                totalPadding += p;
+            }
+
+            int stackHeightWaste = CardImageManager.cardHeight + totalPadding;
+            int yStartWaste = centerY - stackHeightWaste / 2;
+            int currentY = yStartWaste;
+
+            for (int i = 0; i < cardsToShowWaste; i++) {
+                currentY += paddings[i];
+                Card card = wastePile.get(this.wastePileSize - cardsToShowWaste + i);
                 UICard wastePileCard = new UICard(card, null, CardLocation.WASTE, true);
-                wastePileCard.setPosition(centerX + padding / 2, yStartWaste + i * padding);
+                int x = centerX + padding / 2;
+                wastePileCard.setPosition(x, currentY);
+                if (i == 0) {
+                    wastePileX = x;
+                    wastePileY = currentY;
+                }
                 uiCards.add(wastePileCard);
             }
         }
