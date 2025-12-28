@@ -17,36 +17,24 @@ public class AutoPlay {
         Card topCard = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
         List<Card> source = !player.getHand().isEmpty() ? player.getHand() : player.getUpcards();
 
-        List<Card> playableNormalCards = new ArrayList<>();
-        List<Card> playablePriorityCards = new ArrayList<>();
+        Card bestNormalCard = null;
+        Card bestPriorityCard = null;
 
         for (Card card : source) {
             if (game.isPlayable(card.getRank(), topCard)) {
                 if (card.getRank() == Rank.TWO) {
-                    playablePriorityCards.add(card);
+                    if (bestPriorityCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestPriorityCard.getRank())) {
+                        bestPriorityCard = card;
+                    }
                 } else {
-                    playableNormalCards.add(card);
+                    if (bestNormalCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestNormalCard.getRank())) {
+                        bestNormalCard = card;
+                    }
                 }
             }
         }
 
-        if (!playableNormalCards.isEmpty()) {
-            return findLowestRank(playableNormalCards);
-        }
-        if (!playablePriorityCards.isEmpty()) {
-            return findLowestRank(playablePriorityCards);
-        }
-        return null;
-    }
-
-    private static Card findLowestRank(List<Card> cards) {
-        Card bestCard = null;
-        for (Card card : cards) {
-            if (bestCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestCard.getRank())) {
-                bestCard = card;
-            }
-        }
-        return bestCard;
+        return bestNormalCard != null ? bestNormalCard : bestPriorityCard;
     }
 
     public static List<Card> findBestVisibleCards(ShitheadGame game) {
