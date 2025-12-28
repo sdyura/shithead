@@ -78,6 +78,16 @@ public class GameUI implements ActionListener, GameViewListener {
     }
 
     @Override
+    public void playDeck() {
+        gameCommandListener.actionPerformed("play deck");
+    }
+
+    @Override
+    public void playDowncard() {
+        gameCommandListener.actionPerformed("play down 0");
+    }
+
+    @Override
     public void actionPerformed(String actionCommand) {
         if (Frame.CMD_CLOSE.equals(actionCommand)) {
             if (closeActionListener != null) {

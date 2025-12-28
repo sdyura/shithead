@@ -117,8 +117,15 @@ public class PlayerHand {
                         }
                     }
                     else if (!game.isFinished()) {
-                        // TODO if we have 2 of the same rank, we want to ONLY select it, so we can then play more then 1 at a time
-                        gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, uiCard.getCard());
+                        Player player = game.getCurrentPlayer();
+                        if (player.getHand().isEmpty() && player.getUpcards().isEmpty()) {
+                            // TODO do we want to be able to pick the index of the downcard we play
+                            gameCommandListener.playDowncard();
+                        }
+                        else {
+                            // TODO if we have 2 of the same rank, we want to ONLY select it, so we can then play more then 1 at a time
+                            gameCommandListener.playVisibleCard(uiCard.getLocation() == CardLocation.HAND, uiCard.getCard());
+                        }
                     }
                     return true;
                 }

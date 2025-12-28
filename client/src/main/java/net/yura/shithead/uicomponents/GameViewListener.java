@@ -12,4 +12,8 @@ public interface GameViewListener {
     void playVisibleCard(boolean hand, Card card);
 
     void pickUpWaste();
+
+    void playDeck();
+
+    void playDowncard();
 }

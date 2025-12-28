@@ -65,7 +65,7 @@ public class GameView extends Panel {
         }
 
         List<Player> players = game.getPlayers();
-        int localPlayerIndex = 0;
+        int localPlayerIndex = -1;
         if (myUsername != null) {
             for (int i = 0; i < players.size(); i++) {
                 if (myUsername.equals(players.get(i).getName())) {
@@ -162,8 +162,13 @@ public class GameView extends Panel {
             for (int i = uiCards.size() - 1; i >= 0; i--) {
                 UICard uiCard = uiCards.get(i);
                 // if user clicks on waste pile during our turn, this mean we should pick up the waste pile
-                if (uiCard.contains(x, y) && uiCard.getLocation() == CardLocation.WASTE && game.getCurrentPlayer().getName().equals(myUsername)) {
-                    gameCommandListener.pickUpWaste();
+                if (uiCard.contains(x, y) && game.getCurrentPlayer().getName().equals(myUsername)) {
+                    if (uiCard.getLocation() == CardLocation.WASTE) {
+                        gameCommandListener.pickUpWaste();
+                    }
+                    else if (uiCard.getLocation() == CardLocation.DECK) {
+                        gameCommandListener.playDeck();
+                    }
                 }
             }
             for (PlayerHand hand : playerHands.values()) {
