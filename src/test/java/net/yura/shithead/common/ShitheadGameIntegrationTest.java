@@ -158,7 +158,7 @@ public class ShitheadGameIntegrationTest {
             game.playerReady(p);
         }
 
-        int maxTurns = 200;
+        int maxTurns = 100;
         int turn = 0;
 
         // --- Game Loop (3-Player) ---
