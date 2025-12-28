@@ -81,25 +81,6 @@ public class GameView extends Panel {
             layoutPlayer(player, playerPosition, i == localPlayerIndex);
         }
 
-        for (PlayerHand hand : playerHands.values()) {
-            hand.setWaitingForInput(false);
-        }
-
-        if (game.isRearranging()) {
-            for (Player player : game.getPlayers()) {
-                if (!game.getPlayersReady().contains(player)) {
-                    playerHands.get(player).setWaitingForInput(true);
-                }
-            }
-        } else {
-            Player currentPlayer = game.getCurrentPlayer();
-            if (currentPlayer != null) {
-                PlayerHand hand = playerHands.get(currentPlayer);
-                if (hand != null) {
-                    hand.setWaitingForInput(true);
-                }
-            }
-        }
 
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
@@ -145,6 +126,15 @@ public class GameView extends Panel {
 
         PlayerHand hand = new PlayerHand(game, player, isLocalPlayer, gameCommandListener);
         playerHands.put(player, hand);
+
+        if (game.isRearranging()) {
+            if (!game.getPlayersReady().contains(player)) {
+                hand.setWaitingForInput(true);
+            }
+        }
+        else if (game.getCurrentPlayer() == player) {
+            hand.setWaitingForInput(true);
+        }
 
         if (isLocalPlayer) {
             hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2);
