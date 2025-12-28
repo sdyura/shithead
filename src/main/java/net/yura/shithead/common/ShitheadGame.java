@@ -282,10 +282,14 @@ public class ShitheadGame {
                 sourcePile.remove(null); // Known to succeed due to validation above
             }
         }
-        wastePile.addAll(cards);
 
-        // apply special rules
-        boolean burned = applySpecialRules(rank);
+        boolean burned = false;
+        for (Card card : cards) {
+            wastePile.add(card);
+            if (applySpecialRules(card.getRank())) {
+                burned = true;
+            }
+        }
 
         refillHand(player);
 

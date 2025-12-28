@@ -3,6 +3,8 @@ package net.yura.shithead.common;
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Rank;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AutoPlay {
@@ -10,7 +12,7 @@ public class AutoPlay {
     /**
      * This method ONLY works for hand or UP cards
      */
-    public static Card findBestVisibleCard(ShitheadGame game) {
+    public static List<Card> findBestVisibleCards(ShitheadGame game) {
 
         Player player = game.getCurrentPlayer();
 
@@ -26,6 +28,17 @@ public class AutoPlay {
                 }
             }
         }
-        return bestCard;
+
+        if (bestCard == null) {
+            return Collections.emptyList();
+        }
+
+        List<Card> cardsToPlay = new ArrayList<>();
+        for (Card card : source) {
+            if (card.getRank() == bestCard.getRank()) {
+                cardsToPlay.add(card);
+            }
+        }
+        return cardsToPlay;
     }
 }

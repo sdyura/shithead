@@ -3,6 +3,7 @@ package net.yura.shithead.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -96,8 +97,20 @@ public class ShitHeadApplication extends Application implements ActionListener {
                     parser.parse(game, actionCommand);
 
                     while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
-                        Card card = AutoPlay.findBestVisibleCard(game);
-                        parser.parse(game, card == null ? "pickup" : "play " + (game.getCurrentPlayer().getHand().contains(card) ? "hand " : "up ") + card);
+                        List<Card> cards = AutoPlay.findBestVisibleCards(game);
+                        if (cards.isEmpty()) {
+                            parser.parse(game, "pickup");
+                        }
+                        else {
+                            Card card = cards.get(0);
+                            StringBuilder command = new StringBuilder("play ");
+                            command.append(game.getCurrentPlayer().getHand().contains(card) ? "hand " : "up ");
+                            for (Card c : cards) {
+                                command.append(c);
+                                command.append(" ");
+                            }
+                            parser.parse(game, command.toString().trim());
+                        }
                     }
 
                     DesktopPane.getDesktopPane().getSelectedFrame().revalidate();

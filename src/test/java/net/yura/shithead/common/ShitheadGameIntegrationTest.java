@@ -4,6 +4,7 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Deck;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,18 +41,18 @@ public class ShitheadGameIntegrationTest {
 
             // --- Player Logic: Find a valid card to play ---
             // The AI finds the best card from hand or up-cards.
-            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
+            List<Card> cardsToPlay = AutoPlay.findBestVisibleCards(game);
 
-            if (cardToPlay != null) {
+            if (!cardsToPlay.isEmpty()) {
                 // --- Action: Play a valid card ---
-                game.playCards(Collections.singletonList(cardToPlay));
+                game.playCards(cardsToPlay);
 
                 // --- Verification: Check game state after playing ---
                 if (game.getWastePile().isEmpty()) { // Pile was burned
                     assertEquals(0, game.getWastePile().size(), "Waste pile should be burned.");
                     assertEquals(currentPlayer, game.getCurrentPlayer(), "Player should get another turn after a burn.");
                 } else {
-                    assertEquals(initialWastePileSize + 1, game.getWastePile().size(), "Waste pile should increase by one.");
+                    assertEquals(initialWastePileSize + cardsToPlay.size(), game.getWastePile().size(), "Waste pile should increase by one.");
                     assertEquals(otherPlayer, game.getCurrentPlayer(), "Turn should advance to the next player.");
                 }
             } else {
@@ -167,12 +168,12 @@ public class ShitheadGameIntegrationTest {
             int initialWastePileSize = game.getWastePile().size();
 
             // --- Player Logic: Find a valid card to play ---
-            Card cardToPlay = AutoPlay.findBestVisibleCard(game);
+            List<Card> cardsToPlay = AutoPlay.findBestVisibleCards(game);
 
-            if (cardToPlay != null) {
+            if (!cardsToPlay.isEmpty()) {
                 // --- Action: Play a valid card ---
                 Player playerBeforeMove = currentPlayer;
-                game.playCards(Collections.singletonList(cardToPlay));
+                game.playCards(cardsToPlay);
                 Player playerAfterMove = game.getCurrentPlayer();
 
                 // --- Verification: Check game state after playing ---
@@ -181,7 +182,7 @@ public class ShitheadGameIntegrationTest {
                     assertEquals(0, game.getWastePile().size(), "3P: Waste pile should be empty if player gets another turn.");
                 } else {
                     // Turn advanced normally.
-                    assertEquals(initialWastePileSize + 1, game.getWastePile().size(), "3P: Waste pile should increase by one if turn advances.");
+                    assertEquals(initialWastePileSize + cardsToPlay.size(), game.getWastePile().size(), "3P: Waste pile should increase by one if turn advances.");
                 }
             } else {
                 // --- Action: No playable card found ---
