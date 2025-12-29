@@ -96,6 +96,9 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 public void actionPerformed(String actionCommand) {
                     CommandParser parser = new CommandParser();
                     parser.parse(game, actionCommand);
+
+                    // TODO ideally we would call GameView.layoutCards() directly as when we use revalidate it may or not get called
+
                     DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
                     DesktopPane.getDesktopPane().getSelectedFrame().repaint();
 
@@ -104,7 +107,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
                         public void run() {
                             while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
                                 try {
-                                    Thread.sleep(1000);
+                                    Thread.sleep(3000);
                                 } catch (InterruptedException e) {
                                     break;
                                 }

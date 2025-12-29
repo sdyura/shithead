@@ -17,7 +17,7 @@ public class PlayerHand {
 
     private final ShitheadGame game;
     final Player player;
-    private final List<UICard> uiCards = new ArrayList<UICard>();
+    private List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
     final private boolean isLocalPlayer;
@@ -44,12 +44,14 @@ public class PlayerHand {
         return isWaitingForInput;
     }
 
-    public void clear() {
-        uiCards.clear();
+    public List<UICard> setCards(List<UICard> cards) {
+        List<UICard> oldCards = this.uiCards;
+        oldCards.removeAll(cards);
+        this.uiCards = cards;
+        return oldCards;
     }
 
     public void layoutHand(List<UICard> cards, int yOffset) {
-        uiCards.addAll(cards);
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
         int startX = - handWidth / 2;
 
@@ -63,7 +65,7 @@ public class PlayerHand {
         return uiCards;
     }
 
-    private List<UICard> getSelectedUiCards() {
+    public List<UICard> getSelectedUiCards() {
         return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
     }
 
