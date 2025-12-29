@@ -7,7 +7,6 @@ import net.yura.mobile.gui.border.Border;
 import net.yura.mobile.gui.border.LineBorder;
 import net.yura.mobile.gui.components.Component;
 import net.yura.mobile.gui.layout.XULLoader;
-import net.yura.shithead.common.Player;
 
 public class UICard {
 
@@ -22,10 +21,21 @@ public class UICard {
     private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);
     private static final Border playableBorder = new LineBorder(0xFFFFBF00, 2);
 
-    public UICard(Card card, CardLocation location, boolean faceUp) {
+    /**
+     * used when dealing a brand new card from a pack (comes in from off-screen)
+     */
+    public UICard() {
+    }
+
+    /**
+     * used for creating a UICard for a card already existing on the table (in deck)
+     */
+    public UICard(Card card, CardLocation location, boolean faceUp, int x, int y) {
         this.card = card;
         this.location = location;
         this.faceUp = faceUp;
+        this.x = x;
+        this.y = y;
     }
 
     public void setPosition(int x, int y) {
@@ -59,6 +69,14 @@ public class UICard {
 
     public CardLocation getLocation() {
         return location;
+    }
+
+    public void setLocation(CardLocation location) {
+        this.location = location;
+    }
+
+    public void setFaceUp(boolean faceUp) {
+        this.faceUp = faceUp;
     }
 
     public boolean isSelected() {
@@ -135,5 +153,12 @@ public class UICard {
         y += ny * step;
 
         return new double[]{x, y};
+    }
+
+    public void setCard(Card card) {
+        if (this.card != null) {
+            throw new IllegalStateException("already has card " + this.card);
+        }
+        this.card = card;
     }
 }
