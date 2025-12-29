@@ -6,6 +6,7 @@ import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.border.Border;
 import net.yura.mobile.gui.border.LineBorder;
 import net.yura.mobile.gui.components.Component;
+import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.Player;
 
 public class UICard {
@@ -13,8 +14,8 @@ public class UICard {
     private Card card;
     private CardLocation location;
     private boolean faceUp;
-    private int x;
-    private int y;
+    private int x, y;
+    private int targetX, targetY;
     private boolean selected;
     private boolean playable;
 
@@ -28,8 +29,8 @@ public class UICard {
     }
 
     public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.targetX = x;
+        this.targetY = y;
     }
 
     public void paint(Graphics2D g, Component c) {
@@ -83,5 +84,56 @@ public class UICard {
     public boolean contains(int px, int py) {
         return px >= x && px <= x + CardImageManager.cardWidth &&
                py >= y && py <= y + CardImageManager.cardHeight;
+    }
+
+    public boolean animate() {
+        boolean more = false;
+        if (x != targetX || y != targetY) {
+            double[] pos = moveToward(x, y, targetX, targetY);
+            x = (int)pos[0];
+            y = (int)pos[1];
+
+            more = true;
+        }
+
+        return more;
+    }
+
+    public static double[] moveToward(double x, double y, double targetX, double targetY) {
+
+        double dx = targetX - x;
+        double dy = targetY - y;
+
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Already at target
+        if (distance == 0) {
+            return new double[]{x, y};
+        }
+
+        // Step size logic
+        double maxStep = XULLoader.adjustSizeToDensity(10);
+        double minStep = 1.0;
+
+        // Slow down as we get close
+        double step = Math.min(maxStep, distance);
+        if (step < minStep) {
+            step = minStep;
+        }
+
+        // Never overshoot
+        if (step > distance) {
+            step = distance;
+        }
+
+        // Normalize direction
+        double nx = dx / distance;
+        double ny = dy / distance;
+
+        // Move
+        x += nx * step;
+        y += ny * step;
+
+        return new double[]{x, y};
     }
 }

@@ -67,7 +67,7 @@ public class PlayerHand {
                     uiCard.setPlayable(game.isPlayable(card.getRank(), top));
                 }
             }
-            uiCard.setPosition(startX + i * (CardImageManager.cardWidth + padding), yOffset);
+            uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + padding), y + yOffset);
             addCard(uiCard);
         }
     }

@@ -1,5 +1,6 @@
 package net.yura.shithead.uicomponents;
 
+import net.yura.mobile.gui.Animation;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.KeyEvent;
@@ -27,6 +28,7 @@ public class GameView extends Panel {
     private final int padding = XULLoader.adjustSizeToDensity(2);
 
     public GameView() {
+        Animation.FPS = 30;
     }
 
     public void setGameCommandListener(GameViewListener gameCommandListener) {
@@ -50,9 +52,7 @@ public class GameView extends Panel {
     public void paintComponent(Graphics2D g) {
         super.paintComponent(g);
         for (PlayerHand hand : playerHands.values()) {
-            g.translate(hand.x, hand.y);
             hand.paint(g, this);
-            g.translate(-hand.x, -hand.y);
         }
 
         if (game.isFinished()) {
@@ -134,6 +134,7 @@ public class GameView extends Panel {
                 }
             }
         }
+        Animation.registerAnimated(this);
     }
 
     private PlayerHand getPlayerHand(String username) {
@@ -212,12 +213,36 @@ public class GameView extends Panel {
             for (PlayerHand hand : playerHands.values()) {
                 // only allow clicking on my own cards
                 if (hand.player.getName().equals(myUsername) && hand.isWaitingForInput()) {
-                    if (hand.processMouseEvent(type, x - hand.x, y - hand.y, buttons)) {
+                    if (hand.processMouseEvent(type, x, y, buttons)) {
                         repaint();
                         return;
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void animate() {
+        boolean more = false;
+        for (int i = uiCards.size() - 1; i >= 0; i--) {
+            UICard uiCard = uiCards.get(i);
+            if (uiCard.animate()) {
+                more = true;
+            }
+        }
+        for (PlayerHand hand : playerHands.values()) {
+            List<UICard> cards = hand.getUiCards();
+            for (int i = cards.size() - 1; i >= 0; i--) {
+                UICard uiCard = cards.get(i);
+                if (uiCard.animate()) {
+                    more = true;
+                }
+            }
+        }
+        if (more) {
+            repaint();
+            Animation.registerAnimated(this);
         }
     }
 }
