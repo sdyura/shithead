@@ -133,7 +133,7 @@ public class GameUI implements ActionListener, GameViewListener {
     @Override
     public void updateButton() {
         Player player = getPlayer(playerUsername);
-        if (game.isRearranging() && player != null && !game.getPlayersReady().contains(player)) {
+        if (game.isRearranging() && player != null && !game.getPlayersReady().containsKey(player)) {
             playButton.setText(uiTextString.getString("game.ready"));
             playButton.setFocusable(true);
         }

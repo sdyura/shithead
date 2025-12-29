@@ -5,11 +5,11 @@ import net.yura.cardsengine.CardDeckEmptyException;
 import net.yura.cardsengine.Deck;
 import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Basic implementation of the Shithead card game rules.
@@ -20,7 +20,11 @@ import java.util.Set;
  */
 public class ShitheadGame {
 
-    private Set<Player> playersReady = new HashSet<>();
+    /**
+     * map of player that is ready to there lowest card, this card will be used to decide who goes first.
+     * Note! the lowest card for a player may be null!
+     */
+    private Map<Player,Card> playersReady = new HashMap<>();
     private List<Player> players = new ArrayList<>();
     private final Deck deck;
     private List<Card> wastePile = new ArrayList<>();
@@ -116,7 +120,7 @@ public class ShitheadGame {
         if (!isRearranging()) {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
-        if (playersReady.contains(player)) {
+        if (playersReady.containsKey(player)) {
             throw new IllegalStateException("Player is already ready and cannot rearrange cards.");
         }
 
@@ -151,10 +155,14 @@ public class ShitheadGame {
     }
 
     public void playerReady(Player player) {
+        playerReady(player, player.findLowestCard());
+    }
+
+    public void playerReady(Player player, Card lowest) {
         if (!isRearranging()) {
             throw new IllegalStateException("Game is not in REARRANGING state.");
         }
-        playersReady.add(player);
+        playersReady.put(player, lowest);
 
         if (isPlaying()) {
             chooseFirstPlayer();
@@ -162,19 +170,19 @@ public class ShitheadGame {
     }
 
     /**
-     * pick the first player based on who has the lowest upcard
+     * for this method to work we NEED each player to have the lowest card set in the hand
      */
     private void chooseFirstPlayer() {
         int bestRank = Integer.MAX_VALUE;
         Player firstPlayer = null;
 
-        for (Player pc : players) {
-            Card c = findLowestStartCard(pc.getUpcards());
+        for (Map.Entry<Player,Card> pc : playersReady.entrySet()) {
+            Card c = pc.getValue();
             if (c != null) {
                 int rank = c.getRank().toInt();
                 if (rank < bestRank) {
                     bestRank = rank;
-                    firstPlayer = pc;
+                    firstPlayer = pc.getKey();
                 }
             }
         }
@@ -184,19 +192,6 @@ public class ShitheadGame {
         if (firstPlayer != null) {
             currentPlayer = players.indexOf(firstPlayer);
         }
-    }
-
-    public static Card findLowestStartCard(Collection<Card> cards) {
-        int bestRank = Integer.MAX_VALUE;
-        Card lowest = null;
-        for (Card c : cards) {
-            int rank = c.getRank().toInt();
-            if (rank >= 3 && rank < bestRank) {
-                bestRank = rank;
-                lowest = c;
-            }
-        }
-        return lowest;
     }
 
     /**
@@ -422,20 +417,20 @@ public class ShitheadGame {
         return !isRearranging() && !isFinished();
     }
 
-    public Set<Player> getPlayersReady() {
+    public Map<Player, Card> getPlayersReady() {
         return playersReady;
     }
 
-    public void setPlayersReady(Set<Player> playersReady) {
+    public void setPlayersReady(Map<Player,Card> playersReady) {
         this.playersReady = playersReady;
     }
 
     public Card getTopCardFromDeck() {
-        List<Card> cards = deck.getCards();
+        Vector cards = deck.getCards();
         if (cards.isEmpty()) {
             return null;
         }
-        return cards.get(cards.size() - 1);
+        return (Card) cards.get(cards.size() - 1);
     }
 
     public void playCardFromDeck(Card card) {

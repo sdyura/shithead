@@ -169,7 +169,7 @@ public class GameView extends Panel {
         playerHands.put(player, hand);
 
         if (game.isRearranging()) {
-            if (!game.getPlayersReady().contains(player)) {
+            if (!game.getPlayersReady().containsKey(player)) {
                 hand.setWaitingForInput(true);
             }
         }

@@ -12,6 +12,8 @@
     "hand" : [ "2C", "JC", "8C" ],
     "downcards" : [ "9C", "9H", "AS" ]
   } ],
-  "playersReady" : [ "Alice" ],
+  "playersReady" : {
+    "Alice" : "7D"
+  },
   "currentPlayerName" : "Alice"
 }
