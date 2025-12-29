@@ -8,7 +8,6 @@ import net.yura.lobby.model.Player;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.components.Button;
-import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.util.Properties;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.components.Frame;
@@ -17,8 +16,6 @@ import net.yura.mobile.gui.components.TextField;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
-
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -78,28 +75,18 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     @Override
     public void openGameSetup(final GameType gameType) {
-        final XULLoader gameSetupLoader = new XULLoader();
-        try (InputStreamReader reader = new InputStreamReader(ShitHeadApplication.class.getResourceAsStream("/game_setup.xml"))) {
-            gameSetupLoader.load(reader, new ActionListener() {
-                @Override
-                public void actionPerformed(String actionCommand) {
-                    if ("create".equals(actionCommand)) {
-                        Spinner players = (Spinner)gameSetupLoader.find("players");
-                        int numPlayers = (Integer)players.getValue();
-                        TextField gamename = (TextField)gameSetupLoader.find("gamename");
-                        String gameName = gamename.getText();
-                        // TODO for now options cant be null, but in next version of lobby it can
-                        Game newGame = new Game(gameName, "blank", numPlayers, Integer.MAX_VALUE);
-                        newGame.setType(gameType);
-                        lobby.createNewGame(newGame);
-                    }
-                    ((Frame)gameSetupLoader.getRoot()).setVisible(false);
-                }
-            }, strings);
-        }
-        catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+
+        XULLoader gameSetupLoader = ShitHeadApplication.createNewGameScreen(strings, loader -> {
+            Spinner players = (Spinner)loader.find("players");
+            int numPlayers = (Integer)players.getValue();
+            TextField gamename = (TextField)loader.find("gamename");
+            String gameName = gamename.getText();
+            // TODO for now options cant be null, but in next version of lobby it can
+            Game newGame = new Game(gameName, "blank", numPlayers, Integer.MAX_VALUE);
+            newGame.setType(gameType);
+            lobby.createNewGame(newGame);
+        });
+
         TextField gamename = (TextField)gameSetupLoader.find("gamename");
         gamename.setText(lobby.whoAmI() + "'s game");
 
