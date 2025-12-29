@@ -85,10 +85,10 @@ public class PlayerHand {
             g.setColor(0xFF00FF00); // Green
             int arrowWidth = XULLoader.adjustSizeToDensity(10);
             int arrowHeight = XULLoader.adjustSizeToDensity(15);
-            g.fillTriangle(0,0, -arrowWidth, -arrowHeight, arrowWidth, -arrowHeight);
+            g.fillTriangle(x, y, x - arrowWidth, y - arrowHeight, x + arrowWidth, y - arrowHeight);
         }
         g.setColor(0xFF000000);
-        g.drawString(player.getName(), -g.getFont().getWidth(player.getName()) / 2, -g.getFont().getHeight());
+        g.drawString(player.getName(), x -g.getFont().getWidth(player.getName()) / 2, y - g.getFont().getHeight());
         for (UICard card : uiCards) {
             card.paint(g, c);
         }
