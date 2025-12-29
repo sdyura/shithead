@@ -61,6 +61,14 @@ public class UICard {
         return location;
     }
 
+    public void setLocation(CardLocation location) {
+        this.location = location;
+    }
+
+    public void setFaceUp(boolean faceUp) {
+        this.faceUp = faceUp;
+    }
+
     public boolean isSelected() {
         return selected;
     }

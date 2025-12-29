@@ -44,31 +44,18 @@ public class PlayerHand {
         return isWaitingForInput;
     }
 
-    public void addCard(UICard card) {
-        uiCards.add(card);
-    }
-
     public void clear() {
         uiCards.clear();
     }
 
-    public void layoutHand(CardLocation location, List<Card> cards, int yOffset, boolean isFaceUp) {
+    public void layoutHand(List<UICard> cards, int yOffset) {
+        uiCards.addAll(cards);
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
         int startX = - handWidth / 2;
-        Card top = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
 
         for (int i = 0; i < cards.size(); i++) {
-            Card card = cards.get(i);
-            UICard uiCard = new UICard(card, location, isFaceUp);
-            if (card != null && isLocalPlayer && isWaitingForInput && isFaceUp) {
-                boolean activePile = (!player.getHand().isEmpty() && location == CardLocation.HAND) ||
-                        (player.getHand().isEmpty() && !player.getUpcards().isEmpty() && location == CardLocation.UP_CARDS);
-                if (activePile) {
-                    uiCard.setPlayable(game.isPlayable(card.getRank(), top));
-                }
-            }
+            UICard uiCard = cards.get(i);
             uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + padding), y + yOffset);
-            addCard(uiCard);
         }
     }
 

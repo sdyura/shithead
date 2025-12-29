@@ -24,6 +24,8 @@ public class GameView extends Panel {
     private ShitheadGame game;
     private String myUsername;
     private final List<UICard> uiCards = new ArrayList<UICard>();
+    private final Map<Card, UICard> cardToUICard = new HashMap<>();
+    private final List<UICard> deckUICards = new ArrayList<>();
     private final Map<Player, PlayerHand> playerHands = new HashMap<Player, PlayerHand>();
     private final int padding = XULLoader.adjustSizeToDensity(2);
 
@@ -67,12 +69,40 @@ public class GameView extends Panel {
         }
     }
 
+    private UICard getUICard(Card card, CardLocation location, boolean isFaceUp) {
+        UICard uiCard = cardToUICard.get(card);
+        if (uiCard == null) {
+            uiCard = new UICard(card, location, isFaceUp);
+            cardToUICard.put(card, uiCard);
+        } else {
+            uiCard.setLocation(location);
+            uiCard.setFaceUp(isFaceUp);
+        }
+        return uiCard;
+    }
+
     private void layoutCards() {
-        uiCards.clear();
-        playerHands.clear();
         if (game == null) {
             return;
         }
+
+        for (PlayerHand hand : playerHands.values()) {
+            hand.clear();
+        }
+        uiCards.clear();
+
+        for (UICard uiCard : cardToUICard.values()) {
+            uiCard.setPlayable(false);
+        }
+
+        List<Card> allCardsInGame = new ArrayList<>();
+        game.getPlayers().forEach(p -> {
+            allCardsInGame.addAll(p.getHand());
+            allCardsInGame.addAll(p.getUpcards());
+            allCardsInGame.addAll(p.getDowncards());
+        });
+        allCardsInGame.addAll(game.getWastePile());
+        cardToUICard.keySet().retainAll(allCardsInGame);
 
         List<Player> players = game.getPlayers();
         int localPlayerIndex = -1;
@@ -98,11 +128,19 @@ public class GameView extends Panel {
         // Deck
         int deckSize = game.getDeck().getCards().size();
         int cardsToShowDeck = Math.min(deckSize, 3);
+
+        while (deckUICards.size() < cardsToShowDeck) {
+            deckUICards.add(new UICard(null, CardLocation.DECK, false));
+        }
+        while (deckUICards.size() > cardsToShowDeck) {
+            deckUICards.remove(deckUICards.size() - 1);
+        }
+
         if (cardsToShowDeck > 0) {
             int stackHeightDeck = CardImageManager.cardHeight + (cardsToShowDeck - 1) * padding;
             int yStartDeck = centerY - stackHeightDeck / 2;
             for (int i = 0; i < cardsToShowDeck; i++) {
-                UICard deckCard = new UICard(null, CardLocation.DECK, false);
+                UICard deckCard = deckUICards.get(i);
                 deckCard.setPosition(centerX - CardImageManager.cardWidth - padding / 2, yStartDeck + i * padding);
                 uiCards.add(deckCard);
             }
@@ -117,7 +155,7 @@ public class GameView extends Panel {
             int yStartWaste = centerY - stackHeightWaste / 2;
             for (int i = 0; i < wastePileSize; i++) {
                 Card card = wastePile.get(i);
-                UICard wastePileCard = new UICard(card, CardLocation.WASTE, true);
+                UICard wastePileCard = getUICard(card, CardLocation.WASTE, true);
                 wastePileCard.setPosition(centerX + padding / 2, yStartWaste);
                 uiCards.add(wastePileCard);
                 if (i < (wastePileSize - 3)) {
@@ -166,31 +204,58 @@ public class GameView extends Panel {
         int radiusY = height / 2 - 50;
         int overlap = XULLoader.adjustSizeToDensity(20);
 
-        PlayerHand hand = new PlayerHand(game, player, isLocalPlayer, gameCommandListener);
-        playerHands.put(player, hand);
+        PlayerHand hand = playerHands.get(player);
+        if (hand == null) {
+            hand = new PlayerHand(game, player, isLocalPlayer, gameCommandListener);
+            playerHands.put(player, hand);
+        }
 
         if (game.isRearranging()) {
-            if (!game.getPlayersReady().contains(player)) {
-                hand.setWaitingForInput(true);
-            }
+            hand.setWaitingForInput(!game.getPlayersReady().contains(player));
         }
-        else if (game.getCurrentPlayer() == player) {
-            hand.setWaitingForInput(true);
+        else {
+            hand.setWaitingForInput(game.getCurrentPlayer() == player);
+        }
+
+        Card top = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
+
+        List<UICard> downUiCards = player.getDowncards().stream()
+                .map(card -> getUICard(card, CardLocation.DOWN_CARDS, false))
+                .collect(Collectors.toList());
+
+        List<UICard> upUiCards = player.getUpcards().stream()
+                .map(card -> getUICard(card, CardLocation.UP_CARDS, true))
+                .collect(Collectors.toList());
+
+        List<UICard> handUiCards = player.getHand().stream()
+                .map(card -> getUICard(card, CardLocation.HAND, isLocalPlayer))
+                .collect(Collectors.toList());
+
+        if (isLocalPlayer && hand.isWaitingForInput()) {
+            boolean handActive = !player.getHand().isEmpty();
+            boolean upcardsActive = player.getHand().isEmpty() && !player.getUpcards().isEmpty();
+
+            if (handActive) {
+                handUiCards.forEach(c -> c.setPlayable(game.isPlayable(c.getCard().getRank(), top)));
+            }
+            if (upcardsActive) {
+                upUiCards.forEach(c -> c.setPlayable(game.isPlayable(c.getCard().getRank(), top)));
+            }
         }
 
         if (isLocalPlayer) {
             hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2);
-            hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
-            hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
-            hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2 + padding, true);
+            hand.layoutHand(downUiCards, 0);
+            hand.layoutHand(upUiCards, overlap);
+            hand.layoutHand(handUiCards, overlap * 2 + padding);
         } else {
             double angle = Math.PI + (Math.PI * position / playerCount);
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));
             hand.setPosition(x, y);
-            hand.layoutHand(CardLocation.DOWN_CARDS, player.getDowncards(), 0, false);
-            hand.layoutHand(CardLocation.UP_CARDS, player.getUpcards(), overlap, true);
-            hand.layoutHand(CardLocation.HAND, player.getHand(), overlap * 2, false);
+            hand.layoutHand(downUiCards, 0);
+            hand.layoutHand(upUiCards, overlap);
+            hand.layoutHand(handUiCards, overlap * 2);
         }
     }
 
