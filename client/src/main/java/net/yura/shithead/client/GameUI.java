@@ -110,8 +110,9 @@ public class GameUI implements ActionListener, GameViewListener {
                 gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
             }
             else {
+                List<Card> cards = gameView.getSelectedCards();
                 gameView.clearSelectedCards();
-                playVisibleCard(!getPlayer(playerUsername).getHand().isEmpty(), gameView.getSelectedCards());
+                playVisibleCard(!getPlayer(playerUsername).getHand().isEmpty(), cards);
             }
             updateButton();
         }

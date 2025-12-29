@@ -149,7 +149,7 @@ public class GameView extends Panel {
     }
 
     public void clearSelectedCards() {
-        PlayerHand hand = playerHands.get(myUsername);
+        PlayerHand hand = getPlayerHand(myUsername);
         if (hand != null) {
             hand.getUiCards().forEach(c -> c.setSelected(false));
         }
