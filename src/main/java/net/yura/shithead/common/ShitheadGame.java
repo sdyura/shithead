@@ -347,7 +347,7 @@ public class ShitheadGame {
         if (top.getRank() == Rank.TWO) {
             return true;
         }
-        return CardComparator.getRankValue(rank) >= CardComparator.getRankValue(top.getRank());
+        return AcesHighCardComparator.getRankValue(rank) >= AcesHighCardComparator.getRankValue(top.getRank());
     }
 
     private void advanceTurn() {

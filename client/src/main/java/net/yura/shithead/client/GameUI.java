@@ -7,11 +7,10 @@ import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.MenuBar;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
-import net.yura.shithead.common.CardComparator;
+import net.yura.shithead.common.AcesHighCardComparator;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
-import net.yura.shithead.uicomponents.CardLocation;
 import net.yura.shithead.uicomponents.GameView;
 import net.yura.shithead.uicomponents.GameViewListener;
 
@@ -160,7 +159,7 @@ public class GameUI implements ActionListener, GameViewListener {
         if (player != null) {
             List<Card> hand = player.getHand();
             List<Card> sortedHand = new ArrayList<>(hand);
-            sortedHand.sort(new CardComparator());
+            sortedHand.sort(new AcesHighCardComparator());
             if (hand.equals(sortedHand)) {
                 Collections.reverse(hand);
             } else {

@@ -4,7 +4,7 @@ import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Rank;
 import java.util.Comparator;
 
-public class CardComparator implements Comparator<Card> {
+public class AcesHighCardComparator implements Comparator<Card> {
 
     public static int getRankValue(Rank rank) {
         int rankValue = rank.toInt();

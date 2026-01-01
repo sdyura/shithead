@@ -23,11 +23,11 @@ public class AutoPlay {
         for (Card card : source) {
             if (game.isPlayable(card.getRank(), topCard)) {
                 if (card.getRank() == Rank.TWO) {
-                    if (bestPriorityCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestPriorityCard.getRank())) {
+                    if (bestPriorityCard == null || AcesHighCardComparator.getRankValue(card.getRank()) < AcesHighCardComparator.getRankValue(bestPriorityCard.getRank())) {
                         bestPriorityCard = card;
                     }
                 } else {
-                    if (bestNormalCard == null || CardComparator.getRankValue(card.getRank()) < CardComparator.getRankValue(bestNormalCard.getRank())) {
+                    if (bestNormalCard == null || AcesHighCardComparator.getRankValue(card.getRank()) < AcesHighCardComparator.getRankValue(bestNormalCard.getRank())) {
                         bestNormalCard = card;
                     }
                 }

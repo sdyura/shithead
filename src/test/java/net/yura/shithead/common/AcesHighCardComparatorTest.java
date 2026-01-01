@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CardComparatorTest {
+class AcesHighCardComparatorTest {
 
-    private final CardComparator comparator = new CardComparator();
+    private final AcesHighCardComparator comparator = new AcesHighCardComparator();
 
     @Test
     void testCompare() {
@@ -36,18 +36,18 @@ class CardComparatorTest {
 
     @Test
     void testGetRankValue() {
-        assertEquals(14, CardComparator.getRankValue(Rank.ACE));
-        assertEquals(2, CardComparator.getRankValue(Rank.TWO));
-        assertEquals(3, CardComparator.getRankValue(Rank.THREE));
-        assertEquals(4, CardComparator.getRankValue(Rank.FOUR));
-        assertEquals(5, CardComparator.getRankValue(Rank.FIVE));
-        assertEquals(6, CardComparator.getRankValue(Rank.SIX));
-        assertEquals(7, CardComparator.getRankValue(Rank.SEVEN));
-        assertEquals(8, CardComparator.getRankValue(Rank.EIGHT));
-        assertEquals(9, CardComparator.getRankValue(Rank.NINE));
-        assertEquals(10, CardComparator.getRankValue(Rank.TEN));
-        assertEquals(11, CardComparator.getRankValue(Rank.JACK));
-        assertEquals(12, CardComparator.getRankValue(Rank.QUEEN));
-        assertEquals(13, CardComparator.getRankValue(Rank.KING));
+        assertEquals(14, AcesHighCardComparator.getRankValue(Rank.ACE));
+        assertEquals(2, AcesHighCardComparator.getRankValue(Rank.TWO));
+        assertEquals(3, AcesHighCardComparator.getRankValue(Rank.THREE));
+        assertEquals(4, AcesHighCardComparator.getRankValue(Rank.FOUR));
+        assertEquals(5, AcesHighCardComparator.getRankValue(Rank.FIVE));
+        assertEquals(6, AcesHighCardComparator.getRankValue(Rank.SIX));
+        assertEquals(7, AcesHighCardComparator.getRankValue(Rank.SEVEN));
+        assertEquals(8, AcesHighCardComparator.getRankValue(Rank.EIGHT));
+        assertEquals(9, AcesHighCardComparator.getRankValue(Rank.NINE));
+        assertEquals(10, AcesHighCardComparator.getRankValue(Rank.TEN));
+        assertEquals(11, AcesHighCardComparator.getRankValue(Rank.JACK));
+        assertEquals(12, AcesHighCardComparator.getRankValue(Rank.QUEEN));
+        assertEquals(13, AcesHighCardComparator.getRankValue(Rank.KING));
     }
 }
