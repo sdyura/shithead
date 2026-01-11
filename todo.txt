@@ -1,8 +1,16 @@
-# Shithead Rule Discrepancies (vs. Wikipedia)
+## TODO
 
-## Missing Core Rules:
-- **Rearranging Phase:** Implement the pre-game phase where players can swap their hand cards with their upcards.
-- **Starting Player Logic:** The player with the lowest card (starting with the 3 of clubs or diamonds) should begin the game. Currently, the first player in the list always starts.
+- online play, make sure commands are interpreted and only mutations sent out
+- vertical overlap cards when unable to display all for current player
+- horizontal overlap hidden cards of other players
+- show other players at correct angle when main player gets eliminated
+
+- show green felt background for table
+- show nicer picture of back of cards and new game screen
+- rules description on new game screen
+- rotate hands for other players
+
+# Shithead Rule Discrepancies (vs. Wikipedia)
 
 ## Common Variations to Implement:
 - Implement the "reverse play direction" rule for the 8 card. ??
