@@ -1,6 +1,8 @@
 package net.yura.shithead.uicomponents;
 
 import net.yura.cardsengine.Card;
+import net.yura.cardsengine.Rank;
+import net.yura.mobile.gui.Font;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.border.Border;
@@ -20,6 +22,8 @@ public class UICard {
 
     private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);
     private static final Border playableBorder = new LineBorder(0xFFFFBF00, 2);
+
+    private static final Font font = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_SMALL);
 
     /**
      * used when dealing a brand new card from a pack (comes in from off-screen)
@@ -45,18 +49,35 @@ public class UICard {
 
     public void paint(Graphics2D g, Component c) {
         Icon icon;
+        String text = null;
         if (faceUp && card != null) {
             icon = CardImageManager.getCardImage(card);
-        } else {
+
+            if (Rank.TEN.equals(card.getRank())) {
+                text = "Burn";
+            }
+            else if (Rank.TWO.equals(card.getRank())) {
+                text = "Reset";
+            }
+        }
+        else {
             icon = CardImageManager.getCardBackImage();
         }
 
         icon.paintIcon(c, g, x, y);
+
+        if (text != null) {
+            g.setColor(0xFF000000);
+            g.setFont(font);
+            g.drawString(text, x + (icon.getIconWidth() - font.getWidth(text)) / 2, y + icon.getIconHeight() - font.getHeight());
+        }
+
         if (selected) {
             g.translate(x, y);
             selectionBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);
-        } else if (playable) {
+        }
+        else if (playable) {
             g.translate(x, y);
             playableBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);

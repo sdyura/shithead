@@ -1,5 +1,7 @@
 package net.yura.shithead.client;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,10 +24,14 @@ import net.yura.shithead.common.AutoPlay;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
+import net.yura.shithead.common.json.SerializerUtil;
 
 public class ShitHeadApplication extends Application implements ActionListener {
 
     private Properties properties;
+
+    private ShitheadGame singlePlayerGame;
+
     private MiniLobbyClient minilobby;
 
     protected void initialize(DesktopPane dp) {
@@ -43,6 +49,9 @@ public class ShitHeadApplication extends Application implements ActionListener {
         openMainMenu();
     }
 
+    /**
+     * this method is needed so UI tests can setup any extra theme properties they need
+     */
     protected void setupTheme(DesktopPane dp) {
         dp.setLookAndFeel(DesktopPane.getSystemLookAndFeelClassName());
     }
@@ -122,22 +131,22 @@ public class ShitHeadApplication extends Application implements ActionListener {
 
     private void createNewGame(int numPlayers) {
 
-        ShitheadGame game = new ShitheadGame(numPlayers);
+        singlePlayerGame = new ShitheadGame(numPlayers);
         int myIndex = new Random().nextInt(numPlayers);
-        Player me = game.getPlayers().get(myIndex);
-        game.deal();
+        Player me = singlePlayerGame.getPlayers().get(myIndex);
+        singlePlayerGame.deal();
 
-        for (Player player : game.getPlayers()) {
+        for (Player player : singlePlayerGame.getPlayers()) {
             if (me != player) {
-                game.playerReady(player);
+                singlePlayerGame.playerReady(player);
             }
         }
 
-        final GameUI gameUI = new GameUI(properties, game, me.getName(), new ActionListener() {
+        final GameUI gameUI = new GameUI(properties, singlePlayerGame, me.getName(), new ActionListener() {
             @Override
             public void actionPerformed(String actionCommand) {
                 CommandParser parser = new CommandParser();
-                parser.parse(game, actionCommand);
+                parser.parse(singlePlayerGame, actionCommand);
 
                 // TODO ideally we would call GameView.layoutCards() directly as when we use revalidate it may or not get called
 
@@ -147,13 +156,13 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 new Thread() {
                     @Override
                     public void run() {
-                        while (!game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
+                        while (!singlePlayerGame.isFinished() && singlePlayerGame.isPlaying() && singlePlayerGame.getCurrentPlayer() != me) {
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
                                 break;
                             }
-                            parser.parse(game, AutoPlay.getValidGameCommand(game));
+                            parser.parse(singlePlayerGame, AutoPlay.getValidGameCommand(singlePlayerGame));
                             DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
                             DesktopPane.getDesktopPane().getSelectedFrame().repaint();
                         }
@@ -161,6 +170,12 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 }.start();
             }
         });
+        gameUI.closeActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(String actionCommand) {
+                singlePlayerGame = null;
+            }
+        };
     }
 
 
@@ -178,5 +193,27 @@ public class ShitHeadApplication extends Application implements ActionListener {
             throw new RuntimeException(ex);
         }
         return gameSetupLoader;
+    }
+
+    public void saveState() {
+        if (singlePlayerGame != null) {
+            File autoSave = new File(getGameDir(), "auto.save");
+            String json = SerializerUtil.toJSON(singlePlayerGame, null);
+            try (FileWriter out = new FileWriter(autoSave)) { // TODO should use StandardCharsets.UTF_8
+                out.write(json);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private static File getGameDir() {
+        File userHome = new File( System.getProperty("user.home") );
+        File gameDir = new File(userHome, ".shithead");
+        if (!gameDir.isDirectory() && !gameDir.mkdirs()) {
+            throw new RuntimeException("can not create dir " + gameDir);
+        }
+        return gameDir;
     }
 }
