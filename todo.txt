@@ -1,6 +1,6 @@
 ## TODO
 
-- online play, make sure commands are interpreted and only mutations sent out
+- animations in online play are all over the place
 - vertical overlap cards when unable to display all for current player
 - horizontal overlap hidden cards of other players
 - show other players at correct angle when main player gets eliminated

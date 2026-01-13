@@ -10,7 +10,7 @@ java {
 
 application {
     mainClassName = 'org.me4se.MIDletRunner'
-
+    applicationName = "shithead"
     // this sets system properties for BOTH running from gradle AND packaging the app with the run script
     applicationDefaultJvmArgs = [ "-Dwidth=320", "-Dheight=560" ]
 }
