@@ -5,6 +5,7 @@ import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class AutoPlay {
@@ -60,6 +61,26 @@ public class AutoPlay {
             return cardsToPlay;
         }
         return Collections.singletonList(bestCard);
+    }
+
+    public static String getValidGameCommand(ShitheadGame game, String playerName) {
+        if (game.isRearranging()) {
+            Player player = game.getPlayers().stream().filter(p -> playerName.equals(p.getName())).findFirst().orElseThrow(() -> new NoSuchElementException("Name not found: " + playerName));
+
+            List<Card> allCards = new ArrayList<>();
+            allCards.addAll(player.getHand());
+            allCards.addAll(player.getUpcards());
+            allCards.sort(new AcesHighCardComparator());
+            List<Card> newHand = new ArrayList<>(allCards.subList(0, 3));
+            List<Card> newUpcards = new ArrayList<>(allCards.subList(3, 6));
+            if (player.getHand().containsAll(newHand) && player.getUpcards().containsAll(newUpcards)) {
+                return "ready " + CommandParser.encodePlayerName(playerName);
+            }
+            newHand.removeAll(player.getHand());
+            newUpcards.removeAll(player.getUpcards());
+            return "swap " + CommandParser.encodePlayerName(playerName) + " " + newHand.get(0) + " " + newUpcards.get(0);
+        }
+        return getValidGameCommand(game);
     }
 
     public static String getValidGameCommand(ShitheadGame game) {

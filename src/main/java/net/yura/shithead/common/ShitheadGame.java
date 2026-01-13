@@ -120,34 +120,37 @@ public class ShitheadGame {
             throw new IllegalStateException("Player is already ready and cannot rearrange cards.");
         }
 
-        List<Card> hand = player.getHand();
-        List<Card> upcards = player.getUpcards();
+        List<Card> upCards = player.getUpcards();
+        List<Card> handCards = player.getHand();
 
-        Card handCard;
         Card upCard;
+        Card handCard;
 
-        if (hand.contains(card1) && upcards.contains(card2)) {
-            handCard = card1;
-            upCard = card2;
-        } else if (hand.contains(card2) && upcards.contains(card1)) {
-            handCard = card2;
+        if (upCards.contains(card1) && (handCards.contains(card2) || handCards.contains(null))) {
             upCard = card1;
-        } else {
-            if (!hand.contains(card1) && !hand.contains(card2)) {
+            handCard = card2;
+        }
+        else if (upCards.contains(card2) && (handCards.contains(card1) || handCards.contains(null))) {
+            upCard = card2;
+            handCard = card1;
+        }
+        else {
+            if (!handCards.contains(card1) && !handCards.contains(card2)) {
                 throw new IllegalArgumentException("Player does not have the specified card in their hand.");
             }
-            if (!upcards.contains(card1) && !upcards.contains(card2)) {
+            if (!upCards.contains(card1) && !upCards.contains(card2)) {
                 throw new IllegalArgumentException("Player does not have the specified card in their upcards.");
             }
             // This covers swapping two hand cards, or two upcards
             throw new IllegalArgumentException("Cards must be from different piles.");
         }
 
-        int handIndex = hand.indexOf(handCard);
-        int upIndex = upcards.indexOf(upCard);
+        int upIndex = upCards.indexOf(upCard);
+        int handIndex = handCards.indexOf(handCard);
+        if (handIndex < 0) handIndex = handCards.indexOf(null);
 
-        hand.set(handIndex, upCard);
-        upcards.set(upIndex, handCard);
+        upCards.set(upIndex, handCard);
+        handCards.set(handIndex, upCard);
     }
 
     public void playerReady(Player player) {
