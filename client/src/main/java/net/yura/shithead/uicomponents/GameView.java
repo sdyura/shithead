@@ -305,9 +305,11 @@ public class GameView extends Panel {
                 if (uiCard.contains(x, y) && game.getCurrentPlayer().getName().equals(myUsername)) {
                     if (uiCard.getLocation() == CardLocation.WASTE) {
                         gameCommandListener.pickUpWaste();
+                        return;
                     }
                     else if (uiCard.getLocation() == CardLocation.DECK) {
                         gameCommandListener.playDeck();
+                        return;
                     }
                 }
             }

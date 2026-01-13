@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.verification.VerificationWithTimeout;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -139,10 +140,26 @@ public class ServerTest {
     public void test2PlayersJoinGame() {
         int id = bothPlayersJoinGame();
 
-        sendGameMessage(mockClient1, id, "ready " + PLAYER_1_NAME);
-        sendGameMessage(mockClient2, id, "ready " + PLAYER_2_NAME);
+        while (mockClient1.game.isRearranging() || mockClient2.game.isRearranging()) {
+            assertEquals(mockClient1.game.isRearranging(), mockClient2.game.isRearranging());
+
+            List<net.yura.shithead.common.Player> notReadyPlayers = new ArrayList<>(mockClient1.game.getPlayers());
+            notReadyPlayers.removeAll(mockClient1.game.getPlayersReady());
+            net.yura.shithead.common.Player notReadyPlayer = notReadyPlayers.get(0);
+
+            if (PLAYER_1_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient1, id, AutoPlay.getValidGameCommand(mockClient1.game, PLAYER_1_NAME));
+            }
+            else if (PLAYER_2_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient2, id, AutoPlay.getValidGameCommand(mockClient2.game, PLAYER_2_NAME));
+            }
+            else {
+                throw new IllegalStateException();
+            }
+        }
 
         while (!mockClient1.game.isFinished() || !mockClient2.game.isFinished()) {
+            assertEquals(mockClient1.game.isFinished(), mockClient2.game.isFinished());
 
             String whosTurn = mockClient1.game.getCurrentPlayer().getName();
             if (mockClient1.username.equals(whosTurn)) {
