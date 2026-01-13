@@ -62,10 +62,15 @@ public class CommandParserTest {
     public void testPlayFromDowncards() {
         Card downCard = Card.getCardByRankSuit(Rank.SEVEN, Suit.CLUBS);
         player1.getDowncards().add(downCard);
-        Card revealed = parser.parse(game, "play down 0");
+        String mutation = CommandParser.getMutationCommand(game, "play down 0");
+        assertEquals("play down " + downCard, mutation);
+
+        parser.execute(game, mutation);
         assertEquals(1, game.getWastePile().size());
         assertEquals(0, player1.getDowncards().size());
-        assertEquals(downCard, revealed);
+
+        assertTrue(game.getWastePile().contains(downCard), "The played card should be in the waste pile");
+        assertFalse(player1.getDowncards().contains(downCard), "The played card should be removed from the downcards");
     }
 
     @Test
@@ -98,23 +103,6 @@ public class CommandParserTest {
         assertThrows(IllegalArgumentException.class, () -> {
             parser.parse(game, "play hand qh");
         });
-    }
-
-    @Test
-    public void testPlayRevealedDowncard() {
-        Card downCard = Card.getCardByRankSuit(Rank.ACE, Suit.CLUBS);
-        player1.getDowncards().add(downCard);
-
-        // The parser should return the card that was played from the down pile
-        Card revealedCard = parser.parse(game, "play down 0");
-
-        // Assert that the returned card is the one we put in the down pile
-        assertNotNull(revealedCard, "The revealed card should not be null");
-        assertEquals(downCard, revealedCard, "The revealed card should be the Ace of Clubs");
-
-        // Further assert game state
-        assertTrue(game.getWastePile().contains(downCard), "The played card should be in the waste pile");
-        assertFalse(player1.getDowncards().contains(downCard), "The played card should be removed from the downcards");
     }
 
     @Test

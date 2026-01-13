@@ -35,6 +35,6 @@
         <button action="register" text="Register" visible="false" weightx="1"/>
         <button action="setnick" i18n="true" property="plafname=SmallButton" text="lobby.set-nick" weightx="2"/>
         <button action="create" i18n="true" property="plafname=SmallButton" text="lobby.create-game" weightx="2"/>
-        <button action="chat" icon="/discord.png" property="plafname=SmallButton" weightx="1"/>
+        <button action="chat" icon="/discord.png" property="plafname=SmallButton" weightx="1" visible="false"/>
     </panel>
 </panel>

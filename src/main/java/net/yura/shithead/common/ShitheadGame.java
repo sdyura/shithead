@@ -442,12 +442,12 @@ public class ShitheadGame {
         if (!isPlaying()) {
             throw new IllegalStateException("Game is not in PLAYING state.");
         }
-        Card topCard = getTopCardFromDeck();
-        if (topCard == null || !topCard.equals(card)) {
-            throw new IllegalArgumentException("Card is not the top card of the deck.");
-        }
         try {
-            deck.dealCard();
+            Card topCard = deck.dealCard();
+            if (topCard != null && !topCard.equals(card)) {
+                throw new IllegalArgumentException("Card is not the top card of the deck.");
+            }
+
             Card top = wastePile.isEmpty() ? null : wastePile.get(wastePile.size() - 1);
             if (isPlayable(card.getRank(), top)) {
                 wastePile.add(card);
@@ -460,7 +460,7 @@ public class ShitheadGame {
                 pickUpWastePile();
             }
         } catch (CardDeckEmptyException e) {
-            // Nothing happens, deck is empty
+            throw new IllegalStateException("no cards in deck", e);
         }
     }
 }

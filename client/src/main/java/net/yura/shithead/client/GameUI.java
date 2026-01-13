@@ -13,7 +13,6 @@ import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.uicomponents.GameView;
 import net.yura.shithead.uicomponents.GameViewListener;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -152,6 +151,7 @@ public class GameUI implements ActionListener, GameViewListener {
 
     public void newCommand(String message) {
         new CommandParser().execute(game, message);
+        gameView.revalidate();
         gameView.repaint();
     }
 

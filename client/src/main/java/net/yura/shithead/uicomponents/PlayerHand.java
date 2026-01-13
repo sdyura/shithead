@@ -122,7 +122,7 @@ public class PlayerHand {
                             }
                             else {
                                 // deselect all cards that are NOT this rank, when we have multiple of multiple ranks
-                                uiCards.stream().filter(c -> c.getCard().getRank() != uiCard.getCard().getRank()).forEach(c -> c.setSelected(false));
+                                uiCards.stream().filter(c -> c.isPlayable() && c.getCard().getRank() != uiCard.getCard().getRank()).forEach(c -> c.setSelected(false));
                                 // if there is more then 1 then we just toggle the selection
                                 uiCard.toggleSelection();
                                 gameCommandListener.updateButton();

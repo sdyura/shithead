@@ -186,10 +186,11 @@ class ShitheadGameTest {
         int initialDeckSize = deck.getCards().size();
 
         // when
-        Card playedCard = new CommandParser().parse(game, "play deck");
+        String mutation = CommandParser.getMutationCommand(game, "play deck");
+        assertEquals("play deck " + topCard, mutation);
 
         // then
-        assertEquals(topCard, playedCard);
+        new CommandParser().execute(game, mutation);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertTrue(game.getWastePile().contains(topCard));
         assertEquals(otherPlayer, game.getCurrentPlayer());
@@ -220,10 +221,11 @@ class ShitheadGameTest {
         int initialHandSize = originalPlayer.getHand().size();
 
         // when
-        Card playedCard = new CommandParser().parse(game, "play deck");
+        String mutation = CommandParser.getMutationCommand(game, "play deck");
+        assertEquals("play deck " + topCard, mutation);
 
         // then
-        assertEquals(topCard, playedCard);
+        new CommandParser().parse(game, mutation);
         assertEquals(initialDeckSize - 1, deck.getCards().size());
         assertEquals(0, game.getWastePile().size());
         assertEquals(initialHandSize + 2, originalPlayer.getHand().size()); // +1 for the card from the deck, +1 for the card from the waste pile

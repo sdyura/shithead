@@ -24,7 +24,11 @@ public class CardImageManager {
         String cardName = getCardName(card);
         if (!cardImages.containsKey(cardName)) {
             GameRenderer.ScaledIcon icon = new GameRenderer.ScaledIcon(cardWidth, cardHeight);
-            icon.setIcon(new Icon("/cards/" + cardName + ".gif"));
+            Icon cardIcon = new Icon("/cards/" + cardName + ".gif");
+            if (cardIcon.getIconWidth() <= 0 || cardIcon.getIconHeight() <= 0) {
+                throw new IllegalStateException("invalid icon size for card " + cardName + " " + cardIcon);
+            }
+            icon.setIcon(cardIcon);
             cardImages.put(cardName, icon);
         }
         return cardImages.get(cardName);
