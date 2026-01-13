@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class GameSerializer extends JsonSerializer<ShitheadGame> {
 
@@ -32,11 +33,9 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         gen.writeObjectField("wastePile", game.getWastePile());
 
         gen.writeObjectField("players", game.getPlayers());
-        gen.writeArrayFieldStart("playersReady");
-        for (Player p : game.getPlayersReady()) {
-            gen.writeString(p.getName());
-        }
-        gen.writeEndArray();
+        // use a sorted list to make results predictable, so tests are easier to write
+        List<String> sortedReadyPlayer = game.getPlayersReady().stream().map(Player::getName).sorted().collect(Collectors.toList());
+        gen.writeObjectField("playersReady", sortedReadyPlayer);
         gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
         gen.writeEndObject();
     }

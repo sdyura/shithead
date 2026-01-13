@@ -1,11 +1,13 @@
 package net.yura.shithead.common;
 
 import net.yura.cardsengine.Deck;
+import net.yura.shithead.common.json.SerializerUtil;
 import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -63,8 +65,16 @@ public class CommandParserIntegrationTest {
         };
 
         for (String command : subsequentCommands) {
-            parser.parse(spectatorGame, command);
+            String mutation = CommandParser.getMutationCommand(game, command);
+            parser.execute(game, mutation); // at each step we need to also update the full game
+
+            parser.execute(spectatorGame, mutation);
         }
+
+        String json1 = SerializerUtil.toJSON(game, "spectator");
+        String json2 = SerializerUtil.toJSON(spectatorGame, "spectator");
+
+        assertEquals(json1, json2);
 
         assertEquals("Player 1", spectatorGame.getCurrentPlayer().getName());
     }

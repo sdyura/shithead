@@ -10,6 +10,9 @@ java {
 
 application {
     mainClassName = 'org.me4se.MIDletRunner'
+
+    // this sets system properties for BOTH running from gradle AND packaging the app with the run script
+    applicationDefaultJvmArgs = [ "-Dwidth=320", "-Dheight=560" ]
 }
 
 dependencies {
@@ -28,7 +31,7 @@ jar {
     manifest {
         attributes(
                 'Main-Class': project.mainClassName,
-                'MIDlet-1': 'desktop ui,,net.yura.shithead.client.ShitHeadClient',
+                'MIDlet-1': 'Shithead,,net.yura.shithead.client.ShitHeadApplication',
                 'versionName': rootProject.ext.versionName,
                 'versionCode': rootProject.ext.versionCode,
                 'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' ')
@@ -37,14 +40,13 @@ jar {
 }
 
 run {
-    args 'net.yura.shithead.client.ShitHeadApplication', '-width', '320', '-height', '560'
-    // this does not run the actual jar, so cant see the version info in the manifest
-    applicationDefaultJvmArgs = ["-DversionName=$rootProject.ext.versionName", "-DversionCode=$rootProject.ext.versionCode"]
+    // this does not run the actual jar, so cant see the info in the manifest
+    args 'net.yura.shithead.client.ShitHeadApplication'
+    // this line only affects running from gradle
+    jvmArgs += [ "-DversionName=$rootProject.ext.versionName", "-DversionCode=$rootProject.ext.versionCode" ]
 }
 
 test {
     // Allow access to internal package
-    jvmArgs += [
-            "--add-exports=java.desktop/sun.awt=ALL-UNNAMED"
-    ]
+    jvmArgs += [ "--add-exports=java.desktop/sun.awt=ALL-UNNAMED" ]
 }

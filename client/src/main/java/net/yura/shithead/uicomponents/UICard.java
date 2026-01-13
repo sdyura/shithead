@@ -17,7 +17,13 @@ public class UICard {
     private boolean faceUp;
     private int x, y;
     private int targetX, targetY;
+    /**
+     * Allows for selecting multiple cards with red border when multiple cards can be played
+     */
     private boolean selected;
+    /**
+     * used by the UI to draw a yellow border to indicate this card can be played right now
+     */
     private boolean playable;
 
     private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);

@@ -5,13 +5,16 @@ import net.yura.lobby.server.LobbySession;
 import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ShitHeadServer extends AbstractTurnBasedServerGame {
+
+    private static Logger logger = Logger.getLogger(ShitHeadServer.class.getName());
 
     ShitheadGame game;
     private final CommandParser commandParser;
@@ -65,19 +68,35 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void playerTimedOut(String username) {
-
+        // TODO do we want to do autoplay and then resign player??
     }
 
     @Override
     public void objectFromPlayer(String username, Object o) {
+        String command = (String) o;
+
+        if (game.isRearranging() && !username.equals(CommandParser.decodePlayerName(command.split(" ")[1]))) {
+            throw new RuntimeException("not your player");
+        }
         if (game.isPlaying() && !username.equals(game.getCurrentPlayer().getName())) {
+            logger.warning("not your turn error! currentPlayer=" + game.getCurrentPlayer().getName() +" fromPlayer=" + username +" command=" + command);
             throw new RuntimeException("not your turn");
         }
-        String command = (String) o;
-        commandParser.execute(game, command);
+
+        String mutation = CommandParser.getMutationCommand(game, command);
+        commandParser.execute(game, mutation);
 
         // after move, notify all players
-        listoner.messageFromGame(command, getAllClients());
+        Collection<LobbySession> allClients = getAllClients();
+        if (mutation.startsWith("play hand ") && mutation.contains("pickup")) {
+            // for picking up a card we ONLY want to tell the actual player what the card is
+            listoner.messageFromGame(mutation, allClients.stream().filter(c -> username.equals(c.getUsername())).collect(Collectors.toList()));
+            listoner.messageFromGame(command, allClients.stream().filter(c -> !username.equals(c.getUsername())).collect(Collectors.toList()));
+        }
+        else {
+            listoner.messageFromGame(mutation, allClients);
+        }
+
         if (game.isPlaying()) {
             getInputFromClient(game.getCurrentPlayer().getName());
         }
@@ -98,5 +117,4 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         String json = SerializerUtil.toJSON(game, null);
         return json.getBytes(StandardCharsets.UTF_8);
     }
-
 }
