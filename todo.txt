@@ -1,11 +1,16 @@
 ## TODO
 
+- android spinner does not have theme, does not show +/-
 - animations in online play are all over the place
 
 - show green felt background for table
 - show nicer picture of back of cards and new game screen
 - rules description on new game screen
 - rotate hands for other players
+
+- add some sort of icon for lobby games
+- add timeout option in game setup for lobby games
+- deal with player timing out on there turn in the Server
 
 # Shithead Rule Discrepancies (vs. Wikipedia)
 
