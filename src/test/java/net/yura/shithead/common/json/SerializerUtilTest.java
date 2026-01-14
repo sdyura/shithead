@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SerializerUtilTest {
 
@@ -65,7 +66,7 @@ public class SerializerUtilTest {
         ShitheadGame deserializedGame = SerializerUtil.fromJSON(jsonSnapshot);
 
         // Assert that the deserialized game state is identical to the snapshot
-        assertEquals("Alice", deserializedGame.getCurrentPlayer().getName());
+        assertNull(deserializedGame.getCurrentPlayer());
         assertTrue(deserializedGame.getWastePile().isEmpty());
         assertEquals(2, deserializedGame.getPlayers().size());
 
@@ -97,7 +98,7 @@ public class SerializerUtilTest {
         ShitheadGame game = net.yura.shithead.common.json.SerializerUtil.fromJSON(json);
 
         // Assert general game state
-        assertEquals("Alice", game.getCurrentPlayer().getName());
+        assertNull(game.getCurrentPlayer());
         assertTrue(game.getWastePile().isEmpty());
 
         // Assert deck state using reflection

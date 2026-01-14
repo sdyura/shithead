@@ -8,7 +8,6 @@ import net.yura.cardsengine.Suit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
@@ -23,6 +22,7 @@ class ShitheadGameTest {
     @BeforeEach
     void setUp() {
         game = new ShitheadGame(2);
+        assertNull(game.getCurrentPlayer());
         try {
             // Get players for easier testing
             List<Player> players = game.getPlayers();
@@ -338,9 +338,6 @@ class ShitheadGameTest {
         // Give player 1 an Ace
         Card ace = Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS);
         p1.getHand().add(ace);
-
-        // Set the current player to p1
-        game.setCurrentPlayer(0);
 
         // Attempt to play the Ace on the King
         assertTrue(game.playCards(Collections.singletonList(ace)), "An Ace should be playable on a King");

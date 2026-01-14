@@ -36,7 +36,8 @@ public class GameSerializer extends JsonSerializer<ShitheadGame> {
         // use a sorted list to make results predictable, so tests are easier to write
         List<String> sortedReadyPlayer = game.getPlayersReady().stream().map(Player::getName).sorted().collect(Collectors.toList());
         gen.writeObjectField("playersReady", sortedReadyPlayer);
-        gen.writeStringField("currentPlayerName", game.getCurrentPlayer().getName());
+        Player currentPlayer = game.getCurrentPlayer();
+        gen.writeStringField("currentPlayerName", currentPlayer == null ? null : currentPlayer.getName());
         gen.writeEndObject();
     }
 

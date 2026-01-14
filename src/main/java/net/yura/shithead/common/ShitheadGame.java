@@ -184,9 +184,7 @@ public class ShitheadGame {
 
         // in very rare situations no player will have a valid starting card
         // in this case the player at index 0 will go first
-        if (firstPlayer != null) {
-            currentPlayer = players.indexOf(firstPlayer);
-        }
+        currentPlayer = firstPlayer == null ? 0 : players.indexOf(firstPlayer);
     }
 
     public static Card findLowestStartCard(Collection<Card> cards) {

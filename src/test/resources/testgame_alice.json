@@ -13,5 +13,5 @@
     "downcardsCount" : 3
   } ],
   "playersReady" : [ "Alice" ],
-  "currentPlayerName" : "Alice"
+  "currentPlayerName" : null
 }
