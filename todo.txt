@@ -1,7 +1,7 @@
 ## TODO
 
 - animations in online play are all over the place
-- show nicer picture of back of cards and new game screen
+- show nicer picture of back of cards on new game screen
 - rules description on new game screen
 
 - add some sort of icon for lobby games

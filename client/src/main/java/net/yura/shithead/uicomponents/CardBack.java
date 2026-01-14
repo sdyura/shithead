@@ -17,9 +17,10 @@ public class CardBack extends Icon {
         this.height = height;
 
         img = Application.createImage("/back.png");
-        int[] color = new int[1];
-        img.getRGB(color, 0, 1, 0,0, 1, 1);
-        this.color = color[0];
+        //int[] color = new int[1];
+        //img.getRGB(color, 0, 1, 0,0, 1, 1);
+        //this.color = color[0];
+        this.color = 0xFFc1c1c1;
     }
 
     @Override
