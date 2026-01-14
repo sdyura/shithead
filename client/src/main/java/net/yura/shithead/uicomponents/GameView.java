@@ -113,10 +113,14 @@ public class GameView extends Panel {
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
 
-            int playerPosition = (i - localPlayerIndex + numSlots) % numSlots;
-            double angle = Math.PI + (Math.PI * playerPosition / numSlots);
+            boolean isLocalPlayer = i == localPlayerIndex;
+            double angle = 0;
+            if (!isLocalPlayer) {
+                int playerPosition = (i - localPlayerIndex + numSlots) % numSlots;
+                angle = Math.PI + (Math.PI * playerPosition / numSlots);
+            }
 
-            playerLeftOver.addAll(layoutPlayer(wasteLeftover, player, angle, i == localPlayerIndex));
+            playerLeftOver.addAll(layoutPlayer(wasteLeftover, player, angle, isLocalPlayer));
         }
         playerHands.entrySet().removeIf(h -> {
             boolean remove = !players.contains(h.getKey());
