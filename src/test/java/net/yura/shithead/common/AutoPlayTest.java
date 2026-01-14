@@ -89,4 +89,44 @@ public class AutoPlayTest {
         // Then
         assertEquals(Card.getCardByRankSuit(Rank.FIVE, Suit.CLUBS), bestCard);
     }
+
+    @Test
+    void testGetValidGameCommandForRearrangingReady() {
+        ShitheadGame game = new ShitheadGame(Arrays.asList("player1"));
+        Player player = game.getPlayers().get(0);
+
+        player.getHand().addAll(Arrays.asList(
+                Card.getCardByRankSuit(Rank.THREE, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.FOUR, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES)
+        ));
+        player.getUpcards().addAll(Arrays.asList(
+                Card.getCardByRankSuit(Rank.SIX, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.SEVEN, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.EIGHT, Suit.SPADES)
+        ));
+
+        String command = AutoPlay.getValidGameCommand(game, "player1");
+        assertEquals("ready player1", command);
+    }
+
+    @Test
+    void testGetValidGameCommandForRearrangingSwap() {
+        ShitheadGame game = new ShitheadGame(Arrays.asList("player1"));
+        Player player = game.getPlayers().get(0);
+
+        player.getHand().addAll(Arrays.asList(
+                Card.getCardByRankSuit(Rank.SIX, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.SEVEN, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.EIGHT, Suit.SPADES)
+        ));
+        player.getUpcards().addAll(Arrays.asList(
+                Card.getCardByRankSuit(Rank.THREE, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.FOUR, Suit.SPADES),
+                Card.getCardByRankSuit(Rank.FIVE, Suit.SPADES)
+        ));
+
+        String command = AutoPlay.getValidGameCommand(game, "player1");
+        assertEquals("swap player1 3S 6S", command);
+    }
 }
