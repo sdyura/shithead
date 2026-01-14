@@ -161,7 +161,7 @@ public class GameView extends Panel {
         List<UICard> deckUICards = deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.DECK).collect(Collectors.toList());
 
         if (deckUICards.size() > cardsToShowDeck) {
-            throw new IllegalStateException("too many deck cards");
+            throw new IllegalStateException("too many deck cards " + deckUICards.size() + " > " + cardsToShowDeck);
         }
 
         if (cardsToShowDeck > 0) {
@@ -311,7 +311,8 @@ public class GameView extends Panel {
             for (int i = deckAndWasteUICards.size() - 1; i >= 0; i--) {
                 UICard uiCard = deckAndWasteUICards.get(i);
                 // if user clicks on waste pile during our turn, this mean we should pick up the waste pile
-                if (uiCard.contains(x, y) && game.getCurrentPlayer().getName().equals(myUsername)) {
+                Player currentPlayer = game.getCurrentPlayer();
+                if (uiCard.contains(x, y) && currentPlayer != null && currentPlayer.getName().equals(myUsername)) {
                     if (uiCard.getLocation() == CardLocation.WASTE) {
                         gameCommandListener.pickUpWaste();
                         return;

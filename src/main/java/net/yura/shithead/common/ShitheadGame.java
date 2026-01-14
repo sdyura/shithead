@@ -25,7 +25,7 @@ public class ShitheadGame {
     private final Deck deck;
     private List<Card> wastePile = new ArrayList<>();
 
-    private int currentPlayer;
+    private int currentPlayer = -1;
 
     public void setPlayers(List<Player> players) {
         this.players = players;
@@ -206,7 +206,7 @@ public class ShitheadGame {
      * Returns the player whose turn it is.
      */
     public Player getCurrentPlayer() {
-        return players.get(currentPlayer);
+        return currentPlayer == -1 ? null : players.get(currentPlayer);
     }
 
     /**

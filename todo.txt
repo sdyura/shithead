@@ -1,16 +1,19 @@
 ## TODO
 
-- android spinner does not have theme, does not show +/-
 - animations in online play are all over the place
-
-- show green felt background for table
 - show nicer picture of back of cards and new game screen
 - rules description on new game screen
-- rotate hands for other players
 
 - add some sort of icon for lobby games
 - add timeout option in game setup for lobby games
 - deal with player timing out on there turn in the Server
+
+
+lib updates needed:
+- android spinner does not have theme, does not show +/- (fixed in next AndroidME)
+- show green felt background for table (needed as theme is VERY broken on android) (BackgroundBorder in next version of SwingME)
+- rotate hands for other players (requires next version of iOSME/AndroidME/me4se)
+
 
 # Shithead Rule Discrepancies (vs. Wikipedia)
 
