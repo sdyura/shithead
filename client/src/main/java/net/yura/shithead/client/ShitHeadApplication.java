@@ -167,13 +167,14 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 new Thread() {
                     @Override
                     public void run() {
-                        while (!singlePlayerGame.isFinished() && singlePlayerGame.isPlaying() && singlePlayerGame.getCurrentPlayer() != me) {
+                        ShitheadGame game = singlePlayerGame;
+                        while (singlePlayerGame != null && !game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
                                 break;
                             }
-                            parser.parse(singlePlayerGame, AutoPlay.getValidGameCommand(singlePlayerGame));
+                            parser.parse(game, AutoPlay.getValidGameCommand(game));
                             DesktopPane.getDesktopPane().getSelectedFrame().revalidate();
                             DesktopPane.getDesktopPane().getSelectedFrame().repaint();
                         }
