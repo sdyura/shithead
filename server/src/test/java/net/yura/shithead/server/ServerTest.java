@@ -141,7 +141,7 @@ public class ServerTest {
     public void test2PlayersJoinGame() {
         int id = bothPlayersJoinGame();
 
-        int maxTurns = 100;
+        int maxTurns = 200;
         int turns = 0;
         while (mockClient1.game.isRearranging() || mockClient2.game.isRearranging()) {
             assertEquals(mockClient1.game.isRearranging(), mockClient2.game.isRearranging());

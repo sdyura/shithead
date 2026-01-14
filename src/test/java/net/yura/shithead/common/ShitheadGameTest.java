@@ -53,6 +53,8 @@ class ShitheadGameTest {
         game.playerReady(p1);
         game.playerReady(p2);
 
+        game.setCurrentPlayer(0);
+
         // Setup P1 to start
         p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES));
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.QUEEN, Suit.HEARTS));
@@ -93,6 +95,8 @@ class ShitheadGameTest {
         game.playerReady(p1);
         game.playerReady(p2); // P1 starts.
 
+        game.setCurrentPlayer(0);
+
         // P1 plays the 3.
         game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS)));
         // P2's turn. Plays the 4.
@@ -128,6 +132,7 @@ class ShitheadGameTest {
         // All players are ready
         game.playerReady(p1);
         game.playerReady(p2);
+        game.setCurrentPlayer(0);
         // Since hand and upcards are empty, the first player will be p1 (index 0) by default.
         // No need to set it manually.
 
@@ -142,6 +147,8 @@ class ShitheadGameTest {
         // All players are ready
         game.playerReady(p1);
         game.playerReady(p2);
+
+        game.setCurrentPlayer(0);
 
         // Give players upcards so they don't win immediately
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS));

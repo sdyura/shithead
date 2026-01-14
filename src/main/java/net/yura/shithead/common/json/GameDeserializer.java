@@ -96,17 +96,13 @@ public class GameDeserializer extends StdDeserializer<ShitheadGame> {
         game.setWastePile(wastePile);
 
         // Set the current player index
-        int currentPlayerIndex = -1;
         if (players != null && currentPlayerName != null) {
             for (int i = 0; i < players.size(); i++) {
                 if (players.get(i).getName().equals(currentPlayerName)) {
-                    currentPlayerIndex = i;
+                    game.setCurrentPlayer(i);
                     break;
                 }
             }
-        }
-        if (currentPlayerIndex != -1) {
-            game.setCurrentPlayer(currentPlayerIndex);
         }
 
         return game;

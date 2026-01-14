@@ -34,6 +34,7 @@ public class CommandParserTest {
         player1.getDowncards().clear();
         game.setWastePile(new ArrayList<>());
         game.setPlayersReady(Set.of(player1, player2));
+        game.setCurrentPlayer(0);
 
         // Use reflection to set a predictable deck for testing
         Deck deck = game.getDeck();
