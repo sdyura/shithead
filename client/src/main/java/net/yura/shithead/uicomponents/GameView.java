@@ -106,11 +106,17 @@ public class GameView extends Panel {
         List<UICard> wasteLeftover = deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.WASTE).filter(c -> !game.getWastePile().contains(c.getCard())).collect(Collectors.toList());
         wasteLeftover.forEach(deckAndWasteUICards::remove);
 
+        // we always want to keep a slot for the current player, regardless if they are still alive or not
+        int numSlots = players.size() + (localPlayerIndex == -1 ? 1 : 0);
+
         List<UICard> playerLeftOver = new ArrayList<>();
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            int playerPosition = (i - localPlayerIndex + players.size()) % players.size();
-            playerLeftOver.addAll(layoutPlayer(wasteLeftover, player, playerPosition, i == localPlayerIndex));
+
+            int playerPosition = (i - localPlayerIndex + numSlots) % numSlots;
+            double angle = Math.PI + (Math.PI * playerPosition / numSlots);
+
+            playerLeftOver.addAll(layoutPlayer(wasteLeftover, player, angle, i == localPlayerIndex));
         }
         playerHands.entrySet().removeIf(h -> {
             boolean remove = !players.contains(h.getKey());
@@ -179,8 +185,7 @@ public class GameView extends Panel {
         Animation.registerAnimated(this);
     }
 
-    private List<UICard> layoutPlayer(List<UICard> wasteUICards, Player player, int position, boolean isLocalPlayer) {
-        int playerCount = game.getPlayers().size();
+    private List<UICard> layoutPlayer(List<UICard> wasteUICards, Player player, double angle, boolean isLocalPlayer) {
         int width = getWidth();
         int height = getHeight();
         int centerX = width / 2;
@@ -239,7 +244,6 @@ public class GameView extends Panel {
             hand.layoutHand(upUiCards, overlap);
             hand.layoutHand(handUiCards, overlap * 2 + padding);
         } else {
-            double angle = Math.PI + (Math.PI * position / playerCount);
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));
             hand.setPosition(x, y);
