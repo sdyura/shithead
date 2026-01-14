@@ -7,6 +7,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,5 +39,13 @@ public class ShitHeadServerTest {
 
         assertTrue(result);
         assertEquals(1, server.game.getPlayers().size());
+    }
+
+    @Test
+    public void testCurrentPlayerIsNullBeforeGameStarts() {
+        ShitHeadServer server = new ShitHeadServer();
+        server.game = new ShitheadGame(Arrays.asList("player1", "player2", "player3"));
+
+        assertNull(server.game.getCurrentPlayer());
     }
 }
