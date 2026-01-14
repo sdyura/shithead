@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.timeout;
@@ -140,6 +141,8 @@ public class ServerTest {
     public void test2PlayersJoinGame() {
         int id = bothPlayersJoinGame();
 
+        int maxTurns = 100;
+        int turns = 0;
         while (mockClient1.game.isRearranging() || mockClient2.game.isRearranging()) {
             assertEquals(mockClient1.game.isRearranging(), mockClient2.game.isRearranging());
 
@@ -156,8 +159,10 @@ public class ServerTest {
             else {
                 throw new IllegalStateException();
             }
+            assertTrue(turns++ < maxTurns);
         }
 
+        turns = 0;
         while (!mockClient1.game.isFinished() || !mockClient2.game.isFinished()) {
             assertEquals(mockClient1.game.isFinished(), mockClient2.game.isFinished());
 
@@ -171,6 +176,7 @@ public class ServerTest {
             else {
                 throw new IllegalStateException("whos turn??? " + whosTurn);
             }
+            assertTrue(turns++ < maxTurns);
         }
     }
 
