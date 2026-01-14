@@ -239,7 +239,7 @@ public class GameView extends Panel {
 
         List<UICard> leftOver = hand.setCards(allPlayerCards);
         if (isLocalPlayer) {
-            int maxWidth = getWidth() - XULLoader.adjustSizeToDensity(66);
+            int maxWidth = Math.max(getWidth() - XULLoader.adjustSizeToDensity(66), CardImageManager.cardWidth * 3 + XULLoader.adjustSizeToDensity(4)); // 4 = 2 * PlayerHand.padding
             int handRows = hand.calculateNumRows(handUiCards, maxWidth);
             int handHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
 
