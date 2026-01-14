@@ -8,7 +8,6 @@ import net.yura.cardsengine.Suit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
@@ -23,6 +22,7 @@ class ShitheadGameTest {
     @BeforeEach
     void setUp() {
         game = new ShitheadGame(2);
+        assertNull(game.getCurrentPlayer());
         try {
             // Get players for easier testing
             List<Player> players = game.getPlayers();
@@ -52,8 +52,6 @@ class ShitheadGameTest {
         // All players are ready
         game.playerReady(p1);
         game.playerReady(p2);
-
-        game.setCurrentPlayer(0);
 
         // Setup P1 to start
         p1.getHand().add(Card.getCardByRankSuit(Rank.THREE, Suit.SPADES));
@@ -95,8 +93,6 @@ class ShitheadGameTest {
         game.playerReady(p1);
         game.playerReady(p2); // P1 starts.
 
-        game.setCurrentPlayer(0);
-
         // P1 plays the 3.
         game.playCards(Collections.singletonList(Card.getCardByRankSuit(Rank.THREE, Suit.CLUBS)));
         // P2's turn. Plays the 4.
@@ -132,7 +128,6 @@ class ShitheadGameTest {
         // All players are ready
         game.playerReady(p1);
         game.playerReady(p2);
-        game.setCurrentPlayer(0);
         // Since hand and upcards are empty, the first player will be p1 (index 0) by default.
         // No need to set it manually.
 
@@ -147,8 +142,6 @@ class ShitheadGameTest {
         // All players are ready
         game.playerReady(p1);
         game.playerReady(p2);
-
-        game.setCurrentPlayer(0);
 
         // Give players upcards so they don't win immediately
         p1.getUpcards().add(Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS));
@@ -345,9 +338,6 @@ class ShitheadGameTest {
         // Give player 1 an Ace
         Card ace = Card.getCardByRankSuit(Rank.ACE, Suit.HEARTS);
         p1.getHand().add(ace);
-
-        // Set the current player to p1
-        game.setCurrentPlayer(0);
 
         // Attempt to play the Ace on the King
         assertTrue(game.playCards(Collections.singletonList(ace)), "An Ace should be playable on a King");

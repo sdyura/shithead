@@ -6,6 +6,7 @@
 /local.properties
 /ios/xcode/Shithead.xcodeproj/xcuserdata/
 /ios/xcode/Shithead.xcodeproj/project.xcworkspace/
+/desktop/testOutput/
 
 # Ignore Gradle GUI config
 gradle-app.setting
