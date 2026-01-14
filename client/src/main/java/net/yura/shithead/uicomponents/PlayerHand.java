@@ -52,12 +52,28 @@ public class PlayerHand {
     }
 
     public void layoutHand(List<UICard> cards, int yOffset) {
-        int handWidth = (cards.size() * CardImageManager.cardWidth) + (padding * (cards.size() - 1));
+        if (cards.isEmpty()) {
+            return;
+        }
+
+        int spacing = padding;
+        int handWidth = (cards.size() * CardImageManager.cardWidth) + (spacing * (cards.size() - 1));
+
+        if (!isLocalPlayer) {
+            int maxWidth = XULLoader.adjustSizeToDensity(120);
+            if (handWidth > maxWidth) {
+                handWidth = maxWidth;
+                if (cards.size() > 1) {
+                    spacing = (maxWidth - cards.size() * CardImageManager.cardWidth) / (cards.size() - 1);
+                }
+            }
+        }
+
         int startX = - handWidth / 2;
 
         for (int i = 0; i < cards.size(); i++) {
             UICard uiCard = cards.get(i);
-            uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + padding), y + yOffset);
+            uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset);
         }
     }
 
