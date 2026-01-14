@@ -51,7 +51,7 @@ public class PlayerHand {
         return oldCards;
     }
 
-    public void layoutHand(List<UICard> cards, int yOffset) {
+    public void layoutHand(List<UICard> cards, int yOffset, int maxWidth) {
         if (cards.isEmpty()) {
             return;
         }
@@ -59,22 +59,62 @@ public class PlayerHand {
         int spacing = padding;
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (spacing * (cards.size() - 1));
 
-        if (!isLocalPlayer) {
-            int maxWidth = XULLoader.adjustSizeToDensity(120);
-            if (handWidth > maxWidth) {
-                handWidth = maxWidth;
-                if (cards.size() > 1) {
-                    spacing = (maxWidth - cards.size() * CardImageManager.cardWidth) / (cards.size() - 1);
+        if (isLocalPlayer && handWidth > maxWidth) {
+
+            int cardsPerRow = (maxWidth + spacing) / (CardImageManager.cardWidth + spacing);
+            if (cardsPerRow == 0) {
+                cardsPerRow = 1;
+            }
+            int numRows = (int) Math.ceil((double) cards.size() / cardsPerRow);
+
+            int cardIndex = 0;
+            for (int row = 0; row < numRows; row++) {
+
+                int cardsInThisRow = Math.min(cards.size() - cardIndex, cardsPerRow);
+                int rowWidth = (cardsInThisRow * CardImageManager.cardWidth) + (spacing * (cardsInThisRow - 1));
+                int startX = -rowWidth / 2;
+
+                for (int i = 0; i < cardsInThisRow; i++) {
+                    UICard uiCard = cards.get(cardIndex++);
+                    uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset + row * CardImageManager.cardHeight / 2);
                 }
             }
         }
-
-        int startX = - handWidth / 2;
-
-        for (int i = 0; i < cards.size(); i++) {
-            UICard uiCard = cards.get(i);
-            uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset);
+        else {
+            // for non local player we want to overlap large numbers of cards
+            if (!isLocalPlayer) {
+                if (handWidth > maxWidth) {
+                    handWidth = maxWidth;
+                    if (cards.size() > 1) {
+                        spacing = (maxWidth - cards.size() * CardImageManager.cardWidth) / (cards.size() - 1);
+                    }
+                }
+            }
+            int startX = -handWidth / 2;
+            for (int i = 0; i < cards.size(); i++) {
+                UICard uiCard = cards.get(i);
+                uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset);
+            }
         }
+    }
+
+    public int calculateNumRows(List<UICard> cards, int maxWidth) {
+        if (cards.isEmpty()) {
+            return 0;
+        }
+
+        int spacing = padding;
+        int handWidth = (cards.size() * CardImageManager.cardWidth) + (spacing * (cards.size() - 1));
+
+        if (handWidth <= maxWidth) {
+            return 1;
+        }
+
+        int cardsPerRow = (maxWidth + spacing) / (CardImageManager.cardWidth + spacing);
+        if (cardsPerRow == 0) {
+            cardsPerRow = 1;
+        }
+        return (int) Math.ceil((double) cards.size() / cardsPerRow);
     }
 
     public List<UICard> getUiCards() {

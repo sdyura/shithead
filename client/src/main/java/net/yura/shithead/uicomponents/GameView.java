@@ -239,17 +239,22 @@ public class GameView extends Panel {
 
         List<UICard> leftOver = hand.setCards(allPlayerCards);
         if (isLocalPlayer) {
-            hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2);
-            hand.layoutHand(downUiCards, 0);
-            hand.layoutHand(upUiCards, overlap);
-            hand.layoutHand(handUiCards, overlap * 2 + padding);
+            int maxWidth = Math.max(getWidth() - XULLoader.adjustSizeToDensity(66), CardImageManager.cardWidth * 3 + XULLoader.adjustSizeToDensity(4)); // 4 = 2 * PlayerHand.padding
+            int handRows = hand.calculateNumRows(handUiCards, maxWidth);
+            int handHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
+
+            hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2 - handHeight);
+            hand.layoutHand(downUiCards, 0, maxWidth);
+            hand.layoutHand(upUiCards, overlap, maxWidth);
+            hand.layoutHand(handUiCards, overlap * 2 + padding, maxWidth);
         } else {
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));
             hand.setPosition(x, y);
-            hand.layoutHand(downUiCards, 0);
-            hand.layoutHand(upUiCards, overlap);
-            hand.layoutHand(handUiCards, overlap * 2);
+            int maxWidth = XULLoader.adjustSizeToDensity(120);
+            hand.layoutHand(downUiCards, 0, maxWidth);
+            hand.layoutHand(upUiCards, overlap, maxWidth);
+            hand.layoutHand(handUiCards, overlap * 2, maxWidth);
         }
         return leftOver;
     }
