@@ -65,7 +65,10 @@ public class AutoPlay {
 
     public static String getValidGameCommand(ShitheadGame game, String playerName) {
         if (game.isRearranging()) {
-            Player player = game.getPlayers().stream().filter(p -> playerName.equals(p.getName())).findFirst().orElseThrow(() -> new NoSuchElementException("Name not found: " + playerName));
+            Player player = game.getPlayer(playerName);
+            if (player == null) {
+                throw new IllegalArgumentException("Name not found: " + playerName);
+            }
 
             List<Card> allCards = new ArrayList<>();
             allCards.addAll(player.getHand());

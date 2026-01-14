@@ -69,7 +69,7 @@ public class CommandParser {
                     throw new IllegalArgumentException("incomplete rearrange command");
                 }
                 String playerName = decodePlayerName(tokens[1]);
-                Player player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                Player player = game.getPlayer(playerName);
                 if (player == null) {
                     throw new IllegalArgumentException("player not found: " + playerName);
                 }
@@ -85,7 +85,7 @@ public class CommandParser {
                     throw new IllegalArgumentException("incomplete ready command");
                 }
                 playerName = decodePlayerName(tokens[1]);
-                player = game.getPlayers().stream().filter(p -> p.getName().equals(playerName)).findFirst().orElse(null);
+                player = game.getPlayer(playerName);
                 if (player == null) {
                     throw new IllegalArgumentException("player not found: " + playerName);
                 }

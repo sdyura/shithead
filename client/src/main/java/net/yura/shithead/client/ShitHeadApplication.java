@@ -5,8 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -28,6 +31,8 @@ import net.yura.shithead.common.json.SerializerUtil;
 
 public class ShitHeadApplication extends Application implements ActionListener {
 
+    private static final String SINGLE_PLAYER_NAME = "Player 1";
+
     private Properties properties;
 
     private ShitheadGame singlePlayerGame;
@@ -47,6 +52,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
         };
 
         openMainMenu();
+
+        loadState();
     }
 
     /**
@@ -131,18 +138,25 @@ public class ShitHeadApplication extends Application implements ActionListener {
 
     private void createNewGame(int numPlayers) {
 
-        singlePlayerGame = new ShitheadGame(numPlayers);
-        int myIndex = new Random().nextInt(numPlayers);
-        Player me = singlePlayerGame.getPlayers().get(myIndex);
+        ShitheadGame singlePlayerGame = new ShitheadGame(numPlayers);
         singlePlayerGame.deal();
 
+        // TODO maybe we want to use AutoPlay for this also?
+        Player me = singlePlayerGame.getPlayer(SINGLE_PLAYER_NAME);
         for (Player player : singlePlayerGame.getPlayers()) {
             if (me != player) {
                 singlePlayerGame.playerReady(player);
             }
         }
 
-        final GameUI gameUI = new GameUI(properties, singlePlayerGame, me.getName(), new ActionListener() {
+        openGame(singlePlayerGame);
+    }
+
+    private void openGame(ShitheadGame game) {
+        this.singlePlayerGame = game;
+        Player me = game.getPlayer(SINGLE_PLAYER_NAME);
+
+        final GameUI gameUI = new GameUI(properties, singlePlayerGame, SINGLE_PLAYER_NAME, new ActionListener() {
             @Override
             public void actionPerformed(String actionCommand) {
                 CommandParser parser = new CommandParser();
@@ -196,8 +210,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
     }
 
     public void saveState() {
-        if (singlePlayerGame != null) {
-            File autoSave = new File(getGameDir(), "auto.save");
+        File autoSave = new File(getGameDir(), "auto.save");
+        if (singlePlayerGame != null && singlePlayerGame.getPlayer(SINGLE_PLAYER_NAME) != null) {
             String json = SerializerUtil.toJSON(singlePlayerGame, null);
             try (FileWriter out = new FileWriter(autoSave)) { // TODO should use StandardCharsets.UTF_8
                 out.write(json);
@@ -205,6 +219,25 @@ public class ShitHeadApplication extends Application implements ActionListener {
             catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+        else {
+            // if we do not have a game open, make sure this file does not exist
+            autoSave.delete();
+        }
+    }
+
+    private void loadState() {
+        try {
+            File autoSave = new File(getGameDir(), "auto.save");
+            if (autoSave.exists()) {
+                String json = new Scanner(autoSave, "UTF-8").useDelimiter("\\A").next();
+                autoSave.delete();
+                openGame(SerializerUtil.fromJSON(json));
+            }
+        }
+        catch (Exception ex) {
+            // failed to load state, just give up
+            ex.printStackTrace();
         }
     }
 

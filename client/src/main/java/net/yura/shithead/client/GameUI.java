@@ -110,12 +110,12 @@ public class GameUI implements ActionListener, GameViewListener {
             else {
                 List<Card> cards = gameView.getSelectedCards();
                 gameView.clearSelectedCards();
-                playVisibleCard(!getPlayer(playerUsername).getHand().isEmpty(), cards);
+                playVisibleCard(!game.getPlayer(playerUsername).getHand().isEmpty(), cards);
             }
             updateButton();
         }
         else if ("sort".equals(actionCommand)) {
-            Player player = getPlayer(playerUsername);
+            Player player = game.getPlayer(playerUsername);
             if (player != null) {
                 sortHand(player);
             }
@@ -130,7 +130,7 @@ public class GameUI implements ActionListener, GameViewListener {
 
     @Override
     public void updateButton() {
-        Player player = getPlayer(playerUsername);
+        Player player = game.getPlayer(playerUsername);
         if (game.isRearranging() && player != null && !game.getPlayersReady().contains(player)) {
             playButton.setText(uiTextString.getString("game.ready"));
             playButton.setFocusable(true);
@@ -167,14 +167,5 @@ public class GameUI implements ActionListener, GameViewListener {
                 hand.addAll(sortedHand);
             }
         }
-    }
-
-    private Player getPlayer(String playerName) {
-        for (Player player : game.getPlayers()) {
-            if (player.getName().equals(playerName)) {
-                return player;
-            }
-        }
-        return null;
     }
 }

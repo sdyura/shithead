@@ -46,7 +46,7 @@ public class GameView extends Panel {
     }
 
     private PlayerHand getPlayerHand(String username) {
-        return playerHands.values().stream().filter(p -> p.player.getName().equals(username)).findAny().orElse(null);
+        return playerHands.get(game.getPlayer(username));
     }
 
     public List<Card> getSelectedCards() {

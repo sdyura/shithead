@@ -466,4 +466,8 @@ public class ShitheadGame {
             throw new IllegalStateException("no cards in deck", e);
         }
     }
+
+    public Player getPlayer(String username) {
+        return players.stream().filter(p -> p.getName().equals(username)).findFirst().orElse(null);
+    }
 }
