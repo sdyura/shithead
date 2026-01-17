@@ -1,5 +1,8 @@
 package net.yura.shithead.client;
 
+import net.yura.cardsengine.Card;
+import net.yura.cardsengine.Rank;
+import net.yura.cardsengine.Suit;
 import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.lobby.mini.MiniLobbyGame;
 import net.yura.lobby.model.Game;
@@ -16,6 +19,8 @@ import net.yura.mobile.gui.components.TextField;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
+import net.yura.shithead.uicomponents.CardImageManager;
+import net.yura.shithead.uicomponents.Icons;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -52,20 +57,17 @@ public class MiniLobbyShithead implements MiniLobbyGame {
         return "Shithead".equals(gametype.getName());
     }
 
+    /**
+     * proportions should be 75 x 47 (not too far from 5:3 aspect ratio)
+     * @see net.yura.lobby.mini.GameRenderer
+     */
     @Override
     public Icon getIconForGame(Game game) {
-        // TODO when new version of lobby, this can just be null
-        return new Icon() {
-            @Override
-            public int getIconWidth() {
-                return 1;
-            }
-
-            @Override
-            public int getIconHeight() {
-                return 1;
-            }
-        };
+        Icon qos = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.QUEEN, Suit.SPADES));
+        Icon ace = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES));
+        int num = game.getMaxPlayers();
+        Icon countIcon = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.THIRTEEN_RANKS[num - 1], Suit.HEARTS));
+        return new Icons(new Icon[] {qos, countIcon, ace});
     }
 
     @Override

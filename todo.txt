@@ -3,7 +3,6 @@
 - animations in online play are all over the place
 - rules description on new game screen
 
-- add some sort of icon for lobby games
 - add timeout option in game setup for lobby games
 - deal with player timing out on there turn in the Server
 
