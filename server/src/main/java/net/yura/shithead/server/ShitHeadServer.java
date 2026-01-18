@@ -2,13 +2,17 @@ package net.yura.shithead.server;
 
 import net.yura.lobby.server.AbstractTurnBasedServerGame;
 import net.yura.lobby.server.LobbySession;
+import net.yura.shithead.common.AutoPlay;
 import net.yura.shithead.common.CommandParser;
+import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -45,11 +49,46 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
     @Override
     public void playerJoins(String s) { }
 
-    @Override
-    public boolean playerResigns(String s) {
-        game.removePlayer(s);
-        if (game.getPlayers().size() == 1) {
-            return gameFinished(game.getPlayers().get(0).getName());
+    // old method
+    public boolean playerResigns(String username) { return playerResigns(username, false); }
+
+    // new method
+    public boolean playerResigns(String username, boolean gameTriggered) {
+        Player resignedPlayer = game.getPlayer(username);
+        if (resignedPlayer == null) {
+            throw new IllegalArgumentException("player not in the game " + username +" (gameTriggered=" + gameTriggered + ")");
+        }
+
+        // rename the player to a new resigned name both here and on clients
+        String newResignedName = username + (gameTriggered ? "-AutoResigned" : "-Resigned");
+        String renameCommand = "rename " + CommandParser.encodePlayerName(username) + " " + CommandParser.encodePlayerName(newResignedName);
+        commandParser.execute(game, renameCommand);
+        // TODO do we need to actually send this out? as clients are already notified when a player resigns from a game
+        listoner.messageFromGame(renameCommand, getAllClients());
+
+
+        // in the case this player is not ready yet, mark them as ready
+        if (!game.getPlayersReady().contains(resignedPlayer)) {
+            String makePlayerReady = "ready " + CommandParser.encodePlayerName(newResignedName);
+            commandParser.execute(game, makePlayerReady);
+            listoner.messageFromGame(makePlayerReady, getAllClients());
+
+            if (game.isPlaying()) {
+                // if marking this player as ready has transitioned us into the playing state of the game, then we now need input
+                getNextTurn();
+            }
+        }
+        //check if we need to take a turn
+        else if (resignedPlayer.equals(game.getCurrentPlayer())) {
+            getNextTurn();
+        }
+
+        List<Player> notResignedPlayers = game.getPlayers().stream().filter(p -> !p.getName().endsWith("Resigned")).collect(Collectors.toList());
+        if (notResignedPlayers.size() <= 1) {
+            // TODO there is a new gameFinished that takes a Map of username -> score
+            // we may want to keep a full list of game players from the start somewhere to use that
+            // we can get a list of all players from the game by getting game.getReadyPlayers()
+            return gameFinished(null); // game.getPlayers().get(0).getName()
         }
         return false;
     }
@@ -68,7 +107,9 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
 
     @Override
     public void playerTimedOut(String username) {
-        // TODO do we want to do autoplay and then resign player??
+        // TODO for now just resign player, if we want to add skips counter then we need to extend TurnBasedGame
+        //listoner.sendChatroomMessage(username + " has timed out and has been resigned from the game.");
+        listoner.resignPlayer(username); // this will send chat message about AutoResign
     }
 
     @Override
@@ -98,7 +139,32 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         }
 
         if (game.isPlaying()) {
-            getInputFromClient(game.getCurrentPlayer().getName());
+            getNextTurn();
+        }
+    }
+
+    /**
+     * get next command from AI or client app
+     */
+    private void getNextTurn() {
+        Player whosTurn = game.getCurrentPlayer();
+        boolean doAITurn = whosTurn.getName().endsWith("Resigned");
+        getInputFromClient(doAITurn ? null : whosTurn.getName());
+
+        if (doAITurn) {
+            scheduler.schedule(() -> {
+                String command = AutoPlay.getValidGameCommand(game);
+                String mutation = CommandParser.getMutationCommand(game, command);
+                commandParser.execute(game, mutation);
+                listoner.messageFromGame(mutation, getAllClients());
+
+                if (game.isFinished()) {
+                    gameFinished(null);
+                }
+                else {
+                    getNextTurn();
+                }
+            }, 2, TimeUnit.SECONDS);
         }
     }
 
@@ -107,8 +173,11 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         return true;
     }
 
-    @Override
-    public void loadGame(byte[] bytes) {
+    // old method
+    public void loadGame(byte[] bytes) { loadGame(null, bytes); }
+
+    // new method
+    public void loadGame(String[] lobbyPlayer, byte[] bytes) {
         game = SerializerUtil.fromJSON(new String(bytes, StandardCharsets.UTF_8));
     }
 

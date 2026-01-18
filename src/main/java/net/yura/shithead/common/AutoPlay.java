@@ -5,7 +5,6 @@ import net.yura.cardsengine.Rank;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class AutoPlay {
