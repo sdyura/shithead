@@ -1,7 +1,6 @@
 ## TODO
 
 - resign button stays enabled after the player has resigned
-- after resign player cards are drown still in multiple rows
 - animations in online play are all over the place
 
 lib updates needed:

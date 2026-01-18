@@ -196,9 +196,11 @@ public class GameView extends Panel {
 
         PlayerHand hand = playerHands.get(player);
         if (hand == null) {
-            hand = new PlayerHand(game, player, isLocalPlayer, gameCommandListener);
+            hand = new PlayerHand(game, player, gameCommandListener);
             playerHands.put(player, hand);
         }
+        // this can get updated if the player resigns
+        hand.isLocalPlayer = isLocalPlayer;
 
         if (game.isRearranging()) {
             hand.setWaitingForInput(!game.getPlayersReady().contains(player));

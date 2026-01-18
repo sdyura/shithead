@@ -20,15 +20,14 @@ public class PlayerHand {
     private List<UICard> uiCards = new ArrayList<UICard>();
     int x;
     int y;
-    final private boolean isLocalPlayer;
+    boolean isLocalPlayer;
     private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
 
-    public PlayerHand(ShitheadGame game, Player player, boolean isLocalPlayer, GameViewListener gameCommandListener) {
+    public PlayerHand(ShitheadGame game, Player player, GameViewListener gameCommandListener) {
         this.game = game;
         this.player = player;
         this.gameCommandListener = gameCommandListener;
-        this.isLocalPlayer = isLocalPlayer;
     }
 
     public void setPosition(int x, int y) {
