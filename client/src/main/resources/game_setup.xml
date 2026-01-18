@@ -5,6 +5,27 @@
     <textfield columns="10" name="gamename"/>
     <label i18n="true" text="newgame.players.number"/>
     <spinbox maximum="5" minimum="2" name="players" text="2"/>
+
+    <label alignment="right" i18n="true" text="newgame.label.timeout" weightx="1" name="timeoutLabel"/>
+    <combobox editable="false" name="TimeoutValue" selected="3" text="newgame.timeout.1min">
+        <choice i18n="true" name="10" text="newgame.timeout.10sec"/>
+        <choice i18n="true" name="20" text="newgame.timeout.20sec"/>
+        <choice i18n="true" name="30" text="newgame.timeout.30sec"/>
+        <choice i18n="true" name="60" text="newgame.timeout.1min"/>
+        <choice i18n="true" name="300" text="newgame.timeout.5min"/>
+        <choice i18n="true" name="600" text="newgame.timeout.10min"/>
+        <choice i18n="true" name="1200" text="newgame.timeout.20min"/>
+        <choice i18n="true" name="1800" text="newgame.timeout.30min"/>
+        <choice i18n="true" name="3600" text="newgame.timeout.1hour"/>
+        <choice i18n="true" name="7200" text="newgame.timeout.2hours"/>
+        <choice i18n="true" name="21600" text="newgame.timeout.6hours"/>
+        <choice i18n="true" name="43200" text="newgame.timeout.12hours"/>
+        <choice i18n="true" name="86400" text="newgame.timeout.24hours"/>
+    </combobox>
+
+    <checkbox action="private" i18n="true" name="private" text="newgame.private"/>
+    <textfield name="password" enabled="false" property="hint=newgame.password"/>
+
     <button action="back" i18n="true" text="newgame.button.back"/>
     <button action="create" i18n="true" text="newgame.button.create" weightx="1"/>
 </dialog>

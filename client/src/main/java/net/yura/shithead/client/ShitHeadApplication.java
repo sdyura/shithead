@@ -14,9 +14,11 @@ import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
+import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.OptionPane;
 import net.yura.mobile.gui.components.Spinner;
+import net.yura.mobile.gui.components.TextComponent;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
@@ -97,8 +99,12 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 createNewGame(numPlayers);
             });
 
-            gameSetupLoader.find("gamename").setVisible(false);
             gameSetupLoader.find("gamenameLabel").setVisible(false);
+            gameSetupLoader.find("gamename").setVisible(false);
+            gameSetupLoader.find("timeoutLabel").setVisible(false);
+            gameSetupLoader.find("TimeoutValue").setVisible(false);
+            gameSetupLoader.find("private").setVisible(false);
+            gameSetupLoader.find("password").setVisible(false);
 
             Frame dialog = (Frame)gameSetupLoader.getRoot();
             dialog.pack();
@@ -198,8 +204,20 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 if ("create".equals(actionCommand)) {
                     actionListener.accept(gameSetupLoader);
                 }
-                ((Frame)gameSetupLoader.getRoot()).setVisible(false);
+                else if ("private".equals(actionCommand)) {
+                    boolean pvt = ((Button)gameSetupLoader.find("private")).isSelected();
+                    gameSetupLoader.find("password").setFocusable(pvt);
+                    if (pvt) {
+                        gameSetupLoader.find("password").requestFocusInWindow();
+                    }
+                }
+
+                if ("create".equals(actionCommand) || "back".equals(actionCommand)) {
+                    ((Frame) gameSetupLoader.getRoot()).setVisible(false);
+                }
             }, properties);
+
+            ((TextComponent)gameSetupLoader.find("password")).setTitle(properties.getProperty("newgame.password"));
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);

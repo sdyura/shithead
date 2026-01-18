@@ -11,6 +11,9 @@ import net.yura.lobby.model.Player;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.components.Button;
+import net.yura.mobile.gui.components.ComboBox;
+import net.yura.mobile.gui.components.TextComponent;
+import net.yura.mobile.util.Option;
 import net.yura.mobile.util.Properties;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.components.Frame;
@@ -83,8 +86,15 @@ public class MiniLobbyShithead implements MiniLobbyGame {
             int numPlayers = (Integer)players.getValue();
             TextField gamename = (TextField)loader.find("gamename");
             String gameName = gamename.getText();
+            int timeout = Integer.parseInt(((Option) ((ComboBox) loader.find("TimeoutValue")).getSelectedItem()).getKey());
+
             // TODO for now options cant be null, but in next version of lobby it can
-            Game newGame = new Game(gameName, "blank", numPlayers, Integer.MAX_VALUE);
+            Game newGame = new Game(gameName, "blank", numPlayers, timeout);
+
+            if (((Button) loader.find("private")).isSelected()) {
+                newGame.setMagicWord(((TextComponent) loader.find("password")).getText());
+            }
+
             newGame.setType(gameType);
             lobby.createNewGame(newGame);
         });
