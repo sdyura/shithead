@@ -9,8 +9,10 @@ java {
 
 dependencies {
     implementation rootProject
-    implementation 'net.yura:lobby-server:1.0.0'
+    def lobbyServer = 'net.yura:lobby-server:1.0.0'
+    compileOnly lobbyServer
 
+    testImplementation lobbyServer
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.mockito:mockito-core:5.20.0'
 }
@@ -23,3 +25,19 @@ task runTestServer(type: JavaExec) {
     mainClass = 'net.yura.shithead.server.TestServer'
     classpath = sourceSets.test.runtimeClasspath
 }
+
+jar {
+    archiveFileName = 'shithead-server.jar'
+    manifest {
+        attributes(
+            'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')
+        )
+    }
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/libs"
+}
+
+build.dependsOn copyDependencies
