@@ -23,3 +23,20 @@ task runTestServer(type: JavaExec) {
     mainClass = 'net.yura.shithead.server.TestServer'
     classpath = sourceSets.test.runtimeClasspath
 }
+
+jar {
+    archiveFileName = 'shithead-server.jar'
+    manifest {
+        attributes(
+            'Main-Class': 'net.yura.shithead.server.Server',
+            'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')
+        )
+    }
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/libs"
+}
+
+build.dependsOn copyDependencies
