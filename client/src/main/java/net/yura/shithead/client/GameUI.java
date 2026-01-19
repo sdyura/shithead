@@ -151,6 +151,7 @@ public class GameUI implements ActionListener, GameViewListener {
 
     public void newCommand(String message) {
         new CommandParser().execute(game, message);
+        updateButton();
         gameView.revalidate();
         gameView.repaint();
     }

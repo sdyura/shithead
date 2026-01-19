@@ -35,6 +35,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
 
     protected MiniLobbyClient lobby;
     private GameUI openGameUI;
+    private Button resignButton;
 
     public MiniLobbyShithead(Properties strings) {
         this.strings = strings;
@@ -69,6 +70,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
         Icon qos = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.QUEEN, Suit.SPADES));
         Icon ace = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.ACE, Suit.SPADES));
         int num = game.getMaxPlayers();
+        if (num == 0) { num = Rank.KING.toInt(); } // if we have no players, then just show king
         Icon countIcon = CardImageManager.getCardImage(Card.getCardByRankSuit(Rank.THIRTEEN_RANKS[num - 1], Suit.HEARTS));
         return new Icons(new Icon[] {qos, countIcon, ace});
     }
@@ -134,6 +136,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                     if (Frame.CMD_CLOSE.equals(actionCommand)) {
                         lobby.closeGame();
                         openGameUI = null;
+                        resignButton = null;
                     }
                     else if ("resign".equals(actionCommand)) {
                         lobby.resign();
@@ -147,14 +150,23 @@ public class MiniLobbyShithead implements MiniLobbyGame {
             openGameUI.closeActionListener = actionListener;
 
             if (lobby.getCurrentOpenGame().hasPlayer(lobby.whoAmI())) {
-                Button resign = new Button(strings.getProperty("game.resign"));
-                resign.setActionCommand("resign");
-                resign.addActionListener(actionListener);
-                ((Frame) openGameUI.gameView.getWindow()).getMenuBar().add(resign);
+                resignButton = new Button(strings.getProperty("game.resign"));
+                resignButton.setActionCommand("resign");
+                resignButton.addActionListener(actionListener);
+                ((Frame) openGameUI.gameView.getWindow()).getMenuBar().add(resignButton);
             }
         }
         else {
             openGameUI.newCommand(message);
+            if (resignButton != null) {
+                // check we are still in the game
+                if (openGameUI.game.getPlayers().stream().noneMatch(p -> p.getName().equals(lobby.whoAmI()))) {
+                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().remove(resignButton);
+                    resignButton = null;
+                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().revalidate();
+                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().repaint();
+                }
+            }
         }
     }
 
@@ -167,6 +179,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
     public void disconnected() {
         openGameUI.close();
         openGameUI = null;
+        resignButton = null;
     }
 
     @Override

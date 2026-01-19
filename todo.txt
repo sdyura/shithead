@@ -1,6 +1,5 @@
 ## TODO
 
-- resign button stays enabled after the player has resigned
 - animations in online play are all over the place
 
 lib updates needed:
