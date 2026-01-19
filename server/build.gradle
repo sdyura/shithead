@@ -45,7 +45,7 @@ build.dependsOn copyDependencies
 task deploy(dependsOn: build) {
     doLast {
         def lobbyServerDir = file('../Lobby/dist/server/')
-        def shitheadServerDir = file(lobbyServerDir, 'Shithead')
+        def shitheadServerDir = new File(lobbyServerDir, 'Shithead')
 
         if (!lobbyServerDir.exists()) {
             throw new GradleException("Lobby server directory not found at ${lobbyServerDir.absolutePath}")
