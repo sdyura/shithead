@@ -12,7 +12,7 @@ lib updates needed:
 nice to have/maybe:
 
 - rules description on new game screen
-- support a few autoplays before a players if resigned from the game
+- support a few autoplays before a players is resigned from the game
 
 # Shithead Rule Discrepancies (vs. Wikipedia)
 

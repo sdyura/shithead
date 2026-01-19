@@ -9,8 +9,10 @@ java {
 
 dependencies {
     implementation rootProject
-    implementation 'net.yura:lobby-server:1.0.0'
+    def lobbyServer = 'net.yura:lobby-server:1.0.0'
+    compileOnly lobbyServer
 
+    testImplementation lobbyServer
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.mockito:mockito-core:5.20.0'
 }
@@ -28,7 +30,6 @@ jar {
     archiveFileName = 'shithead-server.jar'
     manifest {
         attributes(
-            'Main-Class': 'net.yura.shithead.server.Server',
             'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')
         )
     }
