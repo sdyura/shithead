@@ -41,3 +41,25 @@ task copyDependencies(type: Copy) {
 }
 
 build.dependsOn copyDependencies
+
+task deploy(dependsOn: build) {
+    doLast {
+        def lobbyServerDir = rootProject.file('../Lobby/dist/server/')
+        if (!lobbyServerDir.exists()) {
+            throw new GradleException("Lobby server directory not found at ${lobbyServerDir.absolutePath}")
+        }
+
+        def shitheadServerDir = new File(lobbyServerDir, 'Shithead')
+        if (!shitheadServerDir.exists()) {
+            println "Creating directory: ${shitheadServerDir.absolutePath}"
+            shitheadServerDir.mkdirs()
+        }
+
+        copy {
+            from "$buildDir/libs"
+            into shitheadServerDir
+            include '*.jar'
+        }
+        println "Copied JARs to ${shitheadServerDir.absolutePath}"
+    }
+}
