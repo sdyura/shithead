@@ -142,6 +142,9 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         if (game.isPlaying()) {
             getNextTurn();
         }
+        else if (game.isFinished()) {
+            gameFinished(null);
+        }
     }
 
     /**
