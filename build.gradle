@@ -30,7 +30,9 @@ dependencies {
     // source code to cardsengine can be found here:
     // https://sourceforge.net/p/lobby/code/HEAD/tree/trunk/src_blackjack/net/yura/cardsengine/
     api 'net.yura:playing-cards:1.0.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    // jackson needs to use same version as Lobby Server or version clashes happen
+    // TODO  both need to be upgraded at the same time (see https://sourceforge.net/p/lobby/code/HEAD/tree/trunk/lib/jackson-core-2.10.0.jar)
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
