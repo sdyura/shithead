@@ -120,7 +120,7 @@ public class GameView extends Panel {
         }
         playerHands.entrySet().removeIf(h -> {
             boolean remove = !players.contains(h.getKey());
-            playerLeftOver.addAll(h.getValue().getUiCards());
+            if (remove) playerLeftOver.addAll(h.getValue().getUiCards());
             return remove;
         });
 

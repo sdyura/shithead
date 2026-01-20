@@ -33,6 +33,9 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         game = new ShitheadGame(Arrays.asList(players));
         game.deal();
         // we are in re-arrange mode, anyone can go
+
+        // TODO as we never call getInputFromClient, we never end up timing out any player if they do not go
+        // so game can get stuck if any player does not send ready
     }
 
     @Override

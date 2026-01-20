@@ -188,4 +188,9 @@ public class UICard {
         }
         this.card = card;
     }
+
+    @Override
+    public String toString() {
+        return "UICard-" + card;
+    }
 }
