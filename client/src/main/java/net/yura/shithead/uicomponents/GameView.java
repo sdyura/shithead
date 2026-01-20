@@ -201,13 +201,7 @@ public class GameView extends Panel {
         }
         // this can get updated if the player resigns
         hand.isLocalPlayer = isLocalPlayer;
-
-        if (game.isRearranging()) {
-            hand.setWaitingForInput(!game.getPlayersReady().contains(player));
-        }
-        else {
-            hand.setWaitingForInput(game.getCurrentPlayer() == player);
-        }
+        hand.setWaitingForInput(game.isRearranging() ? !game.getPlayersReady().contains(player) : game.getCurrentPlayer() == player);
 
         Card top = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
 
@@ -240,8 +234,11 @@ public class GameView extends Panel {
                 .collect(Collectors.toList());
 
         List<UICard> leftOver = hand.setCards(allPlayerCards);
+
+        int threeCardsWidth = CardImageManager.cardWidth * 3 + XULLoader.adjustSizeToDensity(4); // 4 = 2 * PlayerHand.padding
+
         if (isLocalPlayer) {
-            int maxWidth = Math.max(getWidth() - XULLoader.adjustSizeToDensity(66), CardImageManager.cardWidth * 3 + XULLoader.adjustSizeToDensity(4)); // 4 = 2 * PlayerHand.padding
+            int maxWidth = Math.max(getWidth() - XULLoader.adjustSizeToDensity(66), threeCardsWidth);
             int handRows = hand.calculateNumRows(handUiCards, maxWidth);
             int handHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
 
@@ -253,10 +250,9 @@ public class GameView extends Panel {
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));
             hand.setPosition(x, y);
-            int maxWidth = XULLoader.adjustSizeToDensity(120);
-            hand.layoutHand(downUiCards, 0, maxWidth);
-            hand.layoutHand(upUiCards, overlap, maxWidth);
-            hand.layoutHand(handUiCards, overlap * 2, maxWidth);
+            hand.layoutHand(downUiCards, 0, threeCardsWidth);
+            hand.layoutHand(upUiCards, overlap, threeCardsWidth);
+            hand.layoutHand(handUiCards, overlap * 2, threeCardsWidth);
         }
         return leftOver;
     }
