@@ -130,8 +130,8 @@ public class PlayerHand {
     public void paint(Graphics2D g, Component c) {
         if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
-            int arrowWidth = XULLoader.adjustSizeToDensity(10);
-            int arrowHeight = XULLoader.adjustSizeToDensity(15);
+            int arrowWidth = XULLoader.adjustSizeToDensity(15);
+            int arrowHeight = XULLoader.adjustSizeToDensity(20);
             g.fillTriangle(x, y, x - arrowWidth, y - arrowHeight, x + arrowWidth, y - arrowHeight);
         }
         g.setFont(font);

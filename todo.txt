@@ -2,6 +2,8 @@
 
 - animations in online play are all over the place
 
+- add cards being burned animation so they dont just vanish
+
 lib updates needed:
 - android spinner does not have theme, does not show +/- (fixed in next AndroidME)
 - show green felt background for table (needed as theme is VERY broken on android) (BackgroundBorder in next version of SwingME)
