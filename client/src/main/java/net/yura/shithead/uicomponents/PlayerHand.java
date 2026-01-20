@@ -1,5 +1,6 @@
 package net.yura.shithead.uicomponents;
 
+import net.yura.mobile.gui.Font;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.components.Component;
 import net.yura.mobile.gui.layout.XULLoader;
@@ -23,6 +24,8 @@ public class PlayerHand {
     boolean isLocalPlayer;
     private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
+
+    private static final Font font = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_MEDIUM);
 
     public PlayerHand(ShitheadGame game, Player player, GameViewListener gameCommandListener) {
         this.game = game;
@@ -131,6 +134,7 @@ public class PlayerHand {
             int arrowHeight = XULLoader.adjustSizeToDensity(15);
             g.fillTriangle(x, y, x - arrowWidth, y - arrowHeight, x + arrowWidth, y - arrowHeight);
         }
+        g.setFont(font);
         g.setColor(0xFF000000);
         g.drawString(player.getName(), x -g.getFont().getWidth(player.getName()) / 2, y - g.getFont().getHeight());
         for (UICard card : uiCards) {

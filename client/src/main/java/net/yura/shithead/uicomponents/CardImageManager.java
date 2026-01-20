@@ -10,10 +10,9 @@ import net.yura.mobile.gui.layout.XULLoader;
 public class CardImageManager {
 
     // at mdpi, the size of the card is half the image size
-    // the images in the lib ARE already @2x, but they do not have it in the name
-    // todo we may want to make it bigger as minimum touch target is 44 dip according to apple
-    public static final int cardWidth = XULLoader.adjustSizeToDensity(66 / 2);
-    public static final int cardHeight = XULLoader.adjustSizeToDensity(120 / 2);
+    // the images in the lib ARE kind of almost @2x, but they do not have it in the name
+    public static final int cardWidth = XULLoader.adjustSizeToDensity(44); // 44 is the SMALLEST to touch target according to apple
+    public static final int cardHeight = XULLoader.adjustSizeToDensity(80); // 80
 
     private static final Map<String, Icon> cardImages = new HashMap<>();
 
