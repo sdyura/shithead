@@ -217,7 +217,7 @@ public class ServerTest {
         clearInvocations(mockClient);
         List<GameType> gameTypes = gameTypeCaptor.getValue();
         System.out.println("Game Types: " + gameTypes);
-        return gameTypes.stream().filter(gt -> name.equals(gt.getName())).findFirst().orElseThrow();
+        return gameTypes.stream().filter(gt -> name.equals(gt.getName())).findFirst().orElseThrow(() -> new RuntimeException("unable to find: " + name + " in " + gameTypes));
     }
 
     private static Game getGameFromServer(LobbyClient mockClient) {
