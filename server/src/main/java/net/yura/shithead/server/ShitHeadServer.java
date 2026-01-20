@@ -84,7 +84,8 @@ public class ShitHeadServer extends AbstractTurnBasedServerGame {
         }
 
         List<Player> notResignedPlayers = game.getPlayers().stream().filter(p -> !p.getName().endsWith("Resigned")).collect(Collectors.toList());
-        if (notResignedPlayers.size() <= 1) {
+        // only schedule game for deletion if game is over or there are no more humans left
+        if (game.isFinished() || notResignedPlayers.isEmpty()) {
             // TODO there is a new gameFinished that takes a Map of username -> score
             // we may want to keep a full list of game players from the start somewhere to use that
             // we can get a list of all players from the game by getting game.getReadyPlayers()

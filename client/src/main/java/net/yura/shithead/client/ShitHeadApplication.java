@@ -86,6 +86,8 @@ public class ShitHeadApplication extends Application implements ActionListener {
             }
             minilobby.connect("localhost");
 
+            // TODO to avoid warning in logs we should remove minilobby from any current parent
+
             Frame frame = (Frame)DesktopPane.getDesktopPane().getSelectedFrame();
             frame.setContentPane(minilobby.getRoot());
             frame.revalidate();

@@ -38,9 +38,11 @@ public class ShitHeadServerTest {
         when(listener.gameFinished(any())).thenReturn(true);
         server.addServerGameListener(listener);
 
-        boolean result = server.playerResigns("player1");
+        boolean result1 = server.playerResigns("player1");
+        assertFalse(result1);
 
-        assertTrue(result);
+        boolean result2 = server.playerResigns("player2");
+        assertTrue(result2);
         //assertEquals(1, server.game.getPlayers().size());
     }
 

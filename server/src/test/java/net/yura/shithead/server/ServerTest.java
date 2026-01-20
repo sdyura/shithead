@@ -212,7 +212,7 @@ public class ServerTest {
 
 
     private static GameType getGameTypeFromServer(LobbyClient mockClient, String name) {
-        ArgumentCaptor<List<GameType>> gameTypeCaptor = ArgumentCaptor.captor();
+        ArgumentCaptor<List<GameType>> gameTypeCaptor = ArgumentCaptor.forClass(List.class);
         verify(mockClient, TIMEOUT).addGameType(gameTypeCaptor.capture());
         clearInvocations(mockClient);
         List<GameType> gameTypes = gameTypeCaptor.getValue();
@@ -221,14 +221,14 @@ public class ServerTest {
     }
 
     private static Game getGameFromServer(LobbyClient mockClient) {
-        ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.captor();
+        ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
         verify(mockClient, TIMEOUT.atLeastOnce()).addOrUpdateGame(gameCaptor.capture());
         clearInvocations(mockClient);
         return gameCaptor.getValue();
     }
 
     private static Object messageForGame(LobbyClient mockClient, int id) {
-        ArgumentCaptor<Object> gameCaptor = ArgumentCaptor.captor();
+        ArgumentCaptor<Object> gameCaptor = ArgumentCaptor.forClass(Object.class);
         verify(mockClient, TIMEOUT).messageForGame(eq(id), gameCaptor.capture());
         clearInvocations(mockClient);
         return gameCaptor.getValue();

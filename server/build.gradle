@@ -14,7 +14,7 @@ dependencies {
 
     testImplementation lobbyServer
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }
 
 // To run the test server, execute the following command in the root project directory:
