@@ -29,6 +29,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.contains;
+import static org.mockito.ArgumentMatchers.isNull;
 
 public class ServerTest {
 
@@ -88,6 +90,8 @@ public class ServerTest {
     //@AfterAll
     @AfterEach
     public void stopServer() {
+        clearInvocations(mockClient1.clientMock, mockClient2.clientMock);
+
         mockClient1.close();
         mockClient1 = null;
         mockClient2.close();
@@ -208,6 +212,120 @@ public class ServerTest {
         //server.getLobbyController().lobby.setNick(newName, "test-normal");
     }
 
+    @Test
+    public void testPlayerResignsInSetup() {
+        int gameId = bothPlayersJoinGame();
+
+        // player 2 resigns
+        mockClient2.connection.leaveGame(gameId);
+
+        // player 1 should be notified that player 2 has left via a game update
+        ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
+        verify(mockClient1.clientMock, TIMEOUT.atLeastOnce()).addOrUpdateGame(gameCaptor.capture());
+        Game updatedGame = gameCaptor.getAllValues().stream().filter(g -> g.getId() == gameId).reduce((first, second) -> second).orElseThrow(RuntimeException::new);
+        assertEquals(gameId, updatedGame.getId());
+        assertEquals(1, updatedGame.getNumOfPlayers());
+    }
+
+    @Test
+    public void testPlayerResignsOnTheirTurn() {
+        int id = bothPlayersJoinGame();
+
+        int maxTurns = 200;
+        int turns = 0;
+        while (mockClient1.game.isRearranging() || mockClient2.game.isRearranging()) {
+            assertEquals(mockClient1.game.isRearranging(), mockClient2.game.isRearranging());
+
+            List<net.yura.shithead.common.Player> notReadyPlayers = new ArrayList<>(mockClient1.game.getPlayers());
+            notReadyPlayers.removeAll(mockClient1.game.getPlayersReady());
+            net.yura.shithead.common.Player notReadyPlayer = notReadyPlayers.get(0);
+
+            if (PLAYER_1_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient1, id, AutoPlay.getValidGameCommand(mockClient1.game, PLAYER_1_NAME));
+            }
+            else if (PLAYER_2_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient2, id, AutoPlay.getValidGameCommand(mockClient2.game, PLAYER_2_NAME));
+            }
+            else {
+                throw new IllegalStateException();
+            }
+            assertTrue(turns++ < maxTurns);
+        }
+
+        // At this point, the game is in the playing state.
+        String whosTurn = mockClient1.game.getCurrentPlayer().getName();
+        if (mockClient1.username.equals(whosTurn)) {
+            mockClient1.connection.leaveGame(id);
+        }
+        else {
+            mockClient2.connection.leaveGame(id);
+        }
+
+        // The other player should be notified that the game is over, and then the game should be closed for both players.
+        if (mockClient1.username.equals(whosTurn)) {
+            verify(mockClient2.clientMock, TIMEOUT).incomingChat(eq(id), isNull(), eq(PLAYER_1_NAME + " has resigned from the game"));
+            verify(mockClient2.clientMock, TIMEOUT).messageForGame(eq(id), eq("rename " + PLAYER_1_NAME + " " + PLAYER_1_NAME + "-Resigned"));
+            verify(mockClient2.clientMock, TIMEOUT).messageForGame(eq(id), Mockito.contains(PLAYER_2_NAME + " wins!!!"));
+        }
+        else {
+            verify(mockClient1.clientMock, TIMEOUT).incomingChat(eq(id), isNull(), eq(PLAYER_2_NAME + " has resigned from the game"));
+            verify(mockClient1.clientMock, TIMEOUT).messageForGame(eq(id), eq("rename " + PLAYER_2_NAME + " " + PLAYER_2_NAME + "-Resigned"));
+            verify(mockClient1.clientMock, TIMEOUT).messageForGame(eq(id), Mockito.contains(PLAYER_1_NAME + " wins!!!"));
+        }
+        // after the game is finished and the winner is declared, the game is closed.
+        verify(mockClient1.clientMock, TIMEOUT).removeGame(id);
+        verify(mockClient2.clientMock, TIMEOUT).removeGame(id);
+    }
+
+    @Test
+    public void testPlayerResignsWhenNotTheirTurn() {
+        int id = bothPlayersJoinGame();
+
+        int maxTurns = 200;
+        int turns = 0;
+        while (mockClient1.game.isRearranging() || mockClient2.game.isRearranging()) {
+            assertEquals(mockClient1.game.isRearranging(), mockClient2.game.isRearranging());
+
+            List<net.yura.shithead.common.Player> notReadyPlayers = new ArrayList<>(mockClient1.game.getPlayers());
+            notReadyPlayers.removeAll(mockClient1.game.getPlayersReady());
+            net.yura.shithead.common.Player notReadyPlayer = notReadyPlayers.get(0);
+
+            if (PLAYER_1_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient1, id, AutoPlay.getValidGameCommand(mockClient1.game, PLAYER_1_NAME));
+            }
+            else if (PLAYER_2_NAME.equals(notReadyPlayer.getName())) {
+                sendGameMessage(mockClient2, id, AutoPlay.getValidGameCommand(mockClient2.game, PLAYER_2_NAME));
+            }
+            else {
+                throw new IllegalStateException();
+            }
+            assertTrue(turns++ < maxTurns);
+        }
+
+        // At this point, the game is in the playing state.
+        String whosTurn = mockClient1.game.getCurrentPlayer().getName();
+        if (mockClient1.username.equals(whosTurn)) {
+            mockClient2.connection.leaveGame(id);
+        }
+        else {
+            mockClient1.connection.leaveGame(id);
+        }
+
+        // The other player should be notified that the game is over, and then the game should be closed for both players.
+        if (mockClient1.username.equals(whosTurn)) {
+            verify(mockClient1.clientMock, TIMEOUT).incomingChat(eq(id), isNull(), eq(PLAYER_2_NAME + " has resigned from the game"));
+            verify(mockClient1.clientMock, TIMEOUT).messageForGame(eq(id), eq("rename " + PLAYER_2_NAME + " " + PLAYER_2_NAME + "-Resigned"));
+            verify(mockClient1.clientMock, TIMEOUT).messageForGame(eq(id), Mockito.contains(PLAYER_1_NAME + " wins!!!"));
+        }
+        else {
+            verify(mockClient2.clientMock, TIMEOUT).incomingChat(eq(id), isNull(), eq(PLAYER_1_NAME + " has resigned from the game"));
+            verify(mockClient2.clientMock, TIMEOUT).messageForGame(eq(id), eq("rename " + PLAYER_1_NAME + " " + PLAYER_1_NAME + "-Resigned"));
+            verify(mockClient2.clientMock, TIMEOUT).messageForGame(eq(id), Mockito.contains(PLAYER_2_NAME + " wins!!!"));
+        }
+        // after the game is finished and the winner is declared, the game is closed.
+        verify(mockClient1.clientMock, TIMEOUT).removeGame(id);
+        verify(mockClient2.clientMock, TIMEOUT).removeGame(id);
+    }
 
 
 
