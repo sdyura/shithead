@@ -105,6 +105,7 @@ public class GameUI implements ActionListener, GameViewListener {
         }
         else if ("play".equals(actionCommand)) {
             if (game.isRearranging()) {
+                gameView.clearSelectedCards(); // just in case we left anything selected
                 gameCommandListener.actionPerformed("ready " + CommandParser.encodePlayerName(playerUsername));
             }
             else {

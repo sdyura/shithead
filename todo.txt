@@ -1,7 +1,7 @@
 ## TODO
 
-- animations in online play are all over the place
-
+- other players are overlapping on small iPhone
+- some animations take card from deck when they should take it from the player
 - add cards being burned animation so they dont just vanish
 
 lib updates needed:
