@@ -148,21 +148,24 @@ public class PlayerHand {
                 UICard uiCard = uiCards.get(i);
                 if (uiCard.contains(x, y)) {
                     if (game.isRearranging()) {
-                        List<UICard> selected = getSelectedUiCards();
-                        if (selected.isEmpty() || uiCard == selected.get(0)) {
-                            uiCard.toggleSelection();
-                        }
-                        else if (selected.size() == 1) {
-                            selected.get(0).toggleSelection();
-                            if (selected.get(0).getLocation() == uiCard.getLocation()) {
+                        // when rearranging, only allow clicking on hand and up cards
+                        if (uiCard.getLocation() == CardLocation.HAND || uiCard.getLocation() == CardLocation.UP_CARDS) {
+                            List<UICard> selected = getSelectedUiCards();
+                            if (selected.isEmpty() || uiCard == selected.get(0)) {
                                 uiCard.toggleSelection();
                             }
-                            else if (selected.get(0) != uiCard) {
-                                gameCommandListener.swapCards(uiCard.getCard(), selected.get(0).getCard());
+                            else if (selected.size() == 1) {
+                                selected.get(0).toggleSelection();
+                                if (selected.get(0).getLocation() == uiCard.getLocation()) {
+                                    uiCard.toggleSelection();
+                                }
+                                else if (selected.get(0) != uiCard) {
+                                    gameCommandListener.swapCards(uiCard.getCard(), selected.get(0).getCard());
+                                }
                             }
-                        }
-                        else {
-                            System.out.println("too many cards selected???? " + selected);
+                            else {
+                                System.out.println("too many cards selected???? " + selected);
+                            }
                         }
                     }
                     else if (!game.isFinished()) {
