@@ -46,11 +46,8 @@ public class PlayerHand {
         return isWaitingForInput;
     }
 
-    public List<UICard> setCards(List<UICard> cards) {
-        List<UICard> oldCards = this.uiCards;
-        oldCards.removeAll(cards);
+    public void setCards(List<UICard> cards) {
         this.uiCards = cards;
-        return oldCards;
     }
 
     public void layoutHand(List<UICard> cards, int yOffset, int maxWidth) {
@@ -121,6 +118,10 @@ public class PlayerHand {
 
     public List<UICard> getUiCards() {
         return uiCards;
+    }
+
+    public List<UICard> getUiCards(CardLocation loc) {
+        return getUiCards().stream().filter(uic -> uic.getLocation() == loc).collect(Collectors.toList());
     }
 
     public List<UICard> getSelectedUiCards() {
