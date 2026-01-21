@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -90,6 +91,13 @@ public class GameView extends Panel {
         }
     }
 
+    /**
+     * steps to lay out cards
+     * 1) find as many unused UICards as possible from deck/waste and player
+     * 2) go through each player and arrange cards using the available UICards as a source
+     * 3) arrange deck and waste
+     * 4) TODO the cards that are left should be animated off screen
+     */
     private void layoutCards() {
 
         List<Player> players = game.getPlayers();
@@ -103,24 +111,25 @@ public class GameView extends Panel {
             }
         }
 
-        List<UICard> wasteLeftover = deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.WASTE).filter(c -> !game.getWastePile().contains(c.getCard())).collect(Collectors.toList());
-        wasteLeftover.forEach(deckAndWasteUICards::remove);
+        List<UICard> available = getUnusedCards(deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.WASTE).collect(Collectors.toList()), game.getWastePile());
+        available.addAll(getUnusedCards(deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.DECK).collect(Collectors.toList()), (List<Card>)game.getDeck().getCards()));
+        available.forEach(deckAndWasteUICards::remove);
 
         // we always want to keep a slot for the current player, regardless if they are still alive or not
         int numSlots = players.size() + (localPlayerIndex == -1 ? 1 : 0);
 
-        List<UICard> playerLeftOver = new ArrayList<>();
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
 
             int playerPosition = (i - localPlayerIndex + numSlots) % numSlots;
             double angle = Math.PI + (Math.PI * playerPosition / numSlots);
 
-            playerLeftOver.addAll(layoutPlayer(wasteLeftover, player, angle, i == localPlayerIndex));
+            layoutPlayer(available, player, angle, i == localPlayerIndex);
         }
+        // check if any player has got rid of all cards and left the game
         playerHands.entrySet().removeIf(h -> {
             boolean remove = !players.contains(h.getKey());
-            if (remove) playerLeftOver.addAll(h.getValue().getUiCards());
+            if (remove) available.addAll(h.getValue().getUiCards());
             return remove;
         });
 
@@ -137,7 +146,8 @@ public class GameView extends Panel {
             int yStartWaste = centerY - stackHeightWaste / 2;
             for (int i = 0; i < wastePileSize; i++) {
                 Card card = wastePile.get(i);
-                UICard wastePileCard = getUICard(playerLeftOver, card, CardLocation.WASTE, true);
+
+                UICard wastePileCard = getUICard(available, Collections.emptyList(), card, CardLocation.WASTE, true);
                 wastePileCard.setPosition(centerX + padding / 2, yStartWaste);
                 if (i < (wastePileSize - 3)) {
                     yStartWaste = yStartWaste + dip;
@@ -154,29 +164,23 @@ public class GameView extends Panel {
             }
         }
 
-        // Deck
-        int deckSize = game.getDeck().getCards().size();
-        int cardsToShowDeck = Math.min(deckSize, 3);
-
+        // Deck (now that we have finished doing anything that may mess about with the deck, e.g. removing any cards)
+        int deckCardsToShow = Math.min(game.getDeck().getCards().size(), 3);
         List<UICard> deckUICards = deckAndWasteUICards.stream().filter(c -> c.getLocation() == CardLocation.DECK).collect(Collectors.toList());
 
-        if (deckUICards.size() > cardsToShowDeck) {
-            throw new IllegalStateException("too many deck cards " + deckUICards.size() + " > " + cardsToShowDeck);
-        }
-
-        if (cardsToShowDeck > 0) {
-            int stackHeightDeck = CardImageManager.cardHeight + (cardsToShowDeck - 1) * padding;
+        if (deckCardsToShow > 0) {
+            int stackHeightDeck = CardImageManager.cardHeight + (deckCardsToShow - 1) * padding;
             int yStartDeck = centerY - stackHeightDeck / 2;
 
             // create deck cards
-            while (deckUICards.size() < cardsToShowDeck) {
+            while (deckUICards.size() < deckCardsToShow) {
                 UICard newlyVisibleDeckCard = new UICard(null, CardLocation.DECK, false,
                         centerX - CardImageManager.cardWidth - padding / 2, yStartDeck);
                 deckUICards.add(newlyVisibleDeckCard);
                 deckAndWasteUICards.add(newlyVisibleDeckCard);
             }
 
-            for (int i = 0; i < cardsToShowDeck; i++) {
+            for (int i = 0; i < deckCardsToShow; i++) {
                 UICard deckCard = deckUICards.get(i);
                 deckCard.setPosition(centerX - CardImageManager.cardWidth - padding / 2, yStartDeck + i * padding);
             }
@@ -185,7 +189,17 @@ public class GameView extends Panel {
         Animation.registerAnimated(this);
     }
 
-    private List<UICard> layoutPlayer(List<UICard> wasteUICards, Player player, double angle, boolean isLocalPlayer) {
+    static List<UICard> getUnusedCards(List<UICard> source, List<Card> actual) {
+        List<UICard> available = source.stream().filter(c -> c.getCard() != null && !actual.contains(c.getCard())).collect(Collectors.toList());
+        // if we have removed unneeded cards, but we still have too many unknown cards, take out the extra unknown cards
+        while (actual.size() < source.size() - available.size()) {
+            available.add(source.stream().filter(c -> c.getCard() == null).findFirst().orElseThrow(() -> new IllegalStateException("no null cards found in: " + source)));
+        }
+        source.removeAll(available);
+        return available;
+    }
+
+    private void layoutPlayer(List<UICard> available, Player player, double angle, boolean isLocalPlayer) {
         int width = getWidth();
         int height = getHeight();
         int centerX = width / 2;
@@ -205,17 +219,31 @@ public class GameView extends Panel {
 
         Card top = game.getWastePile().isEmpty() ? null : game.getWastePile().get(game.getWastePile().size() - 1);
 
-        List<UICard> downUiCards = player.getDowncards().stream()
-                .map(card -> getUICard(wasteUICards, card, CardLocation.DOWN_CARDS, false))
-                .collect(Collectors.toList());
+        // find as many available (not in use) UICards at the start, so we can reuse these when we need a new UICard
+        List<UICard> oldDownUiCards = hand.getUiCards(CardLocation.DOWN_CARDS);
+        available.addAll(0, getUnusedCards(oldDownUiCards, player.getDowncards()));
+        List<UICard> oldUpUiCards = hand.getUiCards(CardLocation.UP_CARDS);
+        available.addAll(0, getUnusedCards(oldUpUiCards, player.getUpcards()));
+        List<UICard> oldHandUiCards = hand.getUiCards(CardLocation.HAND);
+        available.addAll(0, getUnusedCards(oldHandUiCards, player.getHand()));
 
-        List<UICard> upUiCards = player.getUpcards().stream()
-                .map(card -> getUICard(wasteUICards, card, CardLocation.UP_CARDS, true))
+        List<UICard> downUiCards = player.getDowncards().stream()
+                .map(card -> getUICard(available, oldDownUiCards, card, CardLocation.DOWN_CARDS, false))
                 .collect(Collectors.toList());
+        oldDownUiCards.removeAll(downUiCards);
+        available.addAll(0, oldDownUiCards);
 
         List<UICard> handUiCards = player.getHand().stream()
-                .map(card -> getUICard(wasteUICards, card, CardLocation.HAND, isLocalPlayer))
+                .map(card -> getUICard(available, oldHandUiCards, card, CardLocation.HAND, isLocalPlayer))
                 .collect(Collectors.toList());
+        oldHandUiCards.removeAll(handUiCards);
+        available.addAll(0, oldHandUiCards);
+
+        List<UICard> upUiCards = player.getUpcards().stream()
+                .map(card -> getUICard(available, oldUpUiCards, card, CardLocation.UP_CARDS, true))
+                .collect(Collectors.toList());
+        oldUpUiCards.removeAll(upUiCards);
+        available.addAll(0, oldUpUiCards);
 
         if (isLocalPlayer && hand.isWaitingForInput()) {
             boolean handActive = !player.getHand().isEmpty();
@@ -229,11 +257,9 @@ public class GameView extends Panel {
             }
         }
 
-        List<UICard> allPlayerCards = Stream.of(downUiCards, upUiCards, handUiCards)
+        hand.setCards(Stream.of(downUiCards, upUiCards, handUiCards)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
-
-        List<UICard> leftOver = hand.setCards(allPlayerCards);
+                .collect(Collectors.toList()));
 
         int threeCardsWidth = CardImageManager.cardWidth * 3 + XULLoader.adjustSizeToDensity(4); // 4 = 2 * PlayerHand.padding
 
@@ -254,27 +280,37 @@ public class GameView extends Panel {
             hand.layoutHand(upUiCards, overlap, threeCardsWidth);
             hand.layoutHand(handUiCards, overlap * 2, threeCardsWidth);
         }
-        return leftOver;
     }
 
-    private UICard getUICard(List<UICard> leftOver, Card card, CardLocation location, boolean isFaceUp) {
+    private UICard getUICard(List<UICard> available, List<UICard> currentHandCardsAtLocation, Card card, CardLocation location, boolean isFaceUp) {
         UICard uiCard = cardToUICard.get(card);
         if (uiCard == null) {
-            if (!leftOver.isEmpty()) {
-                uiCard = leftOver.stream().filter(c -> c.getCard() == card).findFirst().orElseGet(
-                        () -> leftOver.stream().filter(c -> c.getCard() == null).findFirst().orElse(null)
-                );
-                if (uiCard != null) {
-                    leftOver.remove(uiCard);
+            // if this card is unknown, maybe we can find an existing unknown card at this location, then just use that card
+            if (card == null) {
+                Optional<UICard> currentCard = currentHandCardsAtLocation.stream().filter(uic -> uic.getCard() == null).findFirst();
+                if (currentCard.isPresent()) {
+                    currentHandCardsAtLocation.remove(currentCard.get());
+                    uiCard = currentCard.get();
                 }
             }
+
             if (uiCard == null) {
-                uiCard = StreamSupport.stream(((Iterable<UICard>) () -> new ReverseListIterator<>(deckAndWasteUICards)).spliterator(), false)
-                        .filter(c -> c.getLocation() == CardLocation.DECK).findFirst().orElse(null);
+                if (!available.isEmpty()) {
+                    uiCard = available.stream().filter(c -> c.getCard() == card).findFirst().orElseGet(
+                            () -> available.stream().filter(c -> c.getCard() == null).findFirst().orElse(null)
+                    );
+                    if (uiCard != null) {
+                        available.remove(uiCard);
+                    }
+                }
                 if (uiCard == null) {
-                    // dealing a brand new card, this should ONLY happen at the start of the game
-                    System.out.println("Dealing new card on table (ONLY AT START OF GAME)");
-                    uiCard = new UICard();
+                    uiCard = StreamSupport.stream(((Iterable<UICard>) () -> new ReverseListIterator<>(deckAndWasteUICards)).spliterator(), false)
+                            .filter(c -> c.getLocation() == CardLocation.DECK).findFirst().orElse(null);
+                    if (uiCard == null) {
+                        // dealing a brand new card, this should ONLY happen at the start of the game
+                        System.out.println("Dealing new card on table (ONLY AT START OF GAME)");
+                        uiCard = new UICard();
+                    }
                 }
             }
         }
