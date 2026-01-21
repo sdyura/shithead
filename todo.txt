@@ -15,6 +15,7 @@ nice to have/maybe:
 
 - rules description on new game screen
 - support a few autoplays before a players is resigned from the game
+- share username with domination game, so users can use same name on both
 
 # Shithead Rule Discrepancies (vs. Wikipedia)
 

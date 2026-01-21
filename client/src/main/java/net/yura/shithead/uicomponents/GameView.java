@@ -89,6 +89,12 @@ public class GameView extends Panel {
         for (int i = 0; i < deckAndWasteUICards.size(); i++) {
             deckAndWasteUICards.get(i).paint(g, this);
         }
+
+        // draw line that players are centered on
+        //g.setColor(0xFFFF0000);
+        //int w = getRadiusX() * 2;
+        //int h = getRadiusY() * 2;
+        //g.drawArc((getWidth() - w) / 2, (getHeight() - h) / 2,w,h,0,360);
     }
 
     /**
@@ -118,12 +124,15 @@ public class GameView extends Panel {
         // we always want to keep a slot for the current player, regardless if they are still alive or not
         int numSlots = players.size() + (localPlayerIndex == -1 ? 1 : 0);
 
+        double spaceForOthers = 1.6 * Math.PI; // (288 deg)
+
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-
-            int playerPosition = (i - localPlayerIndex + numSlots) % numSlots;
-            double angle = Math.PI + (Math.PI * playerPosition / numSlots);
-
+            // makes sure this player is always at playerPosition 0, goes from 0 to players.size()-1
+            int playerPosition = (i - localPlayerIndex + numSlots) % numSlots; // zero is very bottom
+            // 360 deg is 2 * PI, ZERO DEGREES POINTS TO THE RIGHT!!!
+            double angle = Math.PI/2 + ((Math.PI*2)-spaceForOthers)/2 + (spaceForOthers / numSlots * playerPosition);
+            // WARNING! this calculation sends an incorrect value for position 0, but it is ignored by the method
             layoutPlayer(available, player, angle, i == localPlayerIndex);
         }
         // check if any player has got rid of all cards and left the game
@@ -199,14 +208,22 @@ public class GameView extends Panel {
         return available;
     }
 
+    /**
+     * these 2 methods calculate the line on which the other players sit on
+     */
+    int getRadiusX() {
+        return width / 2 - XULLoader.adjustSizeToDensity(75); // 15 works well with rotation
+    }
+    int getRadiusY() {
+        return height / 2 - XULLoader.adjustSizeToDensity(75); // 15 works well with rotation
+    }
+
     private void layoutPlayer(List<UICard> available, Player player, double angle, boolean isLocalPlayer) {
-        int width = getWidth();
-        int height = getHeight();
         int centerX = width / 2;
         int centerY = height / 2;
-        int radiusX = width / 2 - 50;
-        int radiusY = height / 2 - 50;
-        int overlap = XULLoader.adjustSizeToDensity(20);
+        int radiusX = getRadiusX();
+        int radiusY = getRadiusY();
+
 
         PlayerHand hand = playerHands.get(player);
         if (hand == null) {
@@ -268,17 +285,19 @@ public class GameView extends Panel {
             int handRows = hand.calculateNumRows(handUiCards, maxWidth);
             int handHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
 
-            hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - overlap * 2 - handHeight);
+            hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - PlayerHand.overlap * 2 - handHeight
+                    // add half a player area (as we will then remove this again in the layoutCard calculations
+                    + (CardImageManager.cardHeight + 2 * PlayerHand.overlap) / 2);
             hand.layoutHand(downUiCards, 0, maxWidth);
-            hand.layoutHand(upUiCards, overlap, maxWidth);
-            hand.layoutHand(handUiCards, overlap * 2 + padding, maxWidth);
+            hand.layoutHand(upUiCards, PlayerHand.overlap, maxWidth);
+            hand.layoutHand(handUiCards, PlayerHand.overlap * 2, maxWidth);
         } else {
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));
             hand.setPosition(x, y);
             hand.layoutHand(downUiCards, 0, threeCardsWidth);
-            hand.layoutHand(upUiCards, overlap, threeCardsWidth);
-            hand.layoutHand(handUiCards, overlap * 2, threeCardsWidth);
+            hand.layoutHand(upUiCards, PlayerHand.overlap, threeCardsWidth);
+            hand.layoutHand(handUiCards, PlayerHand.overlap * 2, threeCardsWidth);
         }
     }
 

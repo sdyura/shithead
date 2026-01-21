@@ -18,11 +18,14 @@ public class PlayerHand {
     private final ShitheadGame game;
     final Player player;
     private List<UICard> uiCards = new ArrayList<UICard>();
-    int x;
-    int y;
+    /**
+     * the center of the hand
+     */
+    int x, y;
     boolean isLocalPlayer;
     private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
+    public static final int overlap = XULLoader.adjustSizeToDensity(20);
 
     private static final Font font = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_MEDIUM);
 
@@ -54,12 +57,14 @@ public class PlayerHand {
             return;
         }
 
-        int spacing = padding;
-        int handWidth = (cards.size() * CardImageManager.cardWidth) + (spacing * (cards.size() - 1));
+        int horizontalSpacing = padding;
+        int handWidth = (cards.size() * CardImageManager.cardWidth) + (horizontalSpacing * (cards.size() - 1));
+        int startY = y - (CardImageManager.cardHeight + 2 * overlap) / 2 + yOffset;
 
         if (isLocalPlayer && handWidth > maxWidth) {
 
-            int cardsPerRow = (maxWidth + spacing) / (CardImageManager.cardWidth + spacing);
+            // TODO a lot of this logic is repeated in the calculateNumRows method
+            int cardsPerRow = (maxWidth + horizontalSpacing) / (CardImageManager.cardWidth + horizontalSpacing);
             if (cardsPerRow == 0) {
                 cardsPerRow = 1;
             }
@@ -69,12 +74,12 @@ public class PlayerHand {
             for (int row = 0; row < numRows; row++) {
 
                 int cardsInThisRow = Math.min(cards.size() - cardIndex, cardsPerRow);
-                int rowWidth = (cardsInThisRow * CardImageManager.cardWidth) + (spacing * (cardsInThisRow - 1));
+                int rowWidth = (cardsInThisRow * CardImageManager.cardWidth) + (horizontalSpacing * (cardsInThisRow - 1));
                 int startX = -rowWidth / 2;
 
                 for (int i = 0; i < cardsInThisRow; i++) {
                     UICard uiCard = cards.get(cardIndex++);
-                    uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset + row * CardImageManager.cardHeight / 2);
+                    uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + horizontalSpacing), startY + row * CardImageManager.cardHeight / 2);
                 }
             }
         }
@@ -84,14 +89,14 @@ public class PlayerHand {
                 if (handWidth > maxWidth) {
                     handWidth = maxWidth;
                     if (cards.size() > 1) {
-                        spacing = (maxWidth - cards.size() * CardImageManager.cardWidth) / (cards.size() - 1);
+                        horizontalSpacing = (maxWidth - cards.size() * CardImageManager.cardWidth) / (cards.size() - 1);
                     }
                 }
             }
             int startX = -handWidth / 2;
             for (int i = 0; i < cards.size(); i++) {
                 UICard uiCard = cards.get(i);
-                uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + spacing), y + yOffset);
+                uiCard.setPosition(x + startX + i * (CardImageManager.cardWidth + horizontalSpacing), startY);
             }
         }
     }
@@ -128,18 +133,44 @@ public class PlayerHand {
     }
 
     public void paint(Graphics2D g, Component c) {
+
+        int middleX = c.getWidth() / 2, middleY = c.getHeight() / 2;
+        double angle = Math.atan2(y - middleY, x - middleX) - Math.PI/2;
+
+        rotate(g, angle);
+
+        int labelY = y - (CardImageManager.cardHeight + 2 * overlap) / 2;
         if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
             int arrowWidth = XULLoader.adjustSizeToDensity(15);
             int arrowHeight = XULLoader.adjustSizeToDensity(20);
-            g.fillTriangle(x, y, x - arrowWidth, y - arrowHeight, x + arrowWidth, y - arrowHeight);
+            g.fillTriangle(x, labelY, x - arrowWidth, labelY - arrowHeight, x + arrowWidth, labelY - arrowHeight);
         }
         g.setFont(font);
         g.setColor(0xFF000000);
-        g.drawString(player.getName(), x -g.getFont().getWidth(player.getName()) / 2, y - g.getFont().getHeight());
+        g.drawString(player.getName(), x -g.getFont().getWidth(player.getName()) / 2, labelY - g.getFont().getHeight());
+
         for (UICard card : uiCards) {
+            // if the card is currently in the process of moving, do NOT rotate it, let it fly free
+            // TODO an alternative would be to have the rotation angle depend on the distance to the PlayerHand center
+            boolean moving = card.moving();
+            if (moving) {
+                rotate(g, -angle);
+            }
             card.paint(g, c);
+            if (moving) {
+                rotate(g, angle);
+            }
         }
+
+        rotate(g, -angle);
+    }
+
+    private void rotate(Graphics2D g, double angle) {
+        // TODO enable rotation when libs updated
+        //g.translate(x, y);
+        //g.getGraphics().rotate(angle);
+        //g.translate(-x, -y);
     }
 
     public boolean processMouseEvent(int type, int x, int y, net.yura.mobile.gui.KeyEvent buttons) {

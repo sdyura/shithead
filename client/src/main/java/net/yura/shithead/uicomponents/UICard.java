@@ -131,9 +131,13 @@ public class UICard {
                py >= y && py <= y + CardImageManager.cardHeight;
     }
 
+    public boolean moving() {
+        return x != targetX || y != targetY;
+    }
+
     public boolean animate() {
         boolean more = false;
-        if (x != targetX || y != targetY) {
+        if (moving()) {
             double[] pos = moveToward(x, y, targetX, targetY);
             x = (int)pos[0];
             y = (int)pos[1];
