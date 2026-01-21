@@ -1,11 +1,13 @@
 package net.yura.shithead.uicomponents;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import net.yura.lobby.mini.GameRenderer;
 import net.yura.mobile.gui.Icon;
 import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.layout.XULLoader;
+import javax.microedition.lcdui.Image;
 
 public class CardImageManager {
 
@@ -23,11 +25,21 @@ public class CardImageManager {
         String cardName = getCardName(card);
         if (!cardImages.containsKey(cardName)) {
             GameRenderer.ScaledIcon icon = new GameRenderer.ScaledIcon(cardWidth, cardHeight);
-            Icon cardIcon = new Icon("/cards/" + cardName + ".gif");
-            if (cardIcon.getIconWidth() <= 0 || cardIcon.getIconHeight() <= 0) {
-                throw new IllegalStateException("invalid icon size for card " + cardName + " " + cardIcon);
+
+            // avoid any system scaling, load images just as bin resources
+            try (InputStream in = Card.class.getResourceAsStream("/cards/" + cardName + ".gif")) {
+                icon.setIcon(new Icon(Image.createImage(in)));
             }
-            icon.setIcon(cardIcon);
+            catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+            // old method, load through standard image loading system, system may autoscale
+            //Icon cardIcon = new Icon("/cards/" + cardName + ".gif");
+            //if (cardIcon.getIconWidth() <= 0 || cardIcon.getIconHeight() <= 0) {
+            //    throw new IllegalStateException("invalid icon size for card " + cardName + " " + cardIcon);
+            //}
+            //icon.setIcon(cardIcon);
             cardImages.put(cardName, icon);
         }
         return cardImages.get(cardName);
