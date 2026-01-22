@@ -1,7 +1,8 @@
 ## TODO
 
+- back button on android does not look good, black on dark background
+- when online game finishes the notification says null won the game
 - add banner for real game
-- add more copyright info to about box
 
 - maybe do length along curve instead of angle to get other player position
 - some animations take card from deck when they should take it from the player

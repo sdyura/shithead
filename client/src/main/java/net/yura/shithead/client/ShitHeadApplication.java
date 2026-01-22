@@ -129,7 +129,12 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 }
             }
 
-            OptionPane.showMessageDialog(null, new String[] {"Version: " + versionName, "Build: " + versionCode}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
+            // TODO move about text to properties file
+            OptionPane.showMessageDialog(null, new String[] {
+                    "Version: " + versionName + " (Build: " + versionCode+")",
+                    "\u00a9 Copyright 2026 yura.net \ud83c\uddfa\ud83c\udde6",
+                    "https://github.com/yura-net/shithead",
+                    "license: GNU General Public License 3.0"}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
         }
         else if (Frame.CMD_CLOSE.equals(actionCommand)) { // close the lobby
             Window frame = minilobby.getRoot().getWindow();
