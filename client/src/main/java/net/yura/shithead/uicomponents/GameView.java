@@ -146,13 +146,23 @@ public class GameView extends Panel {
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
+        // this is the lowest Y that is allowed for the deck and waste, they should not overlap this point as then they overlap the player
+        int lowestY = getHeight();
+        if (localPlayerIndex >= 0) {
+            PlayerHand localPlayerhand = playerHands.get(game.getPlayers().get(localPlayerIndex));
+            lowestY = localPlayerhand.getYCardsStart() - XULLoader.adjustSizeToDensity(20) - padding;
+        }
+
+
+
+
         // Waste Pile
         int dip = XULLoader.adjustSizeToDensity(1);
         List<Card> wastePile = game.getWastePile();
         int wastePileSize = wastePile.size();
         if (wastePileSize > 0) {
             int stackHeightWaste = CardImageManager.cardHeight + (Math.min(wastePileSize, 3) - 1) * padding;
-            int yStartWaste = centerY - stackHeightWaste / 2;
+            int yStartWaste = Math.min(lowestY - stackHeightWaste, centerY - stackHeightWaste / 2);
             for (int i = 0; i < wastePileSize; i++) {
                 Card card = wastePile.get(i);
 
@@ -179,7 +189,7 @@ public class GameView extends Panel {
 
         if (deckCardsToShow > 0) {
             int stackHeightDeck = CardImageManager.cardHeight + (deckCardsToShow - 1) * padding;
-            int yStartDeck = centerY - stackHeightDeck / 2;
+            int yStartDeck = Math.min(lowestY - stackHeightDeck, centerY - stackHeightDeck / 2);
 
             // create deck cards
             while (deckUICards.size() < deckCardsToShow) {

@@ -59,7 +59,7 @@ public class PlayerHand {
 
         int horizontalSpacing = padding;
         int handWidth = (cards.size() * CardImageManager.cardWidth) + (horizontalSpacing * (cards.size() - 1));
-        int startY = y - (CardImageManager.cardHeight + 2 * overlap) / 2 + yOffset;
+        int startY = getYCardsStart() + yOffset;
 
         if (isLocalPlayer && handWidth > maxWidth) {
 
@@ -132,6 +132,10 @@ public class PlayerHand {
         return uiCards.stream().filter(UICard::isSelected).collect(Collectors.toList());
     }
 
+    public int getYCardsStart() {
+        return y - (CardImageManager.cardHeight + 2 * overlap) / 2;
+    }
+
     public void paint(Graphics2D g, Component c) {
 
         int middleX = c.getWidth() / 2, middleY = c.getHeight() / 2;
@@ -139,7 +143,7 @@ public class PlayerHand {
 
         rotate(g, angle);
 
-        int labelY = y - (CardImageManager.cardHeight + 2 * overlap) / 2;
+        int labelY = getYCardsStart();
         if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
             int arrowWidth = XULLoader.adjustSizeToDensity(15);
