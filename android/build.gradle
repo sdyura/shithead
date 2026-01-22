@@ -46,6 +46,29 @@ android {
     lint {
         abortOnError false
     }
+
+    signingConfigs {
+        Properties localProperties = new Properties()
+        rootProject.file('local.properties').with { if (exists()) localProperties.load(new FileInputStream(it)) }
+
+        SignConfig {
+            keyAlias 'yura.net key'
+            keyPassword localProperties['keyPassword'] ?: "password"
+            storeFile file('key')
+            storePassword localProperties['storePassword'] ?: "password"
+        }
+    }
+    if (signingConfigs.SignConfig.storeFile.exists()) {
+        logger.lifecycle("USING KEY TO SIGN FROM 'key' FILE!!")
+        buildTypes {
+            debug {
+                signingConfig signingConfigs.SignConfig
+            }
+            release {
+                signingConfig signingConfigs.SignConfig
+            }
+        }
+    }
 }
 
 dependencies {
