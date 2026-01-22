@@ -239,9 +239,10 @@ public class GameView extends Panel {
     int getRadiusY() {
         return Math.max(
                 // this is the minimal size, if we are less then this we will end up overlapping the deck and waste
+                // any value less then 150, e.g. 145, ends up with the stack starting to overlap the player name label on iPhone SE (1st gen)
                 XULLoader.adjustSizeToDensity(150),
                 // this is best looking values, it needs to be big to allow for overlapping menubar
-                height / 2 - XULLoader.adjustSizeToDensity(60));
+                height / 2 - XULLoader.adjustSizeToDensity(90));
     }
 
     private void layoutPlayer(List<UICard> available, Player player, double angle, boolean isLocalPlayer) {
