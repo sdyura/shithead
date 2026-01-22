@@ -225,7 +225,11 @@ public class GameView extends Panel {
         return width / 2 - XULLoader.adjustSizeToDensity(75); // 15 works well with rotation
     }
     int getRadiusY() {
-        return height / 2 - XULLoader.adjustSizeToDensity(75); // 15 works well with rotation
+        return Math.max(
+                // this is the minimal size, if we are less then this we will end up overlapping the deck and waste
+                XULLoader.adjustSizeToDensity(150),
+                // this is best looking values, it needs to be big to allow for overlapping menubar
+                height / 2 - XULLoader.adjustSizeToDensity(60));
     }
 
     private void layoutPlayer(List<UICard> available, Player player, double angle, boolean isLocalPlayer) {

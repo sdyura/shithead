@@ -129,7 +129,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                     lobby.sendGameMessage(gameAction);
                 }
             });
-            ((Frame)openGameUI.gameView.getWindow()).setTitle(lobby.getCurrentOpenGame().getName());
+            openGameUI.setTitle(lobby.getCurrentOpenGame().getName());
             ActionListener actionListener = new ActionListener() {
                 @Override
                 public void actionPerformed(String actionCommand) {
@@ -153,7 +153,7 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                 resignButton = new Button(strings.getProperty("game.resign"));
                 resignButton.setActionCommand("resign");
                 resignButton.addActionListener(actionListener);
-                ((Frame) openGameUI.gameView.getWindow()).getMenuBar().add(resignButton);
+                openGameUI.getMenuBar().add(resignButton);
             }
         }
         else {
@@ -161,10 +161,10 @@ public class MiniLobbyShithead implements MiniLobbyGame {
             if (resignButton != null) {
                 // check we are still in the game
                 if (openGameUI.game.getPlayers().stream().noneMatch(p -> p.getName().equals(lobby.whoAmI()))) {
-                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().remove(resignButton);
+                    openGameUI.getMenuBar().remove(resignButton);
                     resignButton = null;
-                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().revalidate();
-                    ((Frame) openGameUI.gameView.getWindow()).getMenuBar().repaint();
+                    openGameUI.getMenuBar().revalidate();
+                    openGameUI.getMenuBar().repaint();
                 }
             }
         }

@@ -24,8 +24,10 @@ public class GameUI implements ActionListener, GameViewListener {
 
     // UI components
     Properties uiTextString;
-    final GameView gameView;
-    final Button playButton;
+    private final GameView gameView;
+    private final Button playButton;
+    private final MenuBar menuBar;
+
     final ActionListener gameCommandListener;
     ActionListener closeActionListener;
 
@@ -55,18 +57,27 @@ public class GameUI implements ActionListener, GameViewListener {
 
         Frame frame = (Frame)loader.getRoot();
 
-        MenuBar menuBar = (MenuBar) loader.find("menu_bar");
+        menuBar = (MenuBar) loader.find("menu_bar");
 
         Button backButton = new Button(properties.getProperty("game.back"));
         backButton.setActionCommand(Frame.CMD_CLOSE);
         backButton.addActionListener(this);
         menuBar.add(backButton);
+        menuBar.addGlue();
 
 
 
         frame.setMaximum(true);
         frame.revalidate();
         frame.setVisible(true);
+    }
+
+    public MenuBar getMenuBar() {
+        return menuBar;
+    }
+
+    public void setTitle(String name) {
+        // TODO set title to panel
     }
 
     @Override

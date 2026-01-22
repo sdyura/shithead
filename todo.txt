@@ -1,11 +1,12 @@
 ## TODO
 
-- maybe do length along curve instead of angle to get other player position
-- drawing flicker on in-game menu-bar, menu-bar not really needed
-- some animations take card from deck when they should take it from the player
-- add cards being burned animation so they dont just vanish
+- game title now shown
 - add banner for real game
 - add more copyright info to about box
+
+- maybe do length along curve instead of angle to get other player position
+- some animations take card from deck when they should take it from the player
+- add cards being burned animation so they dont just vanish
 
 nice to have/maybe:
 
