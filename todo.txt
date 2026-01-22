@@ -1,6 +1,5 @@
 ## TODO
 
-- game title now shown
 - add banner for real game
 - add more copyright info to about box
 

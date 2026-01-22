@@ -2,7 +2,9 @@ package net.yura.shithead.client;
 
 import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.ActionListener;
+import net.yura.mobile.gui.border.EmptyBorder;
 import net.yura.mobile.gui.components.Button;
+import net.yura.mobile.gui.components.Component;
 import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.MenuBar;
 import net.yura.mobile.gui.layout.XULLoader;
@@ -52,18 +54,23 @@ public class GameUI implements ActionListener, GameViewListener {
         gameView = (GameView) loader.find("game_view");
         gameView.setGameCommandListener(this);
         gameView.setGame(game, playerUsername);
+        gameView.setTitle(properties.getProperty("app.title"));
         playButton = (Button) loader.find("play_button");
         updateButton();
 
         Frame frame = (Frame)loader.getRoot();
 
         menuBar = (MenuBar) loader.find("menu_bar");
+        // menubar is opaque on desktop, lets get rid of that
+        menuBar.setBorder(new EmptyBorder(0,0,0,0));
 
         Button backButton = new Button(properties.getProperty("game.back"));
         backButton.setActionCommand(Frame.CMD_CLOSE);
         backButton.addActionListener(this);
         menuBar.add(backButton);
         menuBar.addGlue();
+        // the glue is opaque on desktop, lets get rid of that
+        ((Component)menuBar.getItems().get(1)).setBackground(0x00FFFFFF);
 
 
 
@@ -77,7 +84,7 @@ public class GameUI implements ActionListener, GameViewListener {
     }
 
     public void setTitle(String name) {
-        // TODO set title to panel
+        gameView.setTitle(name);
     }
 
     @Override

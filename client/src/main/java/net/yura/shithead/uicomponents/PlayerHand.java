@@ -169,7 +169,7 @@ public class PlayerHand {
         rotate(g, -angle);
     }
 
-    private void drawOutline(Graphics2D g, int color, int outlineColor, String text, int x, int y) {
+    public static void drawOutline(Graphics2D g, int color, int outlineColor, String text, int x, int y) {
         g.setColor(outlineColor);
         int num = XULLoader.adjustSizeToDensity(1);
         g.drawString(text, x-num, y-num);

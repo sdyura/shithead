@@ -2,6 +2,7 @@ package net.yura.shithead.uicomponents;
 
 import net.yura.mobile.gui.Animation;
 import net.yura.mobile.gui.DesktopPane;
+import net.yura.mobile.gui.Font;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.KeyEvent;
 import net.yura.mobile.gui.components.Panel;
@@ -26,13 +27,20 @@ public class GameView extends Panel {
 
     private ShitheadGame game;
     private String myUsername;
+    private String title;
     private final List<UICard> deckAndWasteUICards = new ArrayList<UICard>();
     private final Map<Card, UICard> cardToUICard = new HashMap<>();
     private final Map<Player, PlayerHand> playerHands = new HashMap<Player, PlayerHand>();
+
     private final int padding = XULLoader.adjustSizeToDensity(2);
+    private static final Font bigFont = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_LARGE);
 
     public GameView() {
         Animation.FPS = 30;
+    }
+
+    public void setTitle(String name) {
+        title = name;
     }
 
     public void setGameCommandListener(GameViewListener gameCommandListener) {
@@ -79,15 +87,19 @@ public class GameView extends Panel {
             hand.paint(g, this);
         }
 
-        if (game.isFinished()) {
-            String text = "Game Over!";
-            g.setColor(0xFF000000);
-            g.drawString(text, (getWidth() - g.getFont().getWidth(text)) / 2, getHeight() / 2 - CardImageManager.cardHeight / 2 - g.getFont().getHeight());
-        }
-
         // paint deck and waste pile
         for (int i = 0; i < deckAndWasteUICards.size(); i++) {
             deckAndWasteUICards.get(i).paint(g, this);
+        }
+
+        if (game.isFinished()) {
+            String text = "Game Over!";
+            g.setFont(bigFont);
+            PlayerHand.drawOutline(g, 0xFFFFFFFF, 0xFF000000, text, (getWidth() - bigFont.getWidth(text)) / 2, getHeight() / 2 - CardImageManager.cardHeight / 2 - bigFont.getHeight());
+        }
+        if (title != null) {
+            g.setFont(bigFont);
+            PlayerHand.drawOutline(g, 0xFFFFFFFF, 0xFF000000, title, (getWidth() - bigFont.getWidth(title)) / 2, padding);
         }
 
         // draw line that players are centered on
