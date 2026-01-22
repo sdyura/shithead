@@ -21,6 +21,8 @@ import net.yura.mobile.gui.components.Spinner;
 import net.yura.mobile.gui.components.TextComponent;
 import net.yura.mobile.gui.components.Window;
 import net.yura.mobile.gui.layout.XULLoader;
+import net.yura.mobile.gui.plaf.LookAndFeel;
+import net.yura.mobile.gui.plaf.SynthLookAndFeel;
 import net.yura.mobile.util.Properties;
 import net.yura.shithead.common.AutoPlay;
 import net.yura.shithead.common.CommandParser;
@@ -59,7 +61,18 @@ public class ShitHeadApplication extends Application implements ActionListener {
      * this method is needed so UI tests can setup any extra theme properties they need
      */
     protected void setupTheme(DesktopPane dp) {
-        dp.setLookAndFeel(DesktopPane.getSystemLookAndFeelClassName());
+        LookAndFeel plaf = DesktopPane.getSystemLookAndFeelClassName();
+        dp.setLookAndFeel(plaf);
+
+        if (plaf instanceof SynthLookAndFeel) {
+            SynthLookAndFeel synth = (SynthLookAndFeel) plaf;
+
+            try {
+                synth.load(Application.getResourceAsStream("/theme.xml"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void openMainMenu() {

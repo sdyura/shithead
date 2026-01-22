@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<synth>
+    <style id="mainButton">
+        <font name="PROPORTIONAL" size="MEDIUM" style="BOLD"/>
+        <state>
+            <color value="#00000000" type="BACKGROUND"/>
+            <color value="#FFFFFF" type="FOREGROUND"/>
+            <imagePainter path="/button.9.png" />
+        </state>
+        <state value="FOCUSED">
+            <imagePainter path="/button_focus.9.png" />
+        </state>
+        <state value="FOCUSED AND SELECTED">
+            <imagePainter path="/button_pressed.9.png" />
+        </state>
+    </style>
+    <bind style="mainButton" type="region" key="MainButton"/>
+</synth>
