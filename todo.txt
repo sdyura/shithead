@@ -1,18 +1,17 @@
 ## TODO
 
-- other players are overlapping on small iPhone
+- push stack and waste up when they everlap main player cards
+- maybe do length along curve instead of angle to get other player position
+- make sure singing is working for android
+- drawing flicker on in-game menu-bar, menu-bar not really needed
 - some animations take card from deck when they should take it from the player
 - add cards being burned animation so they dont just vanish
-
-lib updates needed:
-- android spinner does not have theme, does not show +/- (fixed in next AndroidME)
-- show green felt background for table (needed as theme is VERY broken on android) (BackgroundBorder in next version of SwingME)
-- rotate hands for other players (requires next version of iOSME/AndroidME/me4se)
-
-
+- add banner for real game
+- add more copyright info to about box
 
 nice to have/maybe:
 
+- maybe test out old domination buttons as buttons for main menu
 - rules description on new game screen
 - support a few autoplays before a players is resigned from the game
 - share username with domination game, so users can use same name on both

@@ -84,7 +84,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
                 minilobby = new MiniLobbyClient(new MiniLobbyShithead(properties));
                 minilobby.addCloseListener(this);
             }
-            minilobby.connect("localhost");
+            minilobby.connect(MiniLobbyClient.LOBBY_SERVER);
 
             // TODO to avoid warning in logs we should remove minilobby from any current parent
 

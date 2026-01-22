@@ -147,8 +147,7 @@ public class PlayerHand {
             g.fillTriangle(x, labelY, x - arrowWidth, labelY - arrowHeight, x + arrowWidth, labelY - arrowHeight);
         }
         g.setFont(font);
-        g.setColor(0xFF000000);
-        g.drawString(player.getName(), x -g.getFont().getWidth(player.getName()) / 2, labelY - g.getFont().getHeight());
+        drawOutline(g, 0xFFFFFFFF, 0xFF000000, player.getName(), x -g.getFont().getWidth(player.getName()) / 2, labelY - g.getFont().getHeight());
 
         for (UICard card : uiCards) {
             // if the card is currently in the process of moving, do NOT rotate it, let it fly free
@@ -164,6 +163,17 @@ public class PlayerHand {
         }
 
         rotate(g, -angle);
+    }
+
+    private void drawOutline(Graphics2D g, int color, int outlineColor, String text, int x, int y) {
+        g.setColor(outlineColor);
+        int num = XULLoader.adjustSizeToDensity(1);
+        g.drawString(text, x-num, y-num);
+        g.drawString(text, x-num, y+num);
+        g.drawString(text, x+num, y-num);
+        g.drawString(text, x+num, y+num);
+        g.setColor(color);
+        g.drawString(text, x, y);
     }
 
     private void rotate(Graphics2D g, double angle) {
