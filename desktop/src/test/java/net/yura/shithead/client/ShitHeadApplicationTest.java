@@ -59,7 +59,6 @@ class ShitHeadApplicationTest {
             // TODO temp code to use predictable bitmap font in test
             net.yura.mobile.gui.components.Component title = getComponentByText(DesktopPane.getDesktopPane().getSelectedFrame(), "Shithead!");
             // reset to default font
-            ((Label)title).setForeground(DesktopPane.getDefaultTheme(title).getForeground(Style.ALL));
             ((Label)title).setFont(DesktopPane.getDefaultTheme(title).getFont(Style.ALL));
             // we need to tell it that we want to revalidate and repaint, otherwise it will just use old cached buffer
             DesktopPane.getDesktopPane().getSelectedFrame().revalidate();

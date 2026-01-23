@@ -10,10 +10,12 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import net.yura.lobby.mini.GameRenderer;
 import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.mobile.gui.ActionListener;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
+import net.yura.mobile.gui.Icon;
 import net.yura.mobile.gui.components.Button;
 import net.yura.mobile.gui.components.Frame;
 import net.yura.mobile.gui.components.OptionPane;
@@ -27,6 +29,8 @@ import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
+
+import javax.microedition.lcdui.Image;
 
 public class ShitHeadApplication extends Application implements ActionListener {
 
@@ -68,6 +72,15 @@ public class ShitHeadApplication extends Application implements ActionListener {
         XULLoader loader = new XULLoader();
         try (InputStream stream = ShitHeadApplication.class.getResourceAsStream("/main_menu.xml")) {
             loader.load(new InputStreamReader(stream), this, properties);
+
+            // setup banner image
+            Button banner = (Button) loader.find("banner");
+            banner.setMargin(0);
+            int width = Math.min(DesktopPane.getDesktopPane().getWidth(), DesktopPane.getDesktopPane().getHeight());
+            Icon img = new Icon(Image.createImage(ShitHeadApplication.class.getResourceAsStream("/banner.jpg")));
+            GameRenderer.ScaledIcon icon = new GameRenderer.ScaledIcon(width, (int) ((width / (double)img.getIconWidth()) * img.getIconHeight()));
+            icon.setIcon(img);
+            banner.setIcon(icon);
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -135,6 +148,11 @@ public class ShitHeadApplication extends Application implements ActionListener {
                     "\u00a9 Copyright 2026 yura.net \ud83c\uddfa\ud83c\udde6",
                     "https://github.com/yura-net/shithead",
                     "license: GNU General Public License 3.0"}, properties.getProperty("about.title"), OptionPane.INFORMATION_MESSAGE);
+        }
+        else if ("banner".equals(actionCommand)) {
+
+            Application.openURL("https://silverstreetgames.co.uk");
+
         }
         else if (Frame.CMD_CLOSE.equals(actionCommand)) { // close the lobby
             Window frame = minilobby.getRoot().getWindow();

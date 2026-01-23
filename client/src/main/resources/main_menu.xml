@@ -8,4 +8,5 @@
         <button action="multiplayer" i18n="true" text="button.play.online"/>
         <button action="about" i18n="true" text="button.about"/>
     </panel>
+    <button action="banner" halign="center" name="banner" property="plafname=Banner" valign="bottom" weighty="1"/>
 </dialog>
