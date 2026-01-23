@@ -39,6 +39,8 @@ android {
     defaultConfig {
         // more info: https://apilevels.com/
         minSdkVersion 14
+        // in gradle 8 we HAVE to have this here, as the one in AndroidManifest.xml is ignored
+        targetSdkVersion 35
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         multiDexEnabled true
@@ -65,6 +67,8 @@ android {
                 signingConfig signingConfigs.SignConfig
             }
             release {
+                // this is to allow me to keep android:debuggable="true" in the AndroidManifest.xml
+                debuggable true
                 signingConfig signingConfigs.SignConfig
             }
         }
