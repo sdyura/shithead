@@ -394,10 +394,12 @@ public class GameView extends Panel {
                 Player currentPlayer = game.getCurrentPlayer();
                 if (uiCard.contains(x, y) && currentPlayer != null && currentPlayer.getName().equals(myUsername)) {
                     if (uiCard.getLocation() == CardLocation.WASTE) {
+                        clearSelectedCards();
                         gameCommandListener.pickUpWaste();
                         return;
                     }
                     else if (uiCard.getLocation() == CardLocation.DECK) {
+                        clearSelectedCards();
                         gameCommandListener.playDeck();
                         return;
                     }
