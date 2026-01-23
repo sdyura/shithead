@@ -1,5 +1,6 @@
 ## TODO
 
+- android on api-36 shows black bars at top and bottom
 - back button on android does not look good, black on dark background
 - when online game finishes the notification says null won the game
 - add banner for real game
@@ -10,7 +11,6 @@
 
 nice to have/maybe:
 
-- maybe test out old domination buttons as buttons for main menu
 - rules description on new game screen
 - support a few autoplays before a players is resigned from the game
 - share username with domination game, so users can use same name on both
