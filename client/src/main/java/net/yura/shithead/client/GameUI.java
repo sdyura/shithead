@@ -2,11 +2,9 @@ package net.yura.shithead.client;
 
 import net.yura.cardsengine.Card;
 import net.yura.mobile.gui.ActionListener;
-import net.yura.mobile.gui.border.EmptyBorder;
 import net.yura.mobile.gui.components.Button;
-import net.yura.mobile.gui.components.Component;
 import net.yura.mobile.gui.components.Frame;
-import net.yura.mobile.gui.components.MenuBar;
+import net.yura.mobile.gui.components.Menu;
 import net.yura.mobile.gui.layout.XULLoader;
 import net.yura.mobile.util.Properties;
 import net.yura.shithead.common.AcesHighCardComparator;
@@ -28,7 +26,7 @@ public class GameUI implements ActionListener, GameViewListener {
     Properties uiTextString;
     private final GameView gameView;
     private final Button playButton;
-    private final MenuBar menuBar;
+    private final Menu menu;
 
     final ActionListener gameCommandListener;
     ActionListener closeActionListener;
@@ -59,18 +57,7 @@ public class GameUI implements ActionListener, GameViewListener {
         updateButton();
 
         Frame frame = (Frame)loader.getRoot();
-
-        menuBar = (MenuBar) loader.find("menu_bar");
-        // menubar is opaque on desktop, lets get rid of that
-        menuBar.setBorder(new EmptyBorder(0,0,0,0));
-
-        Button backButton = new Button(properties.getProperty("game.back"));
-        backButton.setActionCommand(Frame.CMD_CLOSE);
-        backButton.addActionListener(this);
-        menuBar.add(backButton);
-        menuBar.addGlue();
-        // the glue is opaque on desktop, lets get rid of that
-        ((Component)menuBar.getItems().get(1)).setBackground(0x00FFFFFF);
+        menu = (Menu) loader.find("menu");
 
 
 
@@ -79,8 +66,8 @@ public class GameUI implements ActionListener, GameViewListener {
         frame.setVisible(true);
     }
 
-    public MenuBar getMenuBar() {
-        return menuBar;
+    public Menu getMenu() {
+        return menu;
     }
 
     public void setTitle(String name) {

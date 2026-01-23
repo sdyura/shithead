@@ -141,6 +141,9 @@ public class MiniLobbyShithead implements MiniLobbyGame {
                     else if ("resign".equals(actionCommand)) {
                         lobby.resign();
                     }
+                    else if ("chat".equals(actionCommand)) {
+                        lobby.sendChatMessage();
+                    }
                     else {
                         System.err.println("unknown command: " +actionCommand);
                     }
@@ -148,24 +151,27 @@ public class MiniLobbyShithead implements MiniLobbyGame {
             };
 
             openGameUI.closeActionListener = actionListener;
+            openGameUI.getMenu().setVisible(true);
+
+            Button chatButton = new Button(strings.getProperty("lobby.room.chat"));
+            chatButton.setActionCommand("chat");
+            chatButton.addActionListener(actionListener);
+            openGameUI.getMenu().add(chatButton);
 
             if (lobby.getCurrentOpenGame().hasPlayer(lobby.whoAmI())) {
                 resignButton = new Button(strings.getProperty("game.resign"));
                 resignButton.setActionCommand("resign");
                 resignButton.addActionListener(actionListener);
-                openGameUI.getMenuBar().add(resignButton);
+                openGameUI.getMenu().add(resignButton);
             }
         }
         else {
             openGameUI.newCommand(message);
-            if (resignButton != null) {
-                // check we are still in the game
-                if (openGameUI.game.getPlayers().stream().noneMatch(p -> p.getName().equals(lobby.whoAmI()))) {
-                    openGameUI.getMenuBar().remove(resignButton);
-                    resignButton = null;
-                    openGameUI.getMenuBar().revalidate();
-                    openGameUI.getMenuBar().repaint();
-                }
+
+            // check we are still in the game
+            if (resignButton != null && openGameUI.game.getPlayers().stream().noneMatch(p -> p.getName().equals(lobby.whoAmI()))) {
+                openGameUI.getMenu().remove(resignButton);
+                resignButton = null;
             }
         }
     }
