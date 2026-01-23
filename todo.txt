@@ -1,9 +1,6 @@
 ## TODO
 
-- android on api-36 shows black bars at top and bottom
-- back button on android does not look good, black on dark background
 - when online game finishes the notification says null won the game
-- add banner for real game
 
 - maybe do length along curve instead of angle to get other player position
 - some animations take card from deck when they should take it from the player
