@@ -392,7 +392,7 @@ public class GameView extends Panel {
                 UICard uiCard = deckAndWasteUICards.get(i);
                 // if user clicks on waste pile during our turn, this mean we should pick up the waste pile
                 Player currentPlayer = game.getCurrentPlayer();
-                if (uiCard.contains(x, y) && currentPlayer != null && currentPlayer.getName().equals(myUsername)) {
+                if (uiCard.contains(x, y) && currentPlayer != null && currentPlayer.getName().equals(myUsername) && game.isPlaying()) {
                     if (uiCard.getLocation() == CardLocation.WASTE) {
                         clearSelectedCards();
                         gameCommandListener.pickUpWaste();

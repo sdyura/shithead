@@ -181,10 +181,12 @@ public class PlayerHand {
     }
 
     private void rotate(Graphics2D g, double angle) {
-        // TODO enable rotation when libs updated
-        //g.translate(x, y);
-        //g.getGraphics().rotate(angle);
-        //g.translate(-x, -y);
+        if (!isLocalPlayer) {
+            // TODO enable rotation when libs updated
+            //g.translate(x, y);
+            //g.getGraphics().rotate(angle);
+            //g.translate(-x, -y);
+        }
     }
 
     public boolean processMouseEvent(int type, int x, int y, net.yura.mobile.gui.KeyEvent buttons) {
