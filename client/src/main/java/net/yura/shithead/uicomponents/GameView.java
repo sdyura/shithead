@@ -186,7 +186,7 @@ public class GameView extends Panel {
                 else {
                     if ((i == (wastePileSize - 3) && card.getRank() == wastePile.get(wastePileSize - 1).getRank() && wastePile.get(wastePileSize - 2).getRank() == wastePile.get(wastePileSize - 1).getRank()) ||
                         (i == (wastePileSize - 2) && card.getRank() == wastePile.get(wastePileSize - 1).getRank())) {
-                        yStartWaste = yStartWaste + padding * 4;
+                        yStartWaste = yStartWaste + CardImageManager.cardHeight / 10;
                     }
                     else {
                         yStartWaste = yStartWaste + padding;

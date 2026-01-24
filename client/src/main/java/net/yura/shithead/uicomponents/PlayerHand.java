@@ -146,8 +146,8 @@ public class PlayerHand {
         int labelY = getYCardsStart();
         if (isWaitingForInput) {
             g.setColor(0xFF00FF00); // Green
-            int arrowWidth = XULLoader.adjustSizeToDensity(15);
-            int arrowHeight = XULLoader.adjustSizeToDensity(20);
+            int arrowWidth = XULLoader.adjustSizeToDensity(30);
+            int arrowHeight = XULLoader.adjustSizeToDensity(40);
             g.fillTriangle(x, labelY, x - arrowWidth, labelY - arrowHeight, x + arrowWidth, labelY - arrowHeight);
         }
         g.setFont(font);

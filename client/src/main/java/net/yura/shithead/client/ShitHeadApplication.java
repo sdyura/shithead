@@ -201,7 +201,7 @@ public class ShitHeadApplication extends Application implements ActionListener {
                         ShitheadGame game = singlePlayerGame;
                         while (singlePlayerGame != null && !game.isFinished() && game.isPlaying() && game.getCurrentPlayer() != me) {
                             try {
-                                Thread.sleep(3000);
+                                Thread.sleep(2000);
                             } catch (InterruptedException e) {
                                 break;
                             }
