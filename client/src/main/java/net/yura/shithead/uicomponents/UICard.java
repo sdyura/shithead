@@ -26,8 +26,8 @@ public class UICard {
      */
     private boolean playable;
 
-    private static final Border selectionBorder = new LineBorder(0xFFFF0000, 2);
-    private static final Border playableBorder = new LineBorder(0xFFFFBF00, 2);
+    private static final Border selectionBorder = new LineBorder(0xFF87CEEB, XULLoader.adjustSizeToDensity(4));
+    private static final Border playableBorder = new LineBorder(0xFFFFBF00, XULLoader.adjustSizeToDensity(2));
 
     private static final Font font = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_SMALL);
 
@@ -78,16 +78,20 @@ public class UICard {
             g.drawString(text, x + (icon.getIconWidth() - font.getWidth(text)) / 2, y + icon.getIconHeight() - font.getHeight());
         }
 
-        if (selected) {
-            g.translate(x, y);
-            selectionBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
-            g.translate(-x, -y);
-        }
-        else if (playable) {
+        if (!selected && playable) {
             g.translate(x, y);
             playableBorder.paintBorder(c, g, icon.getIconWidth(), icon.getIconHeight());
             g.translate(-x, -y);
         }
+    }
+
+    /**
+     * as selection overlaps the cards around it, we want to paint this last
+     */
+    public void paintSelection(Graphics2D g, Component c) {
+        g.translate(x, y);
+        selectionBorder.paintBorder(c, g, CardImageManager.cardWidth, CardImageManager.cardHeight);
+        g.translate(-x, -y);
     }
 
     public Card getCard() {
@@ -133,6 +137,9 @@ public class UICard {
 
     public boolean moving() {
         return x != targetX || y != targetY;
+    }
+    public int getY() {
+        return y;
     }
 
     public boolean animate() {

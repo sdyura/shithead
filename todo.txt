@@ -1,5 +1,6 @@
 ## TODO
 
+- animations are too slow on big screens
 - when online game finishes the notification says null won the game
 
 - maybe do length along curve instead of angle to get other player position

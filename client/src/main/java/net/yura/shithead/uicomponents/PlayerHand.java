@@ -25,7 +25,7 @@ public class PlayerHand {
     boolean isLocalPlayer;
     private boolean isWaitingForInput = false;
     private static final int padding = XULLoader.adjustSizeToDensity(2);
-    public static final int overlap = XULLoader.adjustSizeToDensity(20);
+    public static final int overlap = CardImageManager.cardHeight / 4;
 
     private static final Font font = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_MEDIUM);
 
@@ -153,7 +153,22 @@ public class PlayerHand {
         g.setFont(font);
         drawOutline(g, 0xFFFFFFFF, 0xFF000000, player.getName(), x -g.getFont().getWidth(player.getName()) / 2, labelY - g.getFont().getHeight());
 
+        int currentY = 0;
+        List<UICard> selected = new ArrayList<>();
+
         for (UICard card : uiCards) {
+
+            int cardY = card.getY();
+            if (cardY != currentY) {
+                // we are done for this row, paint all selected cards now before moving onto next row
+                drawSelectedOutline(g, c, selected);
+                currentY = cardY;
+            }
+
+            if (card.isSelected()) {
+                selected.add(card);
+            }
+
             // if the card is currently in the process of moving, do NOT rotate it, let it fly free
             // TODO an alternative would be to have the rotation angle depend on the distance to the PlayerHand center
             boolean moving = card.moving();
@@ -166,7 +181,17 @@ public class PlayerHand {
             }
         }
 
+        drawSelectedOutline(g, c, selected);
+
         rotate(g, -angle);
+    }
+
+    private void drawSelectedOutline(Graphics2D g, Component c, List<UICard> selected) {
+        for (UICard card : selected) {
+            card.paintSelection(g, c);
+        }
+
+        selected.clear();
     }
 
     public static void drawOutline(Graphics2D g, int color, int outlineColor, String text, int x, int y) {
