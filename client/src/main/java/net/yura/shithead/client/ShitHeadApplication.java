@@ -13,6 +13,7 @@ import java.util.jar.Manifest;
 import net.yura.lobby.mini.GameRenderer;
 import net.yura.lobby.mini.MiniLobbyClient;
 import net.yura.mobile.gui.ActionListener;
+import net.yura.mobile.gui.Animation;
 import net.yura.mobile.gui.Application;
 import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Icon;
@@ -29,7 +30,6 @@ import net.yura.shithead.common.CommandParser;
 import net.yura.shithead.common.Player;
 import net.yura.shithead.common.ShitheadGame;
 import net.yura.shithead.common.json.SerializerUtil;
-
 import javax.microedition.lcdui.Image;
 
 public class ShitHeadApplication extends Application implements ActionListener {
@@ -43,6 +43,10 @@ public class ShitHeadApplication extends Application implements ActionListener {
     private MiniLobbyClient minilobby;
 
     protected void initialize(DesktopPane dp) {
+
+        // this needs to be set right at the start BEFORE the animation thread starts
+        // as soon as the animation thread starts, changes to this will not take affect
+        Animation.FPS = 30;
 
         setupTheme(dp);
 

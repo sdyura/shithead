@@ -36,7 +36,7 @@ public class GameView extends Panel {
     private static final Font bigFont = new Font(javax.microedition.lcdui.Font.FACE_PROPORTIONAL, javax.microedition.lcdui.Font.STYLE_PLAIN, javax.microedition.lcdui.Font.SIZE_LARGE);
 
     public GameView() {
-        Animation.FPS = 30;
+
     }
 
     public void setTitle(String name) {
