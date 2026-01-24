@@ -291,7 +291,7 @@ public class GameView extends Panel {
 
         if (isLocalPlayer && hand.isWaitingForInput()) {
             boolean handActive = !player.getHand().isEmpty();
-            boolean upcardsActive = player.getHand().isEmpty() && !player.getUpcards().isEmpty();
+            boolean upcardsActive = game.isRearranging() || (player.getHand().isEmpty() && !player.getUpcards().isEmpty());
 
             if (handActive) {
                 handUiCards.forEach(c -> c.setPlayable(game.isPlayable(c.getCard().getRank(), top)));
@@ -310,14 +310,24 @@ public class GameView extends Panel {
         if (isLocalPlayer) {
             int maxWidth = Math.max(getWidth() - XULLoader.adjustSizeToDensity(66), threeCardsWidth);
             int handRows = hand.calculateNumRows(handUiCards, maxWidth);
-            int handHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
+            int upCardsOffset = PlayerHand.overlap;
+            int handCardsOffset = game.getPlayersReady().contains(player) ? PlayerHand.overlap : CardImageManager.cardHeight / 2;
+            int extraHandHeight = handRows > 1 ? (handRows - 1) * CardImageManager.cardHeight / 2 : 0;
 
-            hand.setPosition(centerX, height - CardImageManager.cardHeight - padding - PlayerHand.overlap * 2 - handHeight
+            // starting at the bottom of the screen, find the top position
+            hand.setPosition(centerX, height
+                    -padding
+                    -extraHandHeight
+                    -CardImageManager.cardHeight
+                    -upCardsOffset
+                    -handCardsOffset
                     // add half a player area (as we will then remove this again in the layoutCard calculations
                     + (CardImageManager.cardHeight + 2 * PlayerHand.overlap) / 2);
+
             hand.layoutHand(downUiCards, 0, maxWidth);
-            hand.layoutHand(upUiCards, PlayerHand.overlap, maxWidth);
-            hand.layoutHand(handUiCards, PlayerHand.overlap * 2, maxWidth);
+            hand.layoutHand(upUiCards, upCardsOffset, maxWidth);
+            hand.layoutHand(handUiCards, upCardsOffset + handCardsOffset, maxWidth);
+
         } else {
             int x = centerX + (int) (radiusX * Math.cos(angle));
             int y = centerY + (int) (radiusY * Math.sin(angle));

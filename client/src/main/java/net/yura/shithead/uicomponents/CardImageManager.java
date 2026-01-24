@@ -13,8 +13,20 @@ public class CardImageManager {
 
     // at mdpi, the size of the card is half the image size
     // the images in the lib ARE kind of almost @2x, but they do not have it in the name
-    public static final int cardWidth = XULLoader.adjustSizeToDensity(44); // 44 is the SMALLEST to touch target according to apple
-    public static final int cardHeight = XULLoader.adjustSizeToDensity(80); // 80
+    public static final int cardWidth;
+    public static final int cardHeight;
+
+    static {
+        String size = System.getProperty("display.size");
+        if ("large".equals(size) || "xlarge".equals(size)) {
+            cardWidth = XULLoader.adjustSizeToDensity(65);
+            cardHeight = XULLoader.adjustSizeToDensity(120);
+        }
+        else {
+            cardWidth = XULLoader.adjustSizeToDensity(44); // 44 is the SMALLEST to touch target according to apple
+            cardHeight = XULLoader.adjustSizeToDensity(80); // 80
+        }
+    }
 
     private static final Map<String, Icon> cardImages = new HashMap<>();
 
