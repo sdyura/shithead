@@ -49,6 +49,7 @@
 		B7A3E898974177A2A2F0C417 /* Shithead-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shithead-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC4876D3960503C5F9FA285C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DE30C950268FBF750018914C /* iosmeimg */ = {isa = PBXFileReference; lastKnownFileType = folder; path = iosmeimg; sourceTree = "<group>"; };
+		DE6305F12F291F5B0033AC1C /* Shithead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Shithead.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +108,7 @@
 		4D85E57E486ED51FA34DE305 /* Shithead */ = {
 			isa = PBXGroup;
 			children = (
+				DE6305F12F291F5B0033AC1C /* Shithead.entitlements */,
 				484E50E912C53A6976896EA4 /* Info.plist */,
 				583D44881E40B4B90048FF77 /* Assets.xcassets */,
 				583D44891E40B4B90048FF77 /* LaunchScreen.storyboard */,
@@ -430,6 +432,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Shithead/Shithead.entitlements;
 				DEAD_CODE_STRIPPING = NO;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -470,6 +473,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Shithead/Shithead.entitlements;
 				DEAD_CODE_STRIPPING = NO;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
