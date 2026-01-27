@@ -2,6 +2,7 @@ package net.yura.shithead.uicomponents;
 
 import net.yura.cardsengine.Card;
 import net.yura.cardsengine.Rank;
+import net.yura.mobile.gui.DesktopPane;
 import net.yura.mobile.gui.Font;
 import net.yura.mobile.gui.Graphics2D;
 import net.yura.mobile.gui.Icon;
@@ -162,13 +163,18 @@ public class UICard {
 
         double distance = Math.sqrt(dx * dx + dy * dy);
 
+        int fullDistance = Math.min(DesktopPane.getDesktopPane().getWidth(), DesktopPane.getDesktopPane().getHeight());
+        // this is not really the proper way to use Easings, but it also works in converting our distance to speed
+        // in an ideal world, we would be converting TIME to DISTANCE
+        double speed = Easings.easeOutQuint(Math.min(distance / fullDistance, 1.0));
+
         // Already at target
         if (distance == 0) {
             return new double[]{x, y};
         }
 
         // Step size logic
-        double maxStep = XULLoader.adjustSizeToDensity(10);
+        double maxStep = speed * (fullDistance / 20.0);
         double minStep = 1.0;
 
         // Slow down as we get close
@@ -190,7 +196,7 @@ public class UICard {
         x += nx * step;
         y += ny * step;
 
-        return new double[]{x, y};
+        return new double[]{Math.round(x), Math.round(y)};
     }
 
     public void setCard(Card card) {
